@@ -9,20 +9,45 @@
 // ---------------------------------------------------------------------------
 // structs and variables 
 // ---------------------------------------------------------------------------
+struct date
+{
+    int year[5];
+    int month[3];
+    int day[3];
+};
 
+struct department_head_information 
+{
+    char gender[10];
+    char name[50];
+    char family[50];
+    char start_date[12];
+    char group_name[50];
+    char code[11];
+    char phone_number[12];
+    char email[50];
+    char user_name[50];
+    char password[50];
+    struct department_head_information *link ;
+};
 
 // ---------------------------------------------------------------------------
 // files
 // ---------------------------------------------------------------------------
-
+FILE *head_file_ptr = NULL ;
 
 // ---------------------------------------------------------------------------
 // protoype functions
 // ---------------------------------------------------------------------------
 int main_menu();
 void main_menu_choice(int choice);
+
 void admin_login();
 void admin_menu();
+void admin_menu_choice(int admin_choice);
+void admin_log_head();
+
+
 void department_head_login();
 void academic_staff_login();
 // ---------------------------------------------------------------------------
@@ -94,7 +119,7 @@ void main_menu_choice(int choice)
 
 void admin_login()
 {
-    int choice = 0 , user_found = 0;
+    int choice = 0 , admin_found = 0;
     char enter , admin_user_name[50] , admin_password[50];
 
     system("cls");
@@ -112,13 +137,13 @@ void admin_login()
         if(!strcmp(admin_password , "1212"))
         {
             printf("\033[32m""\n\t\t\t\tWelcome to admin page :)""\033[0m");
-            user_found = 1 ;
+            admin_found = 1 ;
             
         } 
         
     } 
     
-    if(user_found == 1)
+    if(admin_found == 1)
     {
         admin_menu();
     } else 
@@ -156,8 +181,7 @@ void admin_menu()
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &admin_choice);
     getchar();
-    while(admin_choice <= 0 || admin_choice > 7
-    )
+    while(admin_choice <= 0 || admin_choice > 7)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
@@ -165,5 +189,116 @@ void admin_menu()
         gets(c);
     }
 
-    //admin_menu_choice(admin_choice);
+    admin_menu_choice(admin_choice);
 }
+
+void admin_menu_choice(int admin_choice)
+{
+    switch(admin_choice)
+    {
+
+        case 1 :
+        {
+           admin_log_head(); 
+        }
+        case 2 :
+        {
+
+        }
+        case 3 :
+        {
+
+        }
+        case 4 :
+        {
+
+        }
+        case 5 :
+        {
+
+        }
+        case 6 :
+        {
+
+        }
+        case 7 :
+        {
+
+        }
+
+    }
+}
+void admin_log_head()
+{
+   
+    char c[100]  , ch[4] , confirm_password[50] , enter;
+    struct department_head_information department_head;
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|              LOG NEW DEPARTMENT HEAD             |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter gender (male / female) : ");
+    gets(department_head.gender);
+
+    if(!strcmp(department_head.gender , "female"))
+    {
+        strcpy(ch , "her");
+    } else 
+    {
+        strcpy(ch , "his");
+    }
+    printf("\n\t\t\t\tPlease enter %s name : " , ch);
+    gets(department_head.name);
+    printf("\n\t\t\t\tPlease enter %s family : " , ch);
+    gets(department_head.family);
+    printf("\n\t\t\t\tPlease enter %s start date (0000/00/00): " , ch);
+    gets(department_head.start_date);
+    printf("\n\t\t\t\tPlease enter %s group name : " , ch);
+    gets(department_head.group_name);
+    printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
+    gets(department_head.phone_number);
+    printf("\n\t\t\t\tPlease enter %s email : " , ch);
+    gets(department_head.email);
+    printf("\n\t\t\t\tPlease enter %s user name : " , ch);
+    gets(department_head.user_name);
+    printf("\n\t\t\t\tPlease enter %s password : " , ch);
+    gets(department_head.password);
+    printf("\n\t\t\t\tPlease confirm %s password : " , ch);
+    gets(confirm_password);
+
+    if(!strcmp(department_head.password , confirm_password))
+    {
+        printf("\033[32m""\n\t\t\t\tDepartment head registation successfully complited :)\n""\033[0m");
+        printf("\033[34m""\n\t\t\t\t%s user name = %s""\033[0m", ch , department_head.user_name);
+        printf("\033[34m""\n\t\t\t\t%s password = %s""\033[0m" , ch , department_head.password);
+    } else 
+    {
+        printf("\033[31m""\n\t\t\t\tERROR! passwors not matched.\n""\033[0m");
+    }
+
+    head_file_ptr = fopen("department_head_information.txt" , "a");
+    fprintf(head_file_ptr , "%s\n" , department_head.gender);
+    fprintf(head_file_ptr , "%s\n" , department_head.name);
+    fprintf(head_file_ptr , "%s\n" , department_head.family);
+    fprintf(head_file_ptr , "%s\n" , department_head.start_date);
+    fprintf(head_file_ptr , "%s\n" , department_head.group_name);
+    fprintf(head_file_ptr , "%s\n" , department_head.phone_number);
+    fprintf(head_file_ptr , "%s\n" , department_head.email);
+    fprintf(head_file_ptr , "%s\n" , department_head.user_name);
+    fprintf(head_file_ptr , "%s\n" , department_head.password);
+    fclose(head_file_ptr);
+
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        admin_menu();
+    }
+    
+
+     
+}
+
