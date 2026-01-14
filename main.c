@@ -18,13 +18,16 @@
 // protoype functions
 // ---------------------------------------------------------------------------
 int main_menu();
-
+void choice(int choice);
+int admin_menu();
+int department_head_menu();
+int academic_staff_menu();
 // ---------------------------------------------------------------------------
 // main function
 // ---------------------------------------------------------------------------
 void main()
 {
-    main_menu();
+    choice(main_menu());
 }
 // ---------------------------------------------------------------------------
 // functions 
@@ -57,4 +60,31 @@ int main_menu()
     }
 
     return choice ;
+}
+
+void choice(int choice)
+{
+    switch(choice)
+    {
+        case 1 :
+        {
+            //admin_menu();
+            break;
+        }
+        case 2 :
+        {
+            //department_head_menu();
+            break;
+        }
+        case 3 :
+        {
+            //academic_staff_menu();
+            break;
+        }
+        case 4 :
+        {
+            printf("\033[34m""\n\t\t\t\tCome back soon :)""\033[0m");
+            break;
+        }
+    }
 }
