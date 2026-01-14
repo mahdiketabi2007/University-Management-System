@@ -120,7 +120,7 @@ void admin_login()
     
     if(user_found == 1)
     {
-        //admin_menu();
+        admin_menu();
     } else 
     {
         printf("\033[31m""\n\t\t\t\tERROR! incorrect user name or password.\n""\033[0m");
@@ -133,4 +133,37 @@ void admin_login()
     }
     
     
+}
+void admin_menu()
+{
+    int admin_choice = 0 ;
+    char c[100];
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|                    ADMIN PAGE                    |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\t1- Log new Department Head");
+    printf("\n\t\t\t\t2- Log new academic staff");
+    printf("\n\t\t\t\t3- Observe users list as type");
+    printf("\n\t\t\t\t4- Delete user from system");
+    printf("\n\t\t\t\t5- Reports");
+    printf("\n\t\t\t\t6- Backup files");
+    printf("\n\t\t\t\t7- Exit\n");
+
+    printf("\n\t\t\t\tPlease enter your choice : ");
+    scanf("%d" , &admin_choice);
+    getchar();
+    while(admin_choice <= 0 || admin_choice > 7
+    )
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter your choice : ");
+        scanf("%d" , &admin_choice);
+        gets(c);
+    }
+
+    //admin_menu_choice(admin_choice);
 }
