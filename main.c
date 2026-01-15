@@ -74,6 +74,7 @@ void admin_log_staff();
 
 void department_head_login();
 int department_head_check_login(char user_name[] , char password[]);
+void department_head_menu();
 
 
 void academic_staff_login();
@@ -643,8 +644,7 @@ void department_head_login()
     
     if(head_found == 1)
     {
-        //department_head_menu();
-        printf("ppp");
+        department_head_menu();
     } else 
     {
         printf("\033[31m""\n\t\t\t\tERROR! incorrect user name or password.\n""\033[0m");
@@ -659,7 +659,8 @@ void department_head_login()
     
     
 }
-// make link list of department head
+
+// make link  of department head and check it fo login
 int department_head_check_login(char head_user_name[] , char head_password[])
 {
     int head_found = 0 ;
@@ -716,6 +717,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     fclose(head_file_ptr);
 
     temp = s ;
+    // search user name and password
     while(temp != NULL)
     {
         if(!strcmp(temp->user_name , head_user_name))
@@ -736,14 +738,40 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     {
         return 0 ;
     }
-    // printf("%s\n" , e->gender);
-    // printf("%s\n" , e->name);
-    // printf("%s\n" , e->family);
-    // printf("-%4s-+%2s+(%2s)\n" , e->start_date.year , e->start_date.month , e->start_date.day);
-    // printf("%s\n" , e->group_name);
-    // printf("%s\n" , e->phone_number);
-    // printf("%s\n" , e->email);
-    // printf("%s\n" , e->user_name);
-    // printf("%s\n" , e->password);
     
+}
+
+//department head page
+void department_head_menu()
+{
+    int head_choice = 0 ;
+    char c[100];
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|               DEPARTMENT HEAD PAGE               |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\t1- Log new lesson");
+    printf("\n\t\t\t\t2- Log students score");
+    printf("\n\t\t\t\t3- Edit students score");
+    printf("\n\t\t\t\t4- Delete old lesson information");
+    printf("\n\t\t\t\t5- Reports");
+    printf("\n\t\t\t\t6- User account settings");
+    printf("\n\t\t\t\t7- Exit\n");
+
+    printf("\n\t\t\t\tPlease enter your choice : ");
+    scanf("%d" , &head_choice);
+    getchar();
+    // limit admin inputs 
+    while(head_choice <= 0 || head_choice > 7)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter your choice : ");
+        scanf("%d" , &head_choice);
+        gets(c);
+    }
+
+    //department_head_menu_choice(head_choice);
 }
