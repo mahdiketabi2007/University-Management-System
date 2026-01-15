@@ -11,9 +11,9 @@
 // ---------------------------------------------------------------------------
 struct date
 {
-    int year[5];
-    int month[3];
-    int day[3];
+    char year[5];
+    char month[3];
+    char day[3];
 };
 
 struct department_head_information 
@@ -21,7 +21,7 @@ struct department_head_information
     char gender[10];
     char name[50];
     char family[50];
-    char start_date[12];
+    struct date start_date;
     char group_name[50];
     char code[11];
     char phone_number[12];
@@ -37,6 +37,10 @@ struct department_head_information
 FILE *head_file_ptr = NULL ;
 
 // ---------------------------------------------------------------------------
+// other functions 
+// ---------------------------------------------------------------------------
+int check_nane(char str);
+// ---------------------------------------------------------------------------
 // protoype functions
 // ---------------------------------------------------------------------------
 int main_menu();
@@ -46,7 +50,7 @@ void admin_login();
 void admin_menu();
 void admin_menu_choice(int admin_choice);
 void admin_log_head();
-
+void admin_log_staff();
 
 void department_head_login();
 void academic_staff_login();
@@ -58,8 +62,37 @@ void main()
     main_menu_choice(main_menu());
 }
 // ---------------------------------------------------------------------------
+// other functions 
+// ---------------------------------------------------------------------------
+int check_name(char str[50])
+{
+    int len = 0 , correct_name = 1 , i = 0;
+    len = strlen(str);
+    for(i = 0 ; i < len ; i++)
+    {
+        if(isalpha(str[i]) == 1 || isalpha(str[i]) == 2)
+        {
+            continue;
+        } else 
+        {
+            correct_name = 0 ; 
+            break ;
+        }
+    }
+    if(correct_name == 1)
+    {
+        return 1 ;
+    } else 
+    {
+        return 0 ;
+    }
+
+}
+// ---------------------------------------------------------------------------
 // functions 
 // ---------------------------------------------------------------------------
+
+// function for diasplay main menu
 int main_menu()
 {
     int choice = 0 ;
@@ -79,6 +112,7 @@ int main_menu()
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &choice);
     getchar();
+    // limit user inputs
     while(choice <= 0 || choice > 4)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
@@ -90,6 +124,7 @@ int main_menu()
     return choice ;
 }
 
+// switch structure for user choice
 void main_menu_choice(int choice)
 {
     switch(choice)
@@ -117,6 +152,7 @@ void main_menu_choice(int choice)
     }
 }
 
+// login page for admin 
 void admin_login()
 {
     int choice = 0 , admin_found = 0;
@@ -149,6 +185,7 @@ void admin_login()
     } else 
     {
         printf("\033[31m""\n\t\t\t\tERROR! incorrect user name or password.\n""\033[0m");
+        // return to main menu
         printf("\033[34m""\n\t\t\t\tPlease enter to continue ....""\033[0m");
         enter = getchar();
         if(enter == '\n')
@@ -159,6 +196,7 @@ void admin_login()
     
     
 }
+// admin page
 void admin_menu()
 {
     int admin_choice = 0 ;
@@ -181,6 +219,7 @@ void admin_menu()
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &admin_choice);
     getchar();
+    // limit admin inputs 
     while(admin_choice <= 0 || admin_choice > 7)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
@@ -192,6 +231,7 @@ void admin_menu()
     admin_menu_choice(admin_choice);
 }
 
+// switch structure for admin choice
 void admin_menu_choice(int admin_choice)
 {
     switch(admin_choice)
@@ -226,12 +266,13 @@ void admin_menu_choice(int admin_choice)
 
         }
 
-    }
+    } 
 }
+// log new department head
 void admin_log_head()
 {
    
-    char c[100]  , ch[4] , confirm_password[50] , enter;
+    char  ch[4] , confirm_password[50] , enter;
     struct department_head_information department_head;
 
     system("cls");
@@ -240,22 +281,43 @@ void admin_log_head()
     printf("\n\t\t\t\t|              LOG NEW DEPARTMENT HEAD             |");
     printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
 
+    // limit inputs for gender
     printf("\n\t\t\t\tPlease enter gender (male / female) : ");
     gets(department_head.gender);
 
     if(!strcmp(department_head.gender , "female"))
     {
         strcpy(ch , "her");
-    } else 
+    } else if(!strcmp(department_head.gender , "male"))
     {
         strcpy(ch , "his");
+    } else 
+    {
+        while(strcmp(department_head.gender , "female") != 0 && strcmp(department_head.gender , "male") != 0)
+        {
+            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+            printf("\n\t\t\t\tPlease enter gender (male / female) : ");
+            gets(department_head.gender);
+        }
     }
+
     printf("\n\t\t\t\tPlease enter %s name : " , ch);
     gets(department_head.name);
+    while(!check_name(department_head.name))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s name : " , ch);
+        gets(department_head.name);
+    }
+
     printf("\n\t\t\t\tPlease enter %s family : " , ch);
     gets(department_head.family);
-    printf("\n\t\t\t\tPlease enter %s start date (0000/00/00): " , ch);
-    gets(department_head.start_date);
+    printf("\n\t\t\t\tPlease enter year of %s  : " , ch);
+    gets(department_head.start_date.year);
+    printf("\n\t\t\t\tPlease enter month of %s  : " , ch);
+    gets(department_head.start_date.month);
+    printf("\n\t\t\t\tPlease enter day of %s  : " , ch);
+    gets(department_head.start_date.day);
     printf("\n\t\t\t\tPlease enter %s group name : " , ch);
     gets(department_head.group_name);
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
@@ -269,6 +331,7 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease confirm %s password : " , ch);
     gets(confirm_password);
 
+    // check passwords matching
     if(!strcmp(department_head.password , confirm_password))
     {
         printf("\033[32m""\n\t\t\t\tDepartment head registation successfully complited :)\n""\033[0m");
@@ -279,11 +342,13 @@ void admin_log_head()
         printf("\033[31m""\n\t\t\t\tERROR! passwors not matched.\n""\033[0m");
     }
 
+
+    // print head department information in file
     head_file_ptr = fopen("department_head_information.txt" , "a");
     fprintf(head_file_ptr , "%s\n" , department_head.gender);
     fprintf(head_file_ptr , "%s\n" , department_head.name);
     fprintf(head_file_ptr , "%s\n" , department_head.family);
-    fprintf(head_file_ptr , "%s\n" , department_head.start_date);
+    fprintf(head_file_ptr , "%s\\%s\\%s\n" , department_head.start_date.year ,department_head.start_date.month , department_head.start_date.day);
     fprintf(head_file_ptr , "%s\n" , department_head.group_name);
     fprintf(head_file_ptr , "%s\n" , department_head.phone_number);
     fprintf(head_file_ptr , "%s\n" , department_head.email);
@@ -291,6 +356,7 @@ void admin_log_head()
     fprintf(head_file_ptr , "%s\n" , department_head.password);
     fclose(head_file_ptr);
 
+    // return to admin page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
     enter = getchar();
     if(enter == '\n')
