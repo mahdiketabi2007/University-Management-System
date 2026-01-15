@@ -64,6 +64,8 @@ void main()
 // ---------------------------------------------------------------------------
 // other functions 
 // ---------------------------------------------------------------------------
+
+// check name family
 int check_name(char str[50])
 {
     int len = 0 , correct_name = 1 , i = 0;
@@ -87,6 +89,31 @@ int check_name(char str[50])
         return 0 ;
     }
 
+}
+
+// check numbers
+int check_number(char number[])
+{
+    int len = 0 , correct_number = 1 , i = 0;
+    len = strlen(number);
+    for(i = 0 ; i < len ; i++)
+    {
+        if(isdigit(number[i]) == 1)
+        {
+            continue;
+        } else 
+        {
+            correct_number = 0 ; 
+            break ;
+        }
+    }
+    if(correct_number == 1)
+    {
+        return 1 ;
+    } else 
+    {
+        return 0 ;
+    }
 }
 // ---------------------------------------------------------------------------
 // functions 
@@ -299,10 +326,18 @@ void admin_log_head()
             printf("\n\t\t\t\tPlease enter gender (male / female) : ");
             gets(department_head.gender);
         }
+        if(!strcmp(department_head.gender , "female"))
+        {
+             strcpy(ch , "her");
+        } else if(!strcmp(department_head.gender , "male"))
+        {
+            strcpy(ch , "his");
+        }
     }
 
     printf("\n\t\t\t\tPlease enter %s name : " , ch);
     gets(department_head.name);
+    // check name
     while(!check_name(department_head.name))
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
@@ -312,16 +347,57 @@ void admin_log_head()
 
     printf("\n\t\t\t\tPlease enter %s family : " , ch);
     gets(department_head.family);
-    printf("\n\t\t\t\tPlease enter year of %s  : " , ch);
+    // check family
+    while(!check_name(department_head.family))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s family : " , ch);
+        gets(department_head.family);
+    }
+
+    printf("\n\t\t\t\tPlease enter year of %s  start: " , ch);
     gets(department_head.start_date.year);
-    printf("\n\t\t\t\tPlease enter month of %s  : " , ch);
+    //check year
+    while(check_number(department_head.start_date.year) == 0 || strlen(department_head.start_date.year) > 4)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter year of  %s  srtart: " , ch);
+        gets(department_head.start_date.year); 
+    }
+
+    printf("\n\t\t\t\tPlease enter month of %s  start: " , ch);
     gets(department_head.start_date.month);
-    printf("\n\t\t\t\tPlease enter day of %s  : " , ch);
+    //check month
+    while(check_number(department_head.start_date.month) == 0 || strlen(department_head.start_date.month) > 2)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter month of  %s  srtart: " , ch);
+        gets(department_head.start_date.month); 
+    }
+
+    printf("\n\t\t\t\tPlease enter day of %s  atart: " , ch);
     gets(department_head.start_date.day);
+    //check day
+    while(check_number(department_head.start_date.day) == 0 || strlen(department_head.start_date.day) > 2)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter day of  %s  srtart: " , ch);
+        gets(department_head.start_date.day); 
+    }
+
     printf("\n\t\t\t\tPlease enter %s group name : " , ch);
     gets(department_head.group_name);
+
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
     gets(department_head.phone_number);
+    //check phone number
+    while(check_number(department_head.phone_number) == 0 || strlen(department_head.phone_number) > 11)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
+        gets(department_head.phone_number); 
+    }
+
     printf("\n\t\t\t\tPlease enter %s email : " , ch);
     gets(department_head.email);
     printf("\n\t\t\t\tPlease enter %s user name : " , ch);
