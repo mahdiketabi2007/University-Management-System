@@ -44,12 +44,22 @@ struct academic_staff_information
     char password[50];
     struct academic_staff_information *link ;
 };
+
+struct lesson_information
+{
+    char name[50];
+    char number_of_unit[10];
+    char type[50];
+    char code[20];
+};
+
 // ---------------------------------------------------------------------------
 // files
 // ---------------------------------------------------------------------------
 
 FILE *head_file_ptr = NULL ;
 FILE *staff_file_ptr = NULL ;
+FILE *lesson_file_ptr = NULL ;
 // ---------------------------------------------------------------------------
 
 // other functions 
@@ -76,9 +86,12 @@ void department_head_login();
 int department_head_check_login(char user_name[] , char password[]);
 void department_head_menu();
 void department_head_menu_choice(int head_choice);
+void department_head_log_lesson();
 
 void academic_staff_login();
 int academic_staff_check_login(char staff_user_name[] , char staff_password[]);
+void academic_staff_menu();
+void academic_staff_menu_choice(int staff_choice);
 // ---------------------------------------------------------------------------
 // main function
 // ---------------------------------------------------------------------------
@@ -696,6 +709,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     struct department_head_information *e = malloc(sizeof(struct department_head_information));
     struct department_head_information *d = NULL;
     struct department_head_information *temp = NULL;
+    struct department_head_information *temp2 = NULL;
 
     head_file_ptr = fopen("department_head_information.txt" , "r");
     
@@ -758,6 +772,18 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         temp = temp->link ;
     }
 
+    // delete link list 
+    temp2 = s ;
+    temp = s->link ; 
+    while (temp != NULL)
+    {
+        temp2 = NULL;
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+        
+    }
+
     if(head_found == 1)
     {
         return 1 ;
@@ -768,7 +794,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     
 }
 
-//department head page
+//department head page menu
 void department_head_menu()
 {
     int head_choice = 0 ;
@@ -811,7 +837,7 @@ void department_head_menu_choice(int head_choice)
 
         case 1 :
         {
-           
+           department_head_log_lesson();
         }
         case 2 :
         {
@@ -839,6 +865,82 @@ void department_head_menu_choice(int head_choice)
         }
 
     } 
+}
+
+// log new lesson from department head
+void department_head_log_lesson()
+{
+    char  ch[4] , confirm_password[50] , enter;
+    struct lesson_information lesson;
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|                  LOG NEW LESSON                  |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+
+    printf("\n\t\t\t\tPlease enter lessons name : ");
+    gets(lesson.name);
+    // check name
+    while(!check_name(lesson.name))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons name : ");
+        gets(lesson.name);
+    }
+
+    printf("\n\t\t\t\tPlease enter number of unit : ");
+    gets(lesson.number_of_unit);
+    // check
+    while(!check_number(lesson.number_of_unit))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter number of unit : ");
+        gets(lesson.number_of_unit);
+    }
+
+    printf("\n\t\t\t\tPlease enter type of this lesson(theory , parctical , experimental , workshop): ");
+    gets(lesson.type);
+    //check 
+    while(strcmp(lesson.type , "theory") != 0 && strcmp(lesson.type , "parctical") != 0 && strcmp(lesson.type , "experimental") != 0 && strcmp(lesson.type , "workshop") != 0)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter type of this lesson(theory , parctical , experimental , workshop): ");
+        gets(lesson.type);
+    }
+
+    printf("\n\t\t\t\tPlease enter lessons code : " );
+    gets(lesson.code);
+    //check month
+    while(check_number(lesson.code) == 0 )
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons code : " );
+        gets(lesson.code);
+    }
+
+
+
+    // print head department information in file
+    lesson_file_ptr = fopen("lessons_information.txt" , "a");
+    fprintf(lesson_file_ptr , "%s\n" , lesson.name);
+    fprintf(lesson_file_ptr , "%s\n" , lesson.number_of_unit);
+    fprintf(lesson_file_ptr , "%s\n" , lesson.type);
+    fprintf(lesson_file_ptr , "%s\n" , lesson.code);
+
+    fclose(lesson_file_ptr);
+
+    printf("\033[32m""\n\t\t\tlesson log successfully complited :)\n""\033[0m");
+
+    // return to admin page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        department_head_menu();
+    }
+
 }
 
 // login page for academic staff
@@ -875,8 +977,8 @@ void academic_staff_login()
     
     if(staff_found == 1)
     {
-        //academic_staff_menu();
-        printf("!!!!");
+        academic_staff_menu();
+        
     } else 
     {
         printf("\033[31m""\n\t\t\t\tERROR! incorrect user name or password.\n""\033[0m");
@@ -900,6 +1002,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
     struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
     struct academic_staff_information *d = NULL;
     struct academic_staff_information *temp = NULL;
+    struct academic_staff_information *temp2 = NULL;
 
     staff_file_ptr = fopen("staff_information.txt" , "r");
     
@@ -962,6 +1065,19 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
         temp = temp->link ;
     }
 
+    // delete link list 
+    temp2 = s ;
+    temp = s->link ; 
+    while (temp != NULL)
+    {
+        temp2 = NULL;
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+
+    }
+    
+
     if(staff_found == 1)
     {
         return 1 ;
@@ -971,3 +1087,75 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
     }
     
 }
+
+// academic staff page menu
+void academic_staff_menu()
+{
+    int staff_choice = 0 ;
+    char c[100];
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|                ACADEMIC STAFF PAGE               |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\t1- Log new student");
+    printf("\n\t\t\t\t2- Edit students information");
+    printf("\n\t\t\t\t3- Log studnts score");
+    printf("\n\t\t\t\t4- Reports");
+    printf("\n\t\t\t\t5- User account settings");
+    printf("\n\t\t\t\t6- Exit\n");
+
+    printf("\n\t\t\t\tPlease enter your choice : ");
+    scanf("%d" , &staff_choice);
+    getchar();
+    // limit department head inputs 
+    while(staff_choice <= 0 || staff_choice > 6)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter your choice : ");
+        scanf("%d" , &staff_choice);
+        gets(c);
+    }
+
+    //academid_staff_menu_choice(staff_choice);
+}
+
+// switch structure for academic staff choice
+void academic_staff_menu_choice(int staff_choice)
+{
+    switch(staff_choice)
+    {
+
+        case 1 :
+        {
+           
+        }
+        case 2 :
+        {
+            
+        }
+        case 3 :
+        {
+
+        }
+        case 4 :
+        {
+
+        }
+        case 5 :
+        {
+
+        }
+        case 6 :
+        {
+            main_menu_choice(main_menu());
+        }
+
+    } 
+}
+
+
+
+
