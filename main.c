@@ -75,7 +75,7 @@ void admin_log_staff();
 void department_head_login();
 int department_head_check_login(char user_name[] , char password[]);
 void department_head_menu();
-
+void department_head_menu_choice(int head_choice);
 
 void academic_staff_login();
 
@@ -212,7 +212,7 @@ void main_menu_choice(int choice)
 // login page for admin 
 void admin_login()
 {
-    int choice = 0 , admin_found = 0;
+    int  admin_found = 0;
     char enter , admin_user_name[50] , admin_password[50];
 
     system("cls");
@@ -626,7 +626,7 @@ void admin_log_staff()
 // login page for admin 
 void department_head_login()
 {
-    int choice = 0 , head_found = 0;
+    int  head_found = 0;
     char enter , head_user_name[50] , head_password[50];
 
     system("cls");
@@ -694,7 +694,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
 
     s->link = e ;
     e->link = NULL; 
-
+    // make link list of head department information
     while(feof(head_file_ptr) == 0)
     {
         d = malloc(sizeof(struct department_head_information));
@@ -724,7 +724,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         {
             if(!strcmp(temp->password , head_password))
             {
-                return 1;
+                head_found = 1 ;
                 break;
             }
         }
@@ -764,14 +764,52 @@ void department_head_menu()
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &head_choice);
     getchar();
-    // limit admin inputs 
+    // limit department head inputs 
     while(head_choice <= 0 || head_choice > 7)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &head_choice);
         gets(c);
     }
 
-    //department_head_menu_choice(head_choice);
+    department_head_menu_choice(head_choice);
+}
+
+// switch structure for department head choice
+void department_head_menu_choice(int head_choice)
+{
+    switch(head_choice)
+    {
+
+        case 1 :
+        {
+           
+        }
+        case 2 :
+        {
+            
+        }
+        case 3 :
+        {
+
+        }
+        case 4 :
+        {
+
+        }
+        case 5 :
+        {
+
+        }
+        case 6 :
+        {
+
+        }
+        case 7 :
+        {
+            main_menu_choice(main_menu());
+        }
+
+    } 
 }
