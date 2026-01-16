@@ -80,7 +80,7 @@ FILE *student_file_ptr = NULL ;
 // other functions 
 // ---------------------------------------------------------------------------
 
-int check_name(char str[]);
+int check_string(char str[]);
 int check_number(char numbr[]);
 
 
@@ -96,6 +96,7 @@ void admin_menu();
 void admin_menu_choice(int admin_choice);
 void admin_log_head();
 void admin_log_staff();
+void admin_observe_users();
 
 void department_head_login();
 int department_head_check_login(char user_name[] , char password[]);
@@ -123,7 +124,7 @@ void main()
 // ---------------------------------------------------------------------------
 
 // check name family
-int check_name(char str[])
+int check_string(char str[])
 {
     int len = 0 , correct_name = 1 , i = 0;
     len = strlen(str);
@@ -348,7 +349,7 @@ void admin_menu_choice(int admin_choice)
         }
         case 3 :
         {
-
+            admin_observe_users();
         }
         case 4 :
         {
@@ -413,7 +414,7 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease enter %s name : " , ch);
     gets(department_head.name);
     // check name
-    while(!check_name(department_head.name))
+    while(!check_string(department_head.name))
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s name : " , ch);
@@ -423,7 +424,7 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease enter %s family : " , ch);
     gets(department_head.family);
     // check family
-    while(!check_name(department_head.family))
+    while(!check_string(department_head.family))
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s family : " , ch);
@@ -463,6 +464,16 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease enter %s group name : " , ch);
     gets(department_head.group_name);
 
+    printf("\n\t\t\t\tPlease enter %s code : " , ch);
+    gets(department_head.code);
+    // check code
+    while(!check_number(department_head.code))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter day of  %s  code: " , ch);
+        gets(department_head.code); 
+    }
+
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
     gets(department_head.phone_number);
     //check phone number
@@ -499,8 +510,9 @@ void admin_log_head()
     fprintf(head_file_ptr , "%s\n" , department_head.gender);
     fprintf(head_file_ptr , "%s\n" , department_head.name);
     fprintf(head_file_ptr , "%s\n" , department_head.family);
-    fprintf(head_file_ptr , "%4s/%1s/%1s\n" , department_head.start_date.year ,department_head.start_date.month , department_head.start_date.day);
+    fprintf(head_file_ptr , "%4s/%2s/%2s\n" , department_head.start_date.year ,department_head.start_date.month , department_head.start_date.day);
     fprintf(head_file_ptr , "%s\n" , department_head.group_name);
+    fprintf(head_file_ptr , "%s\n" , department_head.code);
     fprintf(head_file_ptr , "%s\n" , department_head.phone_number);
     fprintf(head_file_ptr , "%s\n" , department_head.email);
     fprintf(head_file_ptr , "%s\n" , department_head.user_name);
@@ -561,7 +573,7 @@ void admin_log_staff()
     printf("\n\t\t\t\tPlease enter %s name : " , ch);
     gets(staff.name);
     // check name
-    while(!check_name(staff.name))
+    while(!check_string(staff.name))
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s name : " , ch);
@@ -571,7 +583,7 @@ void admin_log_staff()
     printf("\n\t\t\t\tPlease enter %s family : " , ch);
     gets(staff.family);
     // check family
-    while(!check_name(staff.family))
+    while(!check_string(staff.family))
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s family : " , ch);
@@ -584,7 +596,7 @@ void admin_log_staff()
     while(check_number(staff.start_date.year) == 0 || strlen(staff.start_date.year) > 4)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter year of  %s  srtart: " , ch);
+        printf("\n\t\t\t\tPlease enter year of  %s  start: " , ch);
         gets(staff.start_date.year); 
     }
 
@@ -594,17 +606,17 @@ void admin_log_staff()
     while(check_number(staff.start_date.month) == 0 || strlen(staff.start_date.month) > 2)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter month of  %s  srtart: " , ch);
+        printf("\n\t\t\t\tPlease enter month of  %s  start: " , ch);
         gets(staff.start_date.month); 
     }
 
-    printf("\n\t\t\t\tPlease enter day of %s  atart: " , ch);
+    printf("\n\t\t\t\tPlease enter day of %s  start: " , ch);
     gets(staff.start_date.day);
     //check day
     while(check_number(staff.start_date.day) == 0 || strlen(staff.start_date.day) > 2)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter day of  %s  srtart: " , ch);
+        printf("\n\t\t\t\tPlease enter day of  %s  start: " , ch);
         gets(staff.start_date.day); 
     }
 
@@ -648,6 +660,7 @@ void admin_log_staff()
     fprintf(staff_file_ptr , "%s\n" , staff.name);
     fprintf(staff_file_ptr , "%s\n" , staff.family);
     fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , staff.start_date.year ,staff.start_date.month , staff.start_date.day);
+    fprintf(staff_file_ptr , "%s\n" , staff.rank);
     fprintf(staff_file_ptr , "%s\n" , staff.phone_number);
     fprintf(staff_file_ptr , "%s\n" , staff.email);
     fprintf(staff_file_ptr , "%s\n" , staff.user_name);
@@ -664,6 +677,304 @@ void admin_log_staff()
     
 
      
+}
+
+// observe users 
+void admin_observe_users()
+{
+    system("cls");
+
+    int i = 0  , j = 0;
+    char enter ;
+    //observe department head information
+
+    struct department_head_information *s = malloc(sizeof(struct department_head_information)); 
+    struct department_head_information *e = malloc(sizeof(struct department_head_information));  
+    struct department_head_information *d = NULL;  
+    struct department_head_information *temp = NULL; 
+    struct department_head_information *temp2 = NULL; 
+
+    head_file_ptr = fopen("department_head_information.txt" , "r");
+    
+    fscanf(head_file_ptr , "%s" , s->gender);
+    fscanf(head_file_ptr , "%s" , s->name);
+    fscanf(head_file_ptr , "%s" , s->family);
+    fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+    fscanf(head_file_ptr , "%s" , s->group_name);
+    fscanf(head_file_ptr , "%s" , s->code);
+    fscanf(head_file_ptr , "%s" , s->phone_number);
+    fscanf(head_file_ptr , "%s" , s->email);
+    fscanf(head_file_ptr , "%s" , s->user_name);
+    fscanf(head_file_ptr , "%s" , s->password);
+
+    fscanf(head_file_ptr , "%s" , e->gender);
+    fscanf(head_file_ptr , "%s" , e->name);
+    fscanf(head_file_ptr , "%s" , e->family);
+    fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+    fscanf(head_file_ptr , "%s" , e->group_name);
+    fscanf(head_file_ptr , "%s" , e->code);
+    fscanf(head_file_ptr , "%s" , e->phone_number);
+    fscanf(head_file_ptr , "%s" , e->email);
+    fscanf(head_file_ptr , "%s" , e->user_name);
+    fscanf(head_file_ptr , "%s" , e->password);
+
+    s->link = e ;
+    e->link = NULL ;
+
+    while(feof(head_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct department_head_information)); 
+
+        fscanf(head_file_ptr , "%s" , d->gender);
+        fscanf(head_file_ptr , "%s" , d->name);
+        fscanf(head_file_ptr , "%s" , d->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+        fscanf(head_file_ptr , "%s" , d->group_name);
+        fscanf(head_file_ptr , "%s" , d->code);
+        fscanf(head_file_ptr , "%s" , d->phone_number);
+        fscanf(head_file_ptr , "%s" , d->email);
+        fscanf(head_file_ptr , "%s" , d->user_name);
+        fscanf(head_file_ptr , "%s" , d->password);
+
+        e->link = d ;
+        e = d ;
+    }
+    e->link = NULL ;
+
+    fclose(head_file_ptr) ;
+    
+    printf("\n%c" , 201);
+    for(i = 0 ; i < 164 ; i++)
+        printf("%c" , 205);
+    printf("%c\n" , 187);
+    
+    printf("%c" , 186);
+    printf("%75s%s%74s" , "" , "DEPARTMENT HEAD" , "");
+    printf("%c\n" , 186);
+
+    printf("%c" , 186);
+    for(i = 0 ; i < 164 ; i++)
+        printf("%c" , 205);
+    printf("%c\n" , 186);
+
+    printf("%c" , 186);
+    printf("%2s%c" , "" , 179);
+    printf("%-7s%c" , "GENDER" , 179);
+    printf("%-12s%c" , "NAME" , 179);
+    printf("%-13s%c" , "FAMILY" , 179);
+    printf("%-11s%c" , "STAT DATE" , 179);
+    printf("%-15s%c" , "GROUP NAME" , 179);
+    printf("%-14s%c" , "CODE" , 179);
+    printf("%-14s%c" , "PHONE NUMBER" , 179);
+    printf("%-35s%c" , "EMAIL" , 179);
+    printf("%-15s%c" , "USER NAME" , 179);
+    printf("%-16s" , "PASSWORD");
+    printf("%c\n" , 186);
+
+    printf("%c" , 186);
+    for(i = 0 ; i < 164 ; i++)
+        printf("%c" , 205);
+    printf("%c\n" , 186);
+    
+    temp = s ; 
+    j = 1 ;
+    while(temp != NULL)
+    {
+
+        printf("%c" , 186);
+        printf("%-2d%c" , j++ , 179);
+        printf("%-7s%c" , temp->gender , 179);
+        printf("%-12s%c" , temp->name , 179);
+        printf("%-13s%c" , temp->family , 179);
+        printf("%4s/%2s/%2s%2c" , temp->start_date.year , temp->start_date.month , temp->start_date.month ,  179);
+        printf("%-15s%c" , temp->group_name , 179);
+        printf("%-14s%c" , temp->code , 179);
+        printf("%-14s%c" , temp->phone_number , 179);
+        printf("%-35s%c" , temp->email , 179);
+        printf("%-15s%c" , temp->user_name , 179);
+        printf("%-16s" , temp->password);
+        printf("%c\n" , 186);
+
+        printf("%c" , 186);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+        
+        temp = temp->link ;
+        
+
+    }
+
+    printf("%c" , 186);
+    printf("%164s" , "");
+    printf("%c\n" , 186);
+
+    printf("%c" , 200);
+    for(i = 0 ; i < 164 ; i++)
+        printf("%c" , 205);
+    printf("%c\n" , 188);
+
+    // delete link list 
+    temp2 = s ;
+    temp = s->link ; 
+    while (temp != NULL)
+    {
+        temp2 = NULL;
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+        
+    }
+    s = NULL ;
+    free(s);
+    e = NULL ;
+    free(e);
+
+    // observe academic staff information 
+
+    struct academic_staff_information *s2 = malloc(sizeof(struct academic_staff_information)); 
+    struct academic_staff_information *e2 = malloc(sizeof(struct academic_staff_information));  
+    struct academic_staff_information *d2 = NULL;  
+    struct academic_staff_information *t = NULL; 
+    struct academic_staff_information *t2 = NULL; 
+
+    staff_file_ptr = fopen("staff_information.txt" , "r");
+
+    fscanf(staff_file_ptr , "%s" , s2->gender);
+    fscanf(staff_file_ptr , "%s" , s2->name);
+    fscanf(staff_file_ptr , "%s" , s2->family);
+    fscanf(staff_file_ptr , "%4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
+    fscanf(staff_file_ptr , "%s" , s2->rank);
+    fscanf(staff_file_ptr , "%s" , s2->phone_number);
+    fscanf(staff_file_ptr , "%s" , s2->email);
+    fscanf(staff_file_ptr , "%s" , s2->user_name);
+    fscanf(staff_file_ptr , "%s" , s2->password);
+
+    fscanf(staff_file_ptr , "%s" , e2->gender);
+    fscanf(staff_file_ptr , "%s" , e2->name);
+    fscanf(staff_file_ptr , "%s" , e2->family);
+    fscanf(staff_file_ptr , "%4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
+    fscanf(staff_file_ptr , "%s" , e2->rank);
+    fscanf(staff_file_ptr , "%s" , e2->phone_number);
+    fscanf(staff_file_ptr , "%s" , e2->email);
+    fscanf(staff_file_ptr , "%s" , e2->user_name);
+    fscanf(staff_file_ptr , "%s" , e2->password);
+
+    s2->link = e2 ;
+    e2->link = NULL ;
+
+    while(feof(staff_file_ptr) == 0)
+    {
+        d2 = malloc(sizeof(struct academic_staff_information)); 
+
+        fscanf(staff_file_ptr , "%s" , d2->gender);
+        fscanf(staff_file_ptr , "%s" , d2->name);
+        fscanf(staff_file_ptr , "%s" , d2->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
+        fscanf(staff_file_ptr , "%s" , d2->rank);
+        fscanf(staff_file_ptr , "%s" , d2->phone_number);
+        fscanf(staff_file_ptr , "%s" , d2->email);
+        fscanf(staff_file_ptr , "%s" , d2->user_name);
+        fscanf(staff_file_ptr , "%s" , d2->password);
+
+        e2->link = d2 ;
+        e2 = d2 ;
+    }
+
+    fclose(staff_file_ptr) ;
+    
+    printf("\n\n%c" , 201);
+    for(i = 0 ; i < 164 ; i++)
+        printf("%c" , 205);
+    printf("%c\n" , 187);
+    
+    printf("%c" , 186);
+    printf("%75s%s%75s" , "" , "ACADEMIC STAFF" , "");
+    printf("%c\n" , 186);
+
+    printf("%c" , 186);
+    for(i = 0 ; i < 164 ; i++)
+        printf("%c" , 205);
+    printf("%c\n" , 186);
+
+    printf("%c" , 186);
+    printf("%2s%c" , "" , 179);
+    printf("%-7s%c" , "GENDER" , 179);
+    printf("%-17s%c" , "NAME" , 179);
+    printf("%-17s%c" , "FAMILY" , 179);
+    printf("%-12s%c" , "STAT DATE" , 179);
+    printf("%-13s%c" , "RANK" , 179);
+    printf("%-13s%c" , "PHONE NUMBER" , 179);
+    printf("%-40s%c" , "EMAIL" , 179);
+    printf("%-17s%c" , "USER NAME" , 179);
+    printf("%-17s" , "PASSWORD");
+    printf("%c\n" , 186);
+
+    printf("%c" , 186);
+    for(i = 0 ; i < 164 ; i++)
+        printf("%c" , 205);
+    printf("%c\n" , 186);
+    
+    t = s2 ; 
+    j = 1 ;
+    while(t != NULL)
+    {
+       
+        printf("%c" , 186);
+        printf("%-2d%c" , j++ , 179);
+        printf("%-7s%c" , t->gender , 179);
+        printf("%-17s%c" , t->name , 179);
+        printf("%-17s%c" , t->family , 179);
+        printf("%4s/%2s/%2s%3c" , t->start_date.year , t->start_date.month , t->start_date.day , 179);
+        printf("%-13s%c" , t->rank , 179);
+        printf("%-13s%c" , t->phone_number , 179);
+        printf("%-40s%c" , t->email , 179);
+        printf("%-17s%c" , t->user_name , 179);
+        printf("%-17s" , t->password);
+        printf("%c\n" , 186);
+
+        printf("%c" , 186);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+        
+        t = t->link ;
+        
+
+    }
+
+    printf("%c" , 186);
+    printf("%164s" , "");
+    printf("%c\n" , 186);
+
+    printf("%c" , 200);
+    for(i = 0 ; i < 164 ; i++)
+        printf("%c" , 205);
+    printf("%c\n" , 188);
+
+    // delete link list 
+    t2 = s2 ;
+    t = s2->link ; 
+    while (t != NULL)
+    {
+        t2 = NULL;
+        free(t2);
+        t2 = t ;
+        t = t->link;
+        
+    }
+    s2 = NULL ;
+    free(s2);
+    e2 = NULL ;
+    free(e2);
+
+    // return to main menu
+    printf("\033[34m""\n    Please enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        admin_menu();
+    }
 }
 
 // login page for department head 
@@ -734,6 +1045,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     fscanf(head_file_ptr , "%s" , s->family);
     fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
     fscanf(head_file_ptr , "%s" , s->group_name);
+    fscanf(head_file_ptr , "%s" , s->code);
     fscanf(head_file_ptr , "%s" , s->phone_number);
     fscanf(head_file_ptr , "%s" , s->email);
     fscanf(head_file_ptr , "%s" , s->user_name);
@@ -744,6 +1056,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     fscanf(head_file_ptr , "%s" , e->family);
     fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
     fscanf(head_file_ptr , "%s" , e->group_name);
+    fscanf(head_file_ptr , "%s" , e->code);
     fscanf(head_file_ptr , "%s" , e->phone_number);
     fscanf(head_file_ptr , "%s" , e->email);
     fscanf(head_file_ptr , "%s" , e->user_name);
@@ -751,6 +1064,8 @@ int department_head_check_login(char head_user_name[] , char head_password[])
 
     s->link = e ;
     e->link = NULL; 
+
+
     // make link list of head department information
     while(feof(head_file_ptr) == 0)
     {
@@ -761,6 +1076,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         fscanf(head_file_ptr , "%s" , d->family);
         fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
         fscanf(head_file_ptr , "%s" , d->group_name);
+        fscanf(head_file_ptr , "%s" , d->code);
         fscanf(head_file_ptr , "%s" , d->phone_number);
         fscanf(head_file_ptr , "%s" , d->email);
         fscanf(head_file_ptr , "%s" , d->user_name);
@@ -768,6 +1084,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
 
         e->link = d ;
         e = d ;
+        
     }
     e->link = NULL ;
 
@@ -886,7 +1203,7 @@ void department_head_menu_choice(int head_choice)
 // log new lesson from department head
 void department_head_log_lesson()
 {
-    char  ch[4] , confirm_password[50] , enter;
+    char   enter;
     struct lesson_information lesson;
 
     system("cls");
@@ -899,7 +1216,7 @@ void department_head_log_lesson()
     printf("\n\t\t\t\tPlease enter lessons name : ");
     gets(lesson.name);
     // check name
-    while(!check_name(lesson.name))
+    while(!check_string(lesson.name))
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons name : ");
@@ -1061,6 +1378,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
 
         e->link = d ;
         e = d ;
+        
     }
     e->link = NULL ;
 
@@ -1215,7 +1533,7 @@ void academic_staff_log_student()
     printf("\n\t\t\t\tPlease enter %s name : " , ch);
     gets(student.name);
     // check name
-    while(!check_name(student.name))
+    while(!check_string(student.name))
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s name : " , ch);
@@ -1225,7 +1543,7 @@ void academic_staff_log_student()
     printf("\n\t\t\t\tPlease enter %s family : " , ch);
     gets(student.family);
     // check family
-    while(!check_name(student.family))
+    while(!check_string(student.family))
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s family : " , ch);
@@ -1265,7 +1583,7 @@ void academic_staff_log_student()
     printf("\n\t\t\t\tPlease enter %s birth city : " , ch);
     gets(student.birth_city);
     //check
-    while(check_name(student.birth_city) == 0)
+    while(check_string(student.birth_city) == 0)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth city : " , ch);
@@ -1275,7 +1593,7 @@ void academic_staff_log_student()
     printf("\n\t\t\t\tPlease enter %s filed of study : " , ch);
     gets(student.field_of_study);
     //check
-    while(check_name(student.field_of_study) == 0)
+    while(check_string(student.field_of_study) == 0)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s filed of study : " , ch);
@@ -1308,7 +1626,7 @@ void academic_staff_log_student()
     gets(student.email);
     
 
-    
+    printf("\033[32m""\n\t\t\t\tstudent log successfully complited :)\n""\033[0m");
 
 
     // print student information in file
@@ -1331,7 +1649,7 @@ void academic_staff_log_student()
     enter = getchar();
     if(enter == '\n')
     {
-        admin_menu();
+        academic_staff_menu();
     }
     
 
