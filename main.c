@@ -223,8 +223,22 @@ void admin_login()
 
     printf("\n\t\t\t\tPlease enter your user name : ");
     gets(admin_user_name);
+    while(strcmp(admin_user_name , "") == 0)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter your user name : ");
+        gets(admin_user_name);
+    }
+
     printf("\n\t\t\t\tPlease enter your password : ");
     gets(admin_password);
+    while(strcmp(admin_user_name , "") == 0)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter your user name : ");
+        gets(admin_user_name);
+    }
+
     if(!strcmp(admin_user_name , "admin"))
     {
         if(!strcmp(admin_password , "1212"))
