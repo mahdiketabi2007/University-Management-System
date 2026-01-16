@@ -53,6 +53,20 @@ struct lesson_information
     char code[20];
 };
 
+struct student_information
+{
+    char gender[10];
+    char name[50];
+    char family[50];
+    char code[11];
+    struct date birth_date;
+    char birth_city[50];
+    char field_of_study[50];
+    char id[50];
+    char phone_number[12];
+    char email[50];
+    struct department_head_information *link ;
+};
 // ---------------------------------------------------------------------------
 // files
 // ---------------------------------------------------------------------------
@@ -60,6 +74,7 @@ struct lesson_information
 FILE *head_file_ptr = NULL ;
 FILE *staff_file_ptr = NULL ;
 FILE *lesson_file_ptr = NULL ;
+FILE *student_file_ptr = NULL ;
 // ---------------------------------------------------------------------------
 
 // other functions 
@@ -92,6 +107,7 @@ void academic_staff_login();
 int academic_staff_check_login(char staff_user_name[] , char staff_password[]);
 void academic_staff_menu();
 void academic_staff_menu_choice(int staff_choice);
+void academic_staff_log_student();
 // ---------------------------------------------------------------------------
 // main function
 // ---------------------------------------------------------------------------
@@ -912,7 +928,7 @@ void department_head_log_lesson()
 
     printf("\n\t\t\t\tPlease enter lessons code : " );
     gets(lesson.code);
-    //check month
+    //check
     while(check_number(lesson.code) == 0 )
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
@@ -922,7 +938,7 @@ void department_head_log_lesson()
 
 
 
-    // print head department information in file
+    // print lesson information in file
     lesson_file_ptr = fopen("lessons_information.txt" , "a");
     fprintf(lesson_file_ptr , "%s\n" , lesson.name);
     fprintf(lesson_file_ptr , "%s\n" , lesson.number_of_unit);
@@ -931,9 +947,9 @@ void department_head_log_lesson()
 
     fclose(lesson_file_ptr);
 
-    printf("\033[32m""\n\t\t\tlesson log successfully complited :)\n""\033[0m");
+    printf("\033[32m""\n\t\t\t\tlesson log successfully complited :)\n""\033[0m");
 
-    // return to admin page menu
+    // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
     enter = getchar();
     if(enter == '\n')
@@ -1119,7 +1135,7 @@ void academic_staff_menu()
         gets(c);
     }
 
-    //academid_staff_menu_choice(staff_choice);
+    academic_staff_menu_choice(staff_choice);
 }
 
 // switch structure for academic staff choice
@@ -1130,7 +1146,7 @@ void academic_staff_menu_choice(int staff_choice)
 
         case 1 :
         {
-           
+            academic_staff_log_student();
         }
         case 2 :
         {
@@ -1155,6 +1171,174 @@ void academic_staff_menu_choice(int staff_choice)
 
     } 
 }
+
+// log new student from academic staff
+void academic_staff_log_student()
+{
+   
+    char  ch[4] , enter;
+    struct student_information student;
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|                  LOG NEW STUDENT                 |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    // limit inputs for gender
+    printf("\n\t\t\t\tPlease enter gender (male / female) : ");
+    gets(student.gender);
+
+    if(!strcmp(student.gender , "female"))
+    {
+        strcpy(ch , "her");
+    } else if(!strcmp(student.gender , "male"))
+    {
+        strcpy(ch , "his");
+    } else 
+    {
+        while(strcmp(student.gender , "female") != 0 && strcmp(student.gender , "male") != 0)
+        {
+            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+            printf("\n\t\t\t\tPlease enter gender (male / female) : ");
+            gets(student.gender);
+        }
+        if(!strcmp(student.gender , "female"))
+        {
+             strcpy(ch , "her");
+        } else if(!strcmp(student.gender , "male"))
+        {
+            strcpy(ch , "his");
+        }
+    }
+
+    printf("\n\t\t\t\tPlease enter %s name : " , ch);
+    gets(student.name);
+    // check name
+    while(!check_name(student.name))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s name : " , ch);
+        gets(student.name);
+    }
+
+    printf("\n\t\t\t\tPlease enter %s family : " , ch);
+    gets(student.family);
+    // check family
+    while(!check_name(student.family))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s family : " , ch);
+        gets(student.family);
+    }
+
+    printf("\n\t\t\t\tPlease enter %s birth year : " , ch);
+    gets(student.birth_date.year);
+    //check year
+    while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) > 4)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s birth year : " , ch);
+        gets(student.birth_date.year); 
+    }
+
+    printf("\n\t\t\t\tPlease enter %s birth month : " , ch);
+    gets(student.birth_date.month);
+    //check month
+    while(check_number(student.birth_date.month) == 0 || strlen(student.birth_date.month) > 2)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s birth month : " , ch);
+        gets(student.birth_date.month); 
+    }
+
+    printf("\n\t\t\t\tPlease enter %s birth day : " , ch);
+    gets(student.birth_date.day);
+    //check day
+    while(check_number(student.birth_date.day) == 0 || strlen(student.birth_date.day) > 2)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s birth day : " , ch);
+        gets(student.birth_date.day); 
+    }
+
+    printf("\n\t\t\t\tPlease enter %s birth city : " , ch);
+    gets(student.birth_city);
+    //check
+    while(check_name(student.birth_city) == 0)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s birth city : " , ch);
+        gets(student.birth_city);
+    }
+
+    printf("\n\t\t\t\tPlease enter %s filed of study : " , ch);
+    gets(student.field_of_study);
+    //check
+    while(check_name(student.field_of_study) == 0)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s filed of study : " , ch);
+        gets(student.field_of_study);
+    }
+
+    printf("\n\t\t\t\tPlease enter %s id : " , ch);
+    gets(student.id);
+    //check
+    while(check_number(student.id) == 0)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s id : " , ch);
+        gets(student.id);
+    }
+
+    
+
+    printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
+    gets(student.phone_number);
+    //check phone number
+    while(check_number(student.phone_number) == 0 || strlen(student.phone_number) > 11)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
+        gets(student.phone_number); 
+    }
+
+    printf("\n\t\t\t\tPlease enter %s email : " , ch);
+    gets(student.email);
+    
+
+    
+
+
+    // print student information in file
+    student_file_ptr = fopen("student_information.txt" , "a");
+    fprintf(head_file_ptr , "%s\n" , student.gender);
+    fprintf(head_file_ptr , "%s\n" , student.name);
+    fprintf(head_file_ptr , "%s\n" , student.family);
+    fprintf(head_file_ptr , "%s\n" , student.code);
+    fprintf(head_file_ptr , "%4s/%1s/%1s\n" , student.birth_date.year ,student.birth_date.month , student.birth_date.day);
+    fprintf(head_file_ptr , "%s\n" , student.birth_city);
+    fprintf(head_file_ptr , "%s\n" , student.field_of_study);
+    fprintf(head_file_ptr , "%s\n" , student.id);
+    fprintf(head_file_ptr , "%s\n" , student.phone_number);
+    fprintf(head_file_ptr , "%s\n" , student.email);
+    
+    fclose(student_file_ptr);
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        admin_menu();
+    }
+    
+
+     
+}
+
+
 
 
 
