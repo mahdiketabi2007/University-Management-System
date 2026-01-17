@@ -122,6 +122,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[]);
 void academic_staff_menu( struct academic_staff_information staff);
 void academic_staff_menu_choice(int staff_choice ,  struct academic_staff_information staff);
 void academic_staff_log_student(struct academic_staff_information staff);
+void academic_staff_log_score(struct academic_staff_information staff);
 // ---------------------------------------------------------------------------
 // main function
 // ---------------------------------------------------------------------------
@@ -520,30 +521,37 @@ void admin_menu_choice(int admin_choice)
         case 1 :
         {
            admin_log_head(); 
+           break;
         }
         case 2 :
         {
             admin_log_staff();
+            break;
         }
         case 3 :
         {
             admin_observe_users();
+            break;
         }
         case 4 :
         {
 
+            break;
         }
         case 5 :
         {
 
+            break;
         }
         case 6 :
         {
 
+            break;
         }
         case 7 :
         {
             main_menu_choice(main_menu());
+            break;
         }
 
     } 
@@ -1356,30 +1364,37 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
         case 1 :
         {
            department_head_log_lesson(head);
+           break;
         }
         case 2 :
         {
             department_head_log_score(head);
+            break;
         }
         case 3 :
         {
 
+            break;
         }
         case 4 :
         {
 
+            break;
         }
         case 5 :
         {
 
+            break;
         }
         case 6 :
         {
 
+            break;
         }
         case 7 :
         {
             main_menu_choice(main_menu());
+            break;
         }
 
     } 
@@ -1512,15 +1527,15 @@ void department_head_log_score( struct department_head_information head)
     
     printf("\n\n\t\t\t\tTime : %s" , __TIME__);
     
-    printf("\n\n\t\t\t\tdepartment head name : %s %s" , head.name , head.family);
+    printf("\n\n\t\t\t\tDepartment head name : %s %s" , head.name , head.family);
 
     // print score information in file
     score_file_ptr = fopen("scores_information.txt" , "a");
-    fprintf(score_file_ptr , "%s\n" , score.student_id);
+    fprintf(score_file_ptr , "\n%s\n" , score.student_id);
     fprintf(score_file_ptr , "%s\n" , score.lesson_code);
     fprintf(score_file_ptr , "%s\n" , score.score);
     fprintf(score_file_ptr , "%s\n" , __DATE__);
-    fprintf(score_file_ptr , "%s\n" , __TIME__);
+    fprintf(score_file_ptr , "%s" , __TIME__);
 
      fclose(score_file_ptr);
 
@@ -1727,26 +1742,32 @@ void academic_staff_menu_choice(int staff_choice ,  struct academic_staff_inform
         case 1 :
         {
             academic_staff_log_student(staff);
+            break;
         }
         case 2 :
         {
-            
+           
+            break;
         }
         case 3 :
         {
-
+            academic_staff_log_score(staff);
+            break;
         }
         case 4 :
         {
 
+            break;
         }
         case 5 :
         {
 
+            break;
         }
         case 6 :
         {
             main_menu_choice(main_menu());
+            break;
         }
 
     } 
@@ -1931,6 +1952,78 @@ void academic_staff_log_student(struct academic_staff_information staff)
      
 }
 
+// log students score
+void academic_staff_log_score(struct academic_staff_information staff)
+{
+    char   enter;
+    struct student_score score;
+
+    system("cls");
+
+    printf("%c academid staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|                    LOG SCORE                     |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(score.student_id);
+    // check id
+    while(!check_number(score.student_id))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id  : ");
+        gets(score.student_id);
+    }
+
+    printf("\n\t\t\t\tPlease enter lessons code : ");
+    gets(score.lesson_code);
+    // check code
+    while(!check_number(score.lesson_code))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons code : ");
+        gets(score.lesson_code);
+    }
+
+    printf("\n\t\t\t\tPlease enter score : ");
+    gets(score.score);
+    //check score
+    while(!check_number(score.score))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter score : ");
+        gets(score.score);
+    }
+
+    printf("\n\t\t\t\tDate : %s" , __DATE__);
+    
+    printf("\n\n\t\t\t\tTime : %s" , __TIME__);
+    
+    printf("\n\n\t\t\t\tAcademic staff name : %s %s" , staff.name , staff.family);
+
+    // print score information in file
+    score_file_ptr = fopen("scores_information.txt" , "a");
+    fprintf(score_file_ptr , "\n%s\n" , score.student_id);
+    fprintf(score_file_ptr , "%s\n" , score.lesson_code);
+    fprintf(score_file_ptr , "%s\n" , score.score);
+    fprintf(score_file_ptr , "%s\n" , __DATE__);
+    fprintf(score_file_ptr , "%s" , __TIME__);
+
+     fclose(score_file_ptr);
+
+    printf("\033[32m""\n\n\t\t\t\tscore log successfully complited :)\n""\033[0m");
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+
+}
 
 
 
