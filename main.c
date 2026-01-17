@@ -88,6 +88,11 @@ FILE *lesson_file_ptr = NULL ;
 FILE *student_file_ptr = NULL ;
 FILE *score_file_ptr = NULL ;
 
+FILE *backup_head_file_ptr = NULL ;
+FILE *backup_staff_file_ptr = NULL ;
+FILE *backup_lesson_file_ptr = NULL ;
+FILE *backup_student_file_ptr = NULL ;
+FILE *backup_score_file_ptr = NULL ;
 // ---------------------------------------------------------------------------
 // other functions 
 // ---------------------------------------------------------------------------
@@ -111,6 +116,7 @@ void admin_log_staff();
 void admin_observe_users();
 void admin_backup_menu();
 void admin_backup_menu_choice( int admin_choice);
+void admin_backup(int n);
 
 void department_head_login();
 int department_head_check_login(char user_name[] , char password[]);
@@ -542,12 +548,12 @@ void admin_menu_choice(int admin_choice)
         }
         case 5 :
         {
-            admin_backup_menu();
+            
             break;
         }
         case 6 :
         {
-
+            admin_backup_menu();
             break;
         }
         case 7 :
@@ -1173,7 +1179,7 @@ void admin_observe_users()
 void admin_backup_menu()
 {
    int admin_choice = 0 ;
-    char c[100];
+    char c[100] , enter;
 
     system("cls");
 
@@ -1202,6 +1208,17 @@ void admin_backup_menu()
     }
 
     admin_backup_menu_choice(admin_choice);
+
+    printf("\033[32m""\n\t\t\t\tBackup file successfully built :)\n""\033[0m");
+
+    // return to main menu
+    printf("\033[34m""\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+         admin_menu();
+    }
+
 }  
 
 // switch structure for admin choice in backup file page
@@ -1212,32 +1229,32 @@ void admin_backup_menu_choice( int admin_choice)
 
         case 1 :
         {
-           
-           break;
+            admin_backup(1);
+            break;
         }
         case 2 :
         {
-            
+            admin_backup(2);
             break;
         }
         case 3 :
         {
-
+            admin_backup(3);
             break;
         }
         case 4 :
         {
-
+            admin_backup(4);
             break;
         }
         case 5 :
         {
-
+            admin_backup(5);
             break;
         }
         case 6 :
         {
-
+            admin_backup(6);
             break;
         }
         case 7 :
@@ -1247,6 +1264,106 @@ void admin_backup_menu_choice( int admin_choice)
         }
 
     } 
+}
+
+// backup system
+void admin_backup(int n)
+{
+    char c  , file_name[70];
+    if(n == 1)
+    {
+        head_file_ptr = fopen("department_head_information.txt" , "r");
+
+        sprintf(file_name , "backup_department_head_information(%s).txt" , __DATE__);
+
+        backup_head_file_ptr = fopen(file_name ,  "w");
+
+        c = fgetc(head_file_ptr);
+        while(feof(head_file_ptr) == 0)
+        {
+            fputc(c , backup_head_file_ptr);
+            c = fgetc(head_file_ptr);
+        }
+
+        fclose(head_file_ptr);
+        fclose(backup_head_file_ptr);
+
+    } else if(n == 2)
+    {
+        staff_file_ptr = fopen("staff_information.txt" , "r");
+
+        sprintf(file_name , "backup_staff_information(%s).txt" , __DATE__);
+
+        backup_staff_file_ptr = fopen(file_name ,  "w");
+
+        c = fgetc(staff_file_ptr);
+        while(feof(staff_file_ptr) == 0)
+        {
+            fputc(c , backup_staff_file_ptr);
+            c = fgetc(staff_file_ptr);
+        }
+
+        fclose(staff_file_ptr);
+        fclose(backup_staff_file_ptr);
+
+    } else if(n == 3)
+    {
+        student_file_ptr = fopen("student_information.txt" , "r");
+
+        sprintf(file_name , "backup_student_information(%s).txt" , __DATE__);
+
+        backup_student_file_ptr = fopen(file_name ,  "w");
+
+        c = fgetc(student_file_ptr);
+        while(feof(student_file_ptr) == 0)
+        {
+            fputc(c , backup_student_file_ptr);
+            c = fgetc(student_file_ptr);
+        }
+
+        fclose(student_file_ptr);
+        fclose(backup_student_file_ptr);
+
+    } else if(n == 4)
+    {
+        lesson_file_ptr = fopen("lessons_information.txt" , "r");
+
+        sprintf(file_name , "backup_lessons_information(%s).txt" , __DATE__);
+
+        backup_lesson_file_ptr = fopen(file_name ,  "w");
+
+        c = fgetc(lesson_file_ptr);
+        while(feof(lesson_file_ptr) == 0)
+        {
+            fputc(c , backup_lesson_file_ptr);
+            c = fgetc(lesson_file_ptr);
+        }
+
+        fclose(lesson_file_ptr);
+        fclose(backup_lesson_file_ptr);
+
+    } else if(n == 5)
+    {
+        score_file_ptr = fopen("scores_information.txt" , "r");
+
+        sprintf(file_name , "backup_scores_information(%s).txt" , __DATE__);
+
+        backup_score_file_ptr = fopen(file_name ,  "w");
+
+        c = fgetc(score_file_ptr);
+        while(feof(score_file_ptr) == 0)
+        {
+            fputc(c , backup_score_file_ptr);
+            c = fgetc(score_file_ptr);
+        }
+
+        fclose(score_file_ptr);
+        fclose(backup_score_file_ptr);
+
+    } else if(n == 6)
+    {
+        
+    }
 }
 
 // login page for department head 
@@ -1618,7 +1735,7 @@ void department_head_log_score( struct department_head_information head)
     fprintf(score_file_ptr , "%s\n" , score.score);
     fprintf(score_file_ptr , "%s\n" , __DATE__);
     fprintf(score_file_ptr , "%s" , __TIME__);
-
+    fprintf( score_file_ptr ,"%s %s" , head.name , head.family);
      fclose(score_file_ptr);
 
     printf("\033[32m""\n\n\t\t\t\tscore log successfully complited :)\n""\033[0m");
@@ -2091,7 +2208,8 @@ void academic_staff_log_score(struct academic_staff_information staff)
     fprintf(score_file_ptr , "%s\n" , score.lesson_code);
     fprintf(score_file_ptr , "%s\n" , score.score);
     fprintf(score_file_ptr , "%s\n" , __DATE__);
-    fprintf(score_file_ptr , "%s" , __TIME__);
+    fprintf(score_file_ptr , "%s\n" , __TIME__);
+    fprintf( score_file_ptr ,"%s %s" , staff.name , staff.family);
 
      fclose(score_file_ptr);
 
