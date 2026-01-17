@@ -109,6 +109,8 @@ void admin_menu_choice(int admin_choice);
 void admin_log_head();
 void admin_log_staff();
 void admin_observe_users();
+void admin_backup_menu();
+void admin_backup_menu_choice( int admin_choice);
 
 void department_head_login();
 int department_head_check_login(char user_name[] , char password[]);
@@ -540,7 +542,7 @@ void admin_menu_choice(int admin_choice)
         }
         case 5 :
         {
-
+            admin_backup_menu();
             break;
         }
         case 6 :
@@ -1165,6 +1167,86 @@ void admin_observe_users()
     {
         admin_menu();
     }
+}
+
+// backup files
+void admin_backup_menu()
+{
+   int admin_choice = 0 ;
+    char c[100];
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|                   BACK UP PAGE                   |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\t1- Back up from department head information file");
+    printf("\n\t\t\t\t2- Back up from academic staff information file");
+    printf("\n\t\t\t\t3- Back up from student information file");
+    printf("\n\t\t\t\t4- Back up from lessons  information file");
+    printf("\n\t\t\t\t5- Back up from scores file");
+    printf("\n\t\t\t\t6- .........");
+    printf("\n\t\t\t\t7- Exit\n");
+
+    printf("\n\t\t\t\tPlease enter your choice : ");
+    scanf("%d" , &admin_choice);
+    getchar();
+    // limit admin inputs 
+    while(admin_choice <= 0 || admin_choice > 7)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter your choice : ");
+        scanf("%d" , &admin_choice);
+        gets(c);
+    }
+
+    admin_backup_menu_choice(admin_choice);
+}  
+
+// switch structure for admin choice in backup file page
+void admin_backup_menu_choice( int admin_choice)
+{
+    switch(admin_choice)
+    {
+
+        case 1 :
+        {
+           
+           break;
+        }
+        case 2 :
+        {
+            
+            break;
+        }
+        case 3 :
+        {
+
+            break;
+        }
+        case 4 :
+        {
+
+            break;
+        }
+        case 5 :
+        {
+
+            break;
+        }
+        case 6 :
+        {
+
+            break;
+        }
+        case 7 :
+        {
+            admin_menu();
+            break;
+        }
+
+    } 
 }
 
 // login page for department head 
