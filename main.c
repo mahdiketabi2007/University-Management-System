@@ -119,9 +119,9 @@ void department_head_log_score( struct department_head_information head);
 
 void academic_staff_login();
 int academic_staff_check_login(char staff_user_name[] , char staff_password[]);
-void academic_staff_menu();
-void academic_staff_menu_choice(int staff_choice);
-void academic_staff_log_student();
+void academic_staff_menu( struct academic_staff_information staff);
+void academic_staff_menu_choice(int staff_choice ,  struct academic_staff_information staff);
+void academic_staff_log_student(struct academic_staff_information staff);
 // ---------------------------------------------------------------------------
 // main function
 // ---------------------------------------------------------------------------
@@ -252,6 +252,88 @@ struct department_head_information head_list(char head_user_name[])
     while(temp != NULL)
     {
         if(!strcmp(temp->user_name , head_user_name))
+        {
+            return *temp;
+        }
+        temp = temp->link ;
+    }
+
+
+    // delete link list 
+    temp2 = s ;
+    temp = s->link ; 
+    while (temp != NULL)
+    {
+        temp2 = NULL;
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+        
+    }
+}
+
+// link list of academic staff information
+struct academic_staff_information staff_list(char staff_user_name[])
+{
+    struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
+    struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
+    struct academic_staff_information *d = NULL;
+    struct academic_staff_information *temp = NULL;
+    struct academic_staff_information *temp2 = NULL;
+
+    staff_file_ptr = fopen("staff_information.txt" , "r");
+    
+    fscanf(staff_file_ptr , "%s" , s->gender);
+    fscanf(staff_file_ptr , "%s" , s->name);
+    fscanf(staff_file_ptr , "%s" , s->family);
+    fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+    fscanf(staff_file_ptr , "%s" , s->rank);
+    fscanf(staff_file_ptr , "%s" , s->phone_number);
+    fscanf(staff_file_ptr , "%s" , s->email);
+    fscanf(staff_file_ptr , "%s" , s->user_name);
+    fscanf(staff_file_ptr , "%s" , s->password);
+
+    fscanf(staff_file_ptr , "%s" , e->gender);
+    fscanf(staff_file_ptr , "%s" , e->name);
+    fscanf(staff_file_ptr , "%s" , e->family);
+    fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+    fscanf(staff_file_ptr , "%s" , e->rank);
+    fscanf(staff_file_ptr , "%s" , e->phone_number);
+    fscanf(staff_file_ptr , "%s" , e->email);
+    fscanf(staff_file_ptr , "%s" , e->user_name);
+    fscanf(staff_file_ptr , "%s" , e->password);
+
+    s->link = e ;
+    e->link = NULL; 
+
+
+    // make link list of staff  information
+    while(feof(staff_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct academic_staff_information));
+
+        fscanf(staff_file_ptr , "%s" , d->gender);
+        fscanf(staff_file_ptr , "%s" , d->name);
+        fscanf(staff_file_ptr , "%s" , d->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+        fscanf(staff_file_ptr , "%s" , d->rank);
+        fscanf(staff_file_ptr , "%s" , d->phone_number);
+        fscanf(staff_file_ptr , "%s" , d->email);
+        fscanf(staff_file_ptr , "%s" , d->user_name);
+        fscanf(staff_file_ptr , "%s" , d->password);
+
+        e->link = d ;
+        e = d ;
+        
+    }
+    e->link = NULL ;
+
+    fclose(staff_file_ptr);
+
+    temp = s ;
+    while(temp != NULL)
+    {
+        if(!strcmp(temp->user_name , staff_user_name))
         {
             return *temp;
         }
@@ -1488,7 +1570,7 @@ void academic_staff_login()
     
     if(staff_found == 1)
     {
-        academic_staff_menu();
+        academic_staff_menu(staff_list(staff_user_name));
         
     } else 
     {
@@ -1601,12 +1683,14 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
 }
 
 // academic staff page menu
-void academic_staff_menu()
+void academic_staff_menu(struct academic_staff_information staff)
 {
     int staff_choice = 0 ;
     char c[100];
 
     system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
 
     printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
     printf("\n\t\t\t\t|                ACADEMIC STAFF PAGE               |");
@@ -1631,18 +1715,18 @@ void academic_staff_menu()
         gets(c);
     }
 
-    academic_staff_menu_choice(staff_choice);
+    academic_staff_menu_choice(staff_choice , staff);
 }
 
 // switch structure for academic staff choice
-void academic_staff_menu_choice(int staff_choice)
+void academic_staff_menu_choice(int staff_choice ,  struct academic_staff_information staff)
 {
     switch(staff_choice)
     {
 
         case 1 :
         {
-            academic_staff_log_student();
+            academic_staff_log_student(staff);
         }
         case 2 :
         {
@@ -1669,13 +1753,15 @@ void academic_staff_menu_choice(int staff_choice)
 }
 
 // log new student from academic staff
-void academic_staff_log_student()
+void academic_staff_log_student(struct academic_staff_information staff)
 {
    
     char  ch[4] , enter;
     struct student_information student;
 
     system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
 
     printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
     printf("\n\t\t\t\t|                  LOG NEW STUDENT                 |");
@@ -1838,7 +1924,7 @@ void academic_staff_log_student()
     enter = getchar();
     if(enter == '\n')
     {
-        academic_staff_menu();
+        academic_staff_menu(staff);
     }
     
 
