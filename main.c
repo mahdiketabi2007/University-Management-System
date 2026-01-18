@@ -51,6 +51,7 @@ struct lesson_information
     char number_of_unit[10];
     char type[50];
     char code[20];
+    struct lesson_information *link;
 };
 
 struct student_information
@@ -102,7 +103,6 @@ int check_string(char str[]);
 int check_number(char numbr[]);
 struct department_head_information head_list(char head_user_name[]);
 struct academic_staff_information staff_list(char staff_user_name[]);
-void edit_score_list(char student_id[] , char lesson_code[] , char score[]);
 // ---------------------------------------------------------------------------
 // protoype functions
 // ---------------------------------------------------------------------------
@@ -127,6 +127,14 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
 void department_head_log_lesson( struct department_head_information head);
 void department_head_log_score( struct department_head_information head);
 void department_head_edit_score(struct department_head_information head);
+void department_head_edit_score_list(char student_id[] , char lesson_code[] , char score[]);
+void department_head_edit_lesson(struct department_head_information head);
+void department_head_edit_lessons_list(char lesson_code[] , char type[] , char new[]);
+void department_head_edit_lesson_menu_choice(int head_choice , struct department_head_information head);
+void department_head_edit_lessons_name_page(struct department_head_information head);
+void department_head_edit_lessons_number_of_unit_page(struct department_head_information head);
+void department_head_edit_lessons_type_page(struct department_head_information head);
+
 
 void academic_staff_login();
 int academic_staff_check_login(char staff_user_name[] , char staff_password[]);
@@ -366,89 +374,6 @@ struct academic_staff_information staff_list(char staff_user_name[])
     }
 }
 
-// edit department head link lists information 
-void edit_score_list(char student_id[] , char lesson_code[] , char score[])
-{
-    struct student_score *s = malloc(sizeof(struct student_score));
-    struct student_score *e = malloc(sizeof(struct student_score));
-    struct student_score *d = NULL;
-    struct student_score *temp = NULL;
-    struct student_score *temp2 = NULL;
-
-    score_file_ptr = fopen("scores_information.txt" , "r");
-
-    fgets(s->student_id , sizeof(d->student_id) , score_file_ptr);
-    fgets(s->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
-    fgets(s->score , sizeof(d->score) , score_file_ptr);
-    fgets(s->date , sizeof(d->date) , score_file_ptr);
-    fgets(s->time , sizeof(d->time) , score_file_ptr);
-    fgets(s->user_name , sizeof(d->user_name) ,  score_file_ptr );
-
-    fgets(e->student_id , sizeof(d->student_id) , score_file_ptr);
-    fgets(e->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
-    fgets(e->score , sizeof(d->score) , score_file_ptr);
-    fgets(e->date , sizeof(d->date) , score_file_ptr);
-    fgets(e->time , sizeof(d->time) , score_file_ptr);
-    fgets(e->user_name , sizeof(d->user_name) ,  score_file_ptr );
-
-    s->link = e ;
-    e->link = NULL ;
-
-    
-    while(feof(score_file_ptr) == 0)
-    {
-        d = malloc(sizeof(struct student_score));
-
-        fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
-        fgets(d->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
-        fgets(d->score , sizeof(d->score) , score_file_ptr);
-        fgets(d->date , sizeof(d->date) , score_file_ptr);
-        fgets(d->time , sizeof(d->time) , score_file_ptr);
-        fgets(d->user_name , sizeof(d->user_name) ,  score_file_ptr );
-
-        e->link = d ;
-        e = d ;
-        
-    }
-    e->link = NULL ;
-
-    fclose(score_file_ptr);
-
-    score_file_ptr = fopen("scores_information.txt" , "w");
-
-    strcat(student_id , "\n");
-    strcat(lesson_code , "\n");
-    strcat(score , "\n");
-
-    temp = s ;
-    while(temp != NULL)
-    {
-        if(!strcmp(temp->student_id , student_id))
-        {
-            
-            if(!strcmp(temp->lesson_code , lesson_code))
-            {
-                
-                strcpy(temp->score , "");
-                strcpy(temp->score , score );
-            }
-        }
-        
-        fprintf(score_file_ptr , "%s" , temp->student_id);
-        fprintf(score_file_ptr , "%s" , temp->lesson_code);
-        fprintf(score_file_ptr , "%s" , temp->score);
-        fprintf(score_file_ptr , "%s" , temp->date);
-        fprintf(score_file_ptr , "%s" , temp->time);
-        fprintf(score_file_ptr , "%s" , temp->user_name);
-
-        temp = temp->link ;
-        
-
-    }
-
-    fclose(score_file_ptr);
-
-}
 // ---------------------------------------------------------------------------
 // functions 
 // ---------------------------------------------------------------------------
@@ -1621,10 +1546,11 @@ void department_head_menu(struct department_head_information head)
     printf("\n\t\t\t\t1- Log new lesson");
     printf("\n\t\t\t\t2- Log students score");
     printf("\n\t\t\t\t3- Edit students score");
-    printf("\n\t\t\t\t4- Delete old lesson information");
-    printf("\n\t\t\t\t5- Reports");
-    printf("\n\t\t\t\t6- User account settings");
-    printf("\n\t\t\t\t7- Exit\n");
+    printf("\n\t\t\t\t4- Edit lessons information");
+    printf("\n\t\t\t\t5- Delete old lesson information");
+    printf("\n\t\t\t\t6- Reports");
+    printf("\n\t\t\t\t7- User account settings");
+    printf("\n\t\t\t\t8- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &head_choice);
@@ -1664,7 +1590,7 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
         }
         case 4 :
         {
-
+            department_head_edit_lesson(head);
             break;
         }
         case 5 :
@@ -1678,6 +1604,11 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
             break;
         }
         case 7 :
+        {
+
+            break;
+        }
+        case 8 :
         {
             main_menu_choice(main_menu());
             break;
@@ -1745,10 +1676,13 @@ void department_head_log_lesson( struct department_head_information head)
 
     // print lesson information in file
     lesson_file_ptr = fopen("lessons_information.txt" , "a");
-    fprintf(lesson_file_ptr , "%s\n" , lesson.name);
+
+    fprintf(lesson_file_ptr , "\n%s\n" , lesson.name);
     fprintf(lesson_file_ptr , "%s\n" , lesson.number_of_unit);
     fprintf(lesson_file_ptr , "%s\n" , lesson.type);
-    fprintf(lesson_file_ptr , "%s\n" , lesson.code);
+    fprintf(lesson_file_ptr , "%s" , lesson.code);
+
+    
 
     fclose(lesson_file_ptr);
 
@@ -1882,9 +1816,433 @@ void department_head_edit_score(struct department_head_information head)
         gets(score.score);
     }
 
-    edit_score_list(score.student_id , score.lesson_code , score.score);
+    department_head_edit_score_list(score.student_id , score.lesson_code , score.score);
 
     printf("\033[32m""\n\n\t\t\t\tscore edit successfully :)\n""\033[0m");
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        department_head_menu(head);
+    }
+}
+
+// edit system for  students score from department head 
+void department_head_edit_score_list(char student_id[] , char lesson_code[] , char score[])
+{
+    struct student_score *s = malloc(sizeof(struct student_score));
+    struct student_score *e = malloc(sizeof(struct student_score));
+    struct student_score *d = NULL;
+    struct student_score *temp = NULL;
+    struct student_score *temp2 = NULL;
+
+    score_file_ptr = fopen("scores_information.txt" , "r");
+
+    fgets(s->student_id , sizeof(d->student_id) , score_file_ptr);
+    fgets(s->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+    fgets(s->score , sizeof(d->score) , score_file_ptr);
+    fgets(s->date , sizeof(d->date) , score_file_ptr);
+    fgets(s->time , sizeof(d->time) , score_file_ptr);
+    fgets(s->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+    fgets(e->student_id , sizeof(d->student_id) , score_file_ptr);
+    fgets(e->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+    fgets(e->score , sizeof(d->score) , score_file_ptr);
+    fgets(e->date , sizeof(d->date) , score_file_ptr);
+    fgets(e->time , sizeof(d->time) , score_file_ptr);
+    fgets(e->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+    s->link = e ;
+    e->link = NULL ;
+
+    
+    while(feof(score_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct student_score));
+
+        fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+        fgets(d->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+        fgets(d->score , sizeof(d->score) , score_file_ptr);
+        fgets(d->date , sizeof(d->date) , score_file_ptr);
+        fgets(d->time , sizeof(d->time) , score_file_ptr);
+        fgets(d->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+        e->link = d ;
+        e = d ;
+        
+    }
+    e->link = NULL ;
+
+    fclose(score_file_ptr);
+
+    score_file_ptr = fopen("scores_information.txt" , "w");
+
+    strcat(student_id , "\n");
+    strcat(lesson_code , "\n");
+    strcat(score , "\n");
+
+    temp = s ;
+    while(temp != NULL)
+    {
+        if(!strcmp(temp->student_id , student_id))
+        {
+            
+            if(!strcmp(temp->lesson_code , lesson_code))
+            {
+                
+                strcpy(temp->score , "");
+                strcpy(temp->score , score );
+            }
+        }
+        
+        fprintf(score_file_ptr , "%s" , temp->student_id);
+        fprintf(score_file_ptr , "%s" , temp->lesson_code);
+        fprintf(score_file_ptr , "%s" , temp->score);
+        fprintf(score_file_ptr , "%s" , temp->date);
+        fprintf(score_file_ptr , "%s" , temp->time);
+        fprintf(score_file_ptr , "%s" , temp->user_name);
+
+        temp = temp->link ;
+        
+
+    }
+
+    fclose(score_file_ptr);
+
+    // delete link list
+    temp2 = s ;
+    temp = s->link ; 
+    while (temp != NULL)
+    {
+        temp2 = NULL;
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+        
+    }
+
+}
+
+// department head edit lessons information page
+void department_head_edit_lesson(struct department_head_information head)
+{
+    int head_choice = 0 ;
+    char c[100] , enter;
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|           EDIT LESSONS INFORMATION PAGE          |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\t1- Edit lessons name");
+    printf("\n\t\t\t\t2- Edit lessons number fo unit");
+    printf("\n\t\t\t\t3- Edit type of lesson");
+    printf("\n\t\t\t\t4- Exit\n");
+
+    printf("\n\t\t\t\tPlease enter your choice : ");
+    scanf("%d" , &head_choice);
+    getchar();
+    // limit admin inputs 
+    while(head_choice <= 0 || head_choice > 4)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter your choice : ");
+        scanf("%d" , &head_choice);
+        gets(c);
+    }
+
+    department_head_edit_lesson_menu_choice(head_choice , head);
+
+}
+
+// switch stracture for department head choice in edit lessons information page
+void department_head_edit_lesson_menu_choice(int head_choice , struct department_head_information head)
+{
+    switch(head_choice)
+    {
+        case 1 :
+        {
+            department_head_edit_lessons_name_page(head);
+            break;
+        }
+        case 2 :
+        {
+            department_head_edit_lessons_number_of_unit_page(head);
+            break;
+        }
+        case 3 :
+        {
+            department_head_edit_lessons_type_page(head);
+            break;
+        }
+        case 4 :
+        {
+            department_head_menu(head);
+            break;
+        }
+    }
+}
+
+// edit system for lessons information
+void department_head_edit_lessons_list(char lesson_code[] , char type[] , char new[])
+{
+    struct lesson_information *s = malloc(sizeof(struct lesson_information));
+    struct lesson_information *e = malloc(sizeof(struct lesson_information));
+    struct lesson_information *d = NULL;
+    struct lesson_information *temp = NULL;
+    struct lesson_information *temp2 = NULL;
+
+    lesson_file_ptr = fopen("lessons_information.txt" , "r");
+
+    fscanf(lesson_file_ptr , "%s" , s->name);
+    fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
+    fscanf(lesson_file_ptr , "%s" , s->type);
+    fscanf(lesson_file_ptr , "%s" , s->code);
+
+    fscanf(lesson_file_ptr , "%s" , e->name);
+    fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
+    fscanf(lesson_file_ptr , "%s" , e->type);
+    fscanf(lesson_file_ptr , "%s" , e->code);
+
+    s->link = e ;
+    e->link = NULL ;
+
+    while(feof(lesson_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct lesson_information));
+        
+        fscanf(lesson_file_ptr , "%s" , d->name);
+        fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , d->type);
+        fscanf(lesson_file_ptr , "%s" , d->code);
+
+        e->link = d ; 
+        e = d ;
+    }
+    e->link = NULL ;
+
+    fclose(lesson_file_ptr);
+
+
+    lesson_file_ptr = fopen("lessons_information.txt" , "w");
+
+    if(!strcmp(type , "name"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+    
+            if(!strcmp(temp->code , lesson_code))
+            {
+                
+                strcpy(temp->name , "");
+                strcpy(temp->name , new);
+            }
+            if(temp == s)
+                fprintf(lesson_file_ptr , "%s\n" , temp->name);
+            else
+                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+            fprintf(lesson_file_ptr , "%s\n" , temp->type);
+            fprintf(lesson_file_ptr , "%s" , temp->code);
+
+            temp = temp->link ;
+        }
+    
+    } else if(!strcmp(type , "number of unit"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+    
+            if(!strcmp(temp->code , lesson_code))
+            {
+                
+                strcpy(temp->number_of_unit , "");
+                strcpy(temp->number_of_unit , new);
+            }
+
+            if(temp == s)
+                fprintf(lesson_file_ptr , "%s\n" , temp->name);
+            else
+                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+            fprintf(lesson_file_ptr , "%s\n" , temp->type);
+            fprintf(lesson_file_ptr , "%s" , temp->code);
+
+            temp = temp->link ;
+        }
+    
+    } else if(!strcmp(type , "type"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            
+            if(!strcmp(temp->code , lesson_code))
+            {
+                
+                strcpy(temp->type , "");
+                strcpy(temp->type , new);
+            }
+
+            if(temp == s)
+                fprintf(lesson_file_ptr , "%s\n" , temp->name);
+            else
+                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+            fprintf(lesson_file_ptr , "%s\n" , temp->type);
+            fprintf(lesson_file_ptr , "%s" , temp->code);
+
+            temp = temp->link ;
+        }
+    
+    }
+
+    fclose(lesson_file_ptr);
+    
+}
+
+// edit lessons name page 
+void department_head_edit_lessons_name_page(struct department_head_information head)
+{
+    struct lesson_information lesson ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|              EDIT LESSONS NAME PAGE              |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter lessons code : ");;
+    gets(lesson.code);
+    // check
+    while(!check_number(lesson.code))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons code : ");;
+        gets(lesson.code);
+    }
+
+    printf("\n\t\t\t\tPlease enter lessons new name : ");;
+    gets(lesson.name);
+    // check
+    while(!check_string(lesson.name))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons new name : ");;
+        gets(lesson.name);
+    }
+
+    
+
+    department_head_edit_lessons_list(lesson.code , "name" , lesson.name);
+
+    printf("\033[32m""\n\n\t\t\t\tedit lessons name successfully complited :)\n""\033[0m");
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        department_head_menu(head);
+    }
+}
+
+// edit lessons number of unit page 
+void department_head_edit_lessons_number_of_unit_page(struct department_head_information head)
+{
+    struct lesson_information lesson ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|         EDIT LESSONS NUMBER OF UNIT PAGE         |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter lessons code : ");;
+    gets(lesson.code);
+    // check
+    while(!check_number(lesson.code))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons code : ");;
+        gets(lesson.code);
+    }
+
+    printf("\n\t\t\t\tPlease enter lessons new number of unit : ");;
+    gets(lesson.number_of_unit);
+    // check
+    while(!check_number(lesson.number_of_unit))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons new number of unit : ");;
+        gets(lesson.number_of_unit);
+    }
+
+    
+
+    department_head_edit_lessons_list(lesson.code , "number of unit" , lesson.number_of_unit);
+
+    printf("\033[32m""\n\n\t\t\t\tedit lessons number of unit successfully complited :)\n""\033[0m");
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        department_head_menu(head);
+    }
+}
+
+// edit lessons type page 
+void department_head_edit_lessons_type_page(struct department_head_information head)
+{
+    struct lesson_information lesson ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|              EDIT LESSONS TYPE PAGE              |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter lessons code : ");;
+    gets(lesson.code);
+    // check
+    while(!check_number(lesson.code))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons code : ");;
+        gets(lesson.code);
+    }
+
+    printf("\n\t\t\t\tPlease enter lessons new type : ");;
+    gets(lesson.type);
+    // check
+    while(!check_string(lesson.type))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons new type : ");;
+        gets(lesson.type);
+    }
+
+    
+
+    department_head_edit_lessons_list(lesson.code , "type" , lesson.type);
+
+    printf("\033[32m""\n\n\t\t\t\tedit lessons type successfully complited :)\n""\033[0m");
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
