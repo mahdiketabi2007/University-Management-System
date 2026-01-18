@@ -73,9 +73,10 @@ struct student_score
     char student_id[50];
     char lesson_code[50];
     char score[5];
-    char date[12];
-    char time[12];
+    char date[50];
+    char time[50];
     char user_name[50];
+    struct student_score *link ;
 };
 
 // ---------------------------------------------------------------------------
@@ -94,13 +95,14 @@ FILE *backup_lesson_file_ptr = NULL ;
 FILE *backup_student_file_ptr = NULL ;
 FILE *backup_score_file_ptr = NULL ;
 // ---------------------------------------------------------------------------
-// other functions 
+// protoype other functions 
 // ---------------------------------------------------------------------------
 
 int check_string(char str[]);
 int check_number(char numbr[]);
 struct department_head_information head_list(char head_user_name[]);
-
+struct academic_staff_information staff_list(char staff_user_name[]);
+void edit_score_list(char student_id[] , char lesson_code[] , char score[]);
 // ---------------------------------------------------------------------------
 // protoype functions
 // ---------------------------------------------------------------------------
@@ -124,6 +126,7 @@ void department_head_menu(struct department_head_information head);
 void department_head_menu_choice(int head_choice , struct department_head_information head);
 void department_head_log_lesson( struct department_head_information head);
 void department_head_log_score( struct department_head_information head);
+void department_head_edit_score(struct department_head_information head);
 
 void academic_staff_login();
 int academic_staff_check_login(char staff_user_name[] , char staff_password[]);
@@ -299,7 +302,7 @@ struct academic_staff_information staff_list(char staff_user_name[])
     fscanf(staff_file_ptr , "%s" , s->rank);
     fscanf(staff_file_ptr , "%s" , s->phone_number);
     fscanf(staff_file_ptr , "%s" , s->email);
-    fscanf(staff_file_ptr , "%s" , s->user_name);
+    fscanf(staff_file_ptr , "%s" , s->user_name );
     fscanf(staff_file_ptr , "%s" , s->password);
 
     fscanf(staff_file_ptr , "%s" , e->gender);
@@ -361,6 +364,90 @@ struct academic_staff_information staff_list(char staff_user_name[])
         temp = temp->link;
         
     }
+}
+
+// edit department head link lists information 
+void edit_score_list(char student_id[] , char lesson_code[] , char score[])
+{
+    struct student_score *s = malloc(sizeof(struct student_score));
+    struct student_score *e = malloc(sizeof(struct student_score));
+    struct student_score *d = NULL;
+    struct student_score *temp = NULL;
+    struct student_score *temp2 = NULL;
+
+    score_file_ptr = fopen("scores_information.txt" , "r");
+
+    fgets(s->student_id , sizeof(d->student_id) , score_file_ptr);
+    fgets(s->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+    fgets(s->score , sizeof(d->score) , score_file_ptr);
+    fgets(s->date , sizeof(d->date) , score_file_ptr);
+    fgets(s->time , sizeof(d->time) , score_file_ptr);
+    fgets(s->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+    fgets(e->student_id , sizeof(d->student_id) , score_file_ptr);
+    fgets(e->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+    fgets(e->score , sizeof(d->score) , score_file_ptr);
+    fgets(e->date , sizeof(d->date) , score_file_ptr);
+    fgets(e->time , sizeof(d->time) , score_file_ptr);
+    fgets(e->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+    s->link = e ;
+    e->link = NULL ;
+
+    
+    while(feof(score_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct student_score));
+
+        fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+        fgets(d->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+        fgets(d->score , sizeof(d->score) , score_file_ptr);
+        fgets(d->date , sizeof(d->date) , score_file_ptr);
+        fgets(d->time , sizeof(d->time) , score_file_ptr);
+        fgets(d->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+        e->link = d ;
+        e = d ;
+        
+    }
+    e->link = NULL ;
+
+    fclose(score_file_ptr);
+
+    score_file_ptr = fopen("scores_information.txt" , "w");
+
+    strcat(student_id , "\n");
+    strcat(lesson_code , "\n");
+    strcat(score , "\n");
+
+    temp = s ;
+    while(temp != NULL)
+    {
+        if(!strcmp(temp->student_id , student_id))
+        {
+            
+            if(!strcmp(temp->lesson_code , lesson_code))
+            {
+                
+                strcpy(temp->score , "");
+                strcpy(temp->score , score );
+            }
+        }
+        
+        fprintf(score_file_ptr , "%s" , temp->student_id);
+        fprintf(score_file_ptr , "%s" , temp->lesson_code);
+        fprintf(score_file_ptr , "%s" , temp->score);
+        fprintf(score_file_ptr , "%s" , temp->date);
+        fprintf(score_file_ptr , "%s" , temp->time);
+        fprintf(score_file_ptr , "%s" , temp->user_name);
+
+        temp = temp->link ;
+        
+
+    }
+
+    fclose(score_file_ptr);
+
 }
 // ---------------------------------------------------------------------------
 // functions 
@@ -1572,7 +1659,7 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
         }
         case 3 :
         {
-
+            department_head_edit_score(head);
             break;
         }
         case 4 :
@@ -1734,7 +1821,7 @@ void department_head_log_score( struct department_head_information head)
     fprintf(score_file_ptr , "%s\n" , score.lesson_code);
     fprintf(score_file_ptr , "%s\n" , score.score);
     fprintf(score_file_ptr , "%s\n" , __DATE__);
-    fprintf(score_file_ptr , "%s" , __TIME__);
+    fprintf(score_file_ptr , "%s\n" , __TIME__);
     fprintf( score_file_ptr ,"%s %s" , head.name , head.family);
      fclose(score_file_ptr);
 
@@ -1748,6 +1835,64 @@ void department_head_log_score( struct department_head_information head)
         department_head_menu(head);
     }
 
+}
+
+// department head edit score page
+void department_head_edit_score(struct department_head_information head)
+{
+    char   enter;
+    struct student_score score;
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|                    EDIT SCORE                    |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(score.student_id);
+    // check id
+    while(!check_number(score.student_id))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id  : ");
+        gets(score.student_id );
+    }
+
+    printf("\n\t\t\t\tPlease enter lessons code : ");
+    gets(score.lesson_code );
+    // check code
+    while(!check_number(score.lesson_code))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons code : ");
+        gets(score.lesson_code);
+    }
+
+    printf("\n\t\t\t\tPlease enter score : ");
+    gets(score.score);
+    //check score
+    while(!check_number(score.score))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter score : ");
+        gets(score.score);
+    }
+
+    edit_score_list(score.student_id , score.lesson_code , score.score);
+
+    printf("\033[32m""\n\n\t\t\t\tscore edit successfully :)\n""\033[0m");
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        department_head_menu(head);
+    }
 }
 
 // login page for academic staff
