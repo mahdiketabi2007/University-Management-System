@@ -7,7 +7,7 @@
 //--------------------- admin username = admin |   admin password = 1212 ---------------------
 
 // ---------------------------------------------------------------------------
-// structs and variables 
+// structs and variables
 // ---------------------------------------------------------------------------
 struct date
 {
@@ -16,7 +16,7 @@ struct date
     char day[3];
 };
 
-struct department_head_information 
+struct department_head_information
 {
     char gender[10];
     char name[50];
@@ -66,7 +66,7 @@ struct student_information
     char id[50];
     char phone_number[12];
     char email[50];
-    struct department_head_information *link ;
+    struct student_information *link ;
 };
 
 struct student_score
@@ -96,7 +96,7 @@ FILE *backup_lesson_file_ptr = NULL ;
 FILE *backup_student_file_ptr = NULL ;
 FILE *backup_score_file_ptr = NULL ;
 // ---------------------------------------------------------------------------
-// protoype other functions 
+// protoype other functions
 // ---------------------------------------------------------------------------
 
 int check_string(char str[]);
@@ -142,6 +142,19 @@ void academic_staff_menu( struct academic_staff_information staff);
 void academic_staff_menu_choice(int staff_choice ,  struct academic_staff_information staff);
 void academic_staff_log_student(struct academic_staff_information staff);
 void academic_staff_log_score(struct academic_staff_information staff);
+void academic_staff_edit_students_information(struct academic_staff_information staff);
+void academic_staff_edit_students_information_menu_choice(int staff_choice , struct academic_staff_information staff);
+void academic_staff_edit_students_gender_page(struct academic_staff_information staff);
+void academic_staff_edit_students_name_page(struct academic_staff_information staff);
+void academic_staff_edit_students_family_page(struct academic_staff_information staff);
+void academic_staff_edit_students_code_page(struct academic_staff_information staff);
+void academic_staff_edit_students_birth_date_page(struct academic_staff_information staff);
+void academic_staff_edit_students_birth_city_page(struct academic_staff_information staff);
+void academic_staff_edit_students_field_of_study_page(struct academic_staff_information staff);
+void academic_staff_edit_students_phone_number_page(struct academic_staff_information staff);
+void academic_staff_edit_students_email_page(struct academic_staff_information staff);
+void academic_staff_edit_students_information_list(char students_id[] , char type[] , char new[]);
+
 // ---------------------------------------------------------------------------
 // main function
 // ---------------------------------------------------------------------------
@@ -149,14 +162,14 @@ void academic_staff_log_score(struct academic_staff_information staff);
 void main()
 {
     main_menu_choice(main_menu());
-    
+
 }
 
 // ---------------------------------------------------------------------------
-// other functions 
+// other functions
 // ---------------------------------------------------------------------------
 
-// check name family
+// check strings
 int check_string(char str[])
 {
     int len = 0 , correct_name = 1 , i = 0;
@@ -166,16 +179,16 @@ int check_string(char str[])
         if(isalpha(str[i]) == 1 || isalpha(str[i]) == 2)
         {
             continue;
-        } else 
+        } else
         {
-            correct_name = 0 ; 
+            correct_name = 0 ;
             break ;
         }
     }
     if(correct_name == 1)
     {
         return 1 ;
-    } else 
+    } else
     {
         return 0 ;
     }
@@ -192,22 +205,22 @@ int check_number(char number[])
         if(isdigit(number[i]) == 1)
         {
             continue;
-        } else 
+        } else
         {
-            correct_number = 0 ; 
+            correct_number = 0 ;
             break ;
         }
     }
     if(correct_number == 1)
     {
         return 1 ;
-    } else 
+    } else
     {
         return 0 ;
     }
 }
 
-// link list of department head information
+// link list of department head information -> return head name and family
 struct department_head_information head_list(char head_user_name[])
 {
     struct department_head_information *s = malloc(sizeof(struct department_head_information));
@@ -217,7 +230,7 @@ struct department_head_information head_list(char head_user_name[])
     struct department_head_information *temp2 = NULL;
 
     head_file_ptr = fopen("department_head_information.txt" , "r");
-    
+
     fscanf(head_file_ptr , "%s" , s->gender);
     fscanf(head_file_ptr , "%s" , s->name);
     fscanf(head_file_ptr , "%s" , s->family);
@@ -241,7 +254,7 @@ struct department_head_information head_list(char head_user_name[])
     fscanf(head_file_ptr , "%s" , e->password);
 
     s->link = e ;
-    e->link = NULL; 
+    e->link = NULL;
 
 
     // make link list of head department information
@@ -262,7 +275,7 @@ struct department_head_information head_list(char head_user_name[])
 
         e->link = d ;
         e = d ;
-        
+
     }
     e->link = NULL ;
 
@@ -279,20 +292,21 @@ struct department_head_information head_list(char head_user_name[])
     }
 
 
-    // delete link list 
+    // delete link list
     temp2 = s ;
-    temp = s->link ; 
+    temp = s->link ;
     while (temp != NULL)
     {
-        temp2 = NULL;
+
         free(temp2);
         temp2 = temp ;
         temp = temp->link;
-        
+
     }
+
 }
 
-// link list of academic staff information
+// link list of academic staff information -> return staff name and family
 struct academic_staff_information staff_list(char staff_user_name[])
 {
     struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
@@ -302,7 +316,7 @@ struct academic_staff_information staff_list(char staff_user_name[])
     struct academic_staff_information *temp2 = NULL;
 
     staff_file_ptr = fopen("staff_information.txt" , "r");
-    
+
     fscanf(staff_file_ptr , "%s" , s->gender);
     fscanf(staff_file_ptr , "%s" , s->name);
     fscanf(staff_file_ptr , "%s" , s->family);
@@ -324,7 +338,7 @@ struct academic_staff_information staff_list(char staff_user_name[])
     fscanf(staff_file_ptr , "%s" , e->password);
 
     s->link = e ;
-    e->link = NULL; 
+    e->link = NULL;
 
 
     // make link list of staff  information
@@ -344,7 +358,7 @@ struct academic_staff_information staff_list(char staff_user_name[])
 
         e->link = d ;
         e = d ;
-        
+
     }
     e->link = NULL ;
 
@@ -361,21 +375,22 @@ struct academic_staff_information staff_list(char staff_user_name[])
     }
 
 
-    // delete link list 
+    // delete link list
     temp2 = s ;
-    temp = s->link ; 
+    temp = s->link ;
     while (temp != NULL)
     {
-        temp2 = NULL;
+
         free(temp2);
         temp2 = temp ;
         temp = temp->link;
-        
+
     }
+
 }
 
 // ---------------------------------------------------------------------------
-// functions 
+// functions
 // ---------------------------------------------------------------------------
 
 // function for diasplay main menu
@@ -438,7 +453,7 @@ void main_menu_choice(int choice)
     }
 }
 
-// login page for admin 
+// login page for admin
 void admin_login()
 {
     int  admin_found = 0;
@@ -474,15 +489,15 @@ void admin_login()
         {
             printf("\033[32m""\n\t\t\t\tWelcome to admin page :)""\033[0m");
             admin_found = 1 ;
-            
-        } 
-        
-    } 
-    
+
+        }
+
+    }
+
     if(admin_found == 1)
     {
         admin_menu();
-    } else 
+    } else
     {
         printf("\033[31m""\n\t\t\t\tERROR! incorrect user name or password.\n""\033[0m");
         // return to main menu
@@ -493,8 +508,8 @@ void admin_login()
              main_menu_choice(main_menu());
         }
     }
-    
-    
+
+
 }
 
 // admin page
@@ -520,7 +535,7 @@ void admin_menu()
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &admin_choice);
     getchar();
-    // limit admin inputs 
+    // limit admin inputs
     while(admin_choice <= 0 || admin_choice > 7)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
@@ -540,7 +555,7 @@ void admin_menu_choice(int admin_choice)
 
         case 1 :
         {
-           admin_log_head(); 
+           admin_log_head();
            break;
         }
         case 2 :
@@ -560,7 +575,7 @@ void admin_menu_choice(int admin_choice)
         }
         case 5 :
         {
-            
+
             break;
         }
         case 6 :
@@ -574,13 +589,13 @@ void admin_menu_choice(int admin_choice)
             break;
         }
 
-    } 
+    }
 }
 
 // log new department head
 void admin_log_head()
 {
-   
+
     char  ch[4] , confirm_password[50] , enter;
     struct department_head_information department_head;
 
@@ -600,7 +615,7 @@ void admin_log_head()
     } else if(!strcmp(department_head.gender , "male"))
     {
         strcpy(ch , "his");
-    } else 
+    } else
     {
         while(strcmp(department_head.gender , "female") != 0 && strcmp(department_head.gender , "male") != 0)
         {
@@ -644,7 +659,7 @@ void admin_log_head()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter year of  %s  srtart: " , ch);
-        gets(department_head.start_date.year); 
+        gets(department_head.start_date.year);
     }
 
     printf("\n\t\t\t\tPlease enter month of %s  start: " , ch);
@@ -654,7 +669,7 @@ void admin_log_head()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter month of  %s  srtart: " , ch);
-        gets(department_head.start_date.month); 
+        gets(department_head.start_date.month);
     }
 
     printf("\n\t\t\t\tPlease enter day of %s  atart: " , ch);
@@ -664,7 +679,7 @@ void admin_log_head()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter day of  %s  srtart: " , ch);
-        gets(department_head.start_date.day); 
+        gets(department_head.start_date.day);
     }
 
     printf("\n\t\t\t\tPlease enter %s group name : " , ch);
@@ -677,7 +692,7 @@ void admin_log_head()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter day of  %s  code: " , ch);
-        gets(department_head.code); 
+        gets(department_head.code);
     }
 
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
@@ -687,7 +702,7 @@ void admin_log_head()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
-        gets(department_head.phone_number); 
+        gets(department_head.phone_number);
     }
 
     printf("\n\t\t\t\tPlease enter %s email : " , ch);
@@ -705,7 +720,7 @@ void admin_log_head()
         printf("\033[32m""\n\t\t\t\tDepartment head registation successfully complited :)\n""\033[0m");
         printf("\033[34m""\n\t\t\t\t%s user name = %s""\033[0m", ch , department_head.user_name);
         printf("\033[34m""\n\t\t\t\t%s password = %s""\033[0m" , ch , department_head.password);
-    } else 
+    } else
     {
         printf("\033[31m""\n\t\t\t\tERROR! passwors not matched.\n""\033[0m");
     }
@@ -732,15 +747,15 @@ void admin_log_head()
     {
         admin_menu();
     }
-    
 
-     
+
+
 }
 
 // log new department head
 void admin_log_staff()
 {
-   
+
     char  ch[4] , confirm_password[50] , enter;
     struct academic_staff_information staff;
 
@@ -759,7 +774,7 @@ void admin_log_staff()
     } else if(!strcmp(staff.gender , "male"))
     {
         strcpy(ch , "his");
-    } else 
+    } else
     {
         while(strcmp(staff.gender , "female") != 0 && strcmp(staff.gender , "male") != 0)
         {
@@ -803,7 +818,7 @@ void admin_log_staff()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter year of  %s  start: " , ch);
-        gets(staff.start_date.year); 
+        gets(staff.start_date.year);
     }
 
     printf("\n\t\t\t\tPlease enter month of %s  start: " , ch);
@@ -813,7 +828,7 @@ void admin_log_staff()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter month of  %s  start: " , ch);
-        gets(staff.start_date.month); 
+        gets(staff.start_date.month);
     }
 
     printf("\n\t\t\t\tPlease enter day of %s  start: " , ch);
@@ -823,7 +838,7 @@ void admin_log_staff()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter day of  %s  start: " , ch);
-        gets(staff.start_date.day); 
+        gets(staff.start_date.day);
     }
 
     printf("\n\t\t\t\tPlease enter %s rank : " , ch);
@@ -836,7 +851,7 @@ void admin_log_staff()
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
-        gets(staff.phone_number); 
+        gets(staff.phone_number);
     }
 
     printf("\n\t\t\t\tPlease enter %s email : " , ch);
@@ -854,7 +869,7 @@ void admin_log_staff()
         printf("\033[32m""\n\t\t\t\tDepartment head registation successfully complited :)\n""\033[0m");
         printf("\033[34m""\n\t\t\t\t%s user name = %s""\033[0m", ch , staff.user_name);
         printf("\033[34m""\n\t\t\t\t%s password = %s""\033[0m" , ch , staff.password);
-    } else 
+    } else
     {
         printf("\033[31m""\n\t\t\t\tERROR! passwors not matched.\n""\033[0m");
     }
@@ -880,12 +895,12 @@ void admin_log_staff()
     {
         admin_menu();
     }
-    
 
-     
+
+
 }
 
-// observe users 
+// observe users
 void admin_observe_users()
 {
     system("cls");
@@ -894,14 +909,14 @@ void admin_observe_users()
     char enter ;
     //observe department head information
 
-    struct department_head_information *s = malloc(sizeof(struct department_head_information)); 
-    struct department_head_information *e = malloc(sizeof(struct department_head_information));  
-    struct department_head_information *d = NULL;  
-    struct department_head_information *temp = NULL; 
-    struct department_head_information *temp2 = NULL; 
+    struct department_head_information *s = malloc(sizeof(struct department_head_information));
+    struct department_head_information *e = malloc(sizeof(struct department_head_information));
+    struct department_head_information *d = NULL;
+    struct department_head_information *temp = NULL;
+    struct department_head_information *temp2 = NULL;
 
     head_file_ptr = fopen("department_head_information.txt" , "r");
-    
+
     fscanf(head_file_ptr , "%s" , s->gender);
     fscanf(head_file_ptr , "%s" , s->name);
     fscanf(head_file_ptr , "%s" , s->family);
@@ -930,7 +945,7 @@ void admin_observe_users()
     //make link list
     while(feof(head_file_ptr) == 0)
     {
-        d = malloc(sizeof(struct department_head_information)); 
+        d = malloc(sizeof(struct department_head_information));
 
         fscanf(head_file_ptr , "%s" , d->gender);
         fscanf(head_file_ptr , "%s" , d->name);
@@ -949,12 +964,12 @@ void admin_observe_users()
     e->link = NULL ;
 
     fclose(head_file_ptr) ;
-    
+
     printf("\n%c" , 201);
     for(i = 0 ; i < 164 ; i++)
         printf("%c" , 205);
     printf("%c\n" , 187);
-    
+
     printf("%c" , 186);
     printf("%75s%s%74s" , "" , "DEPARTMENT HEAD" , "");
     printf("%c\n" , 186);
@@ -982,8 +997,8 @@ void admin_observe_users()
     for(i = 0 ; i < 164 ; i++)
         printf("%c" , 205);
     printf("%c\n" , 186);
-    
-    temp = s ; 
+
+    temp = s ;
     j = 1 ;
     // print tables data
     while(temp != NULL)
@@ -1007,9 +1022,9 @@ void admin_observe_users()
         for(i = 0 ; i < 164 ; i++)
             printf("%c" , 205);
         printf("%c\n" , 186);
-        
+
         temp = temp->link ;
-        
+
 
     }
 
@@ -1022,29 +1037,25 @@ void admin_observe_users()
         printf("%c" , 205);
     printf("%c\n" , 188);
 
-    // delete link list 
+    // delete link list
     temp2 = s ;
-    temp = s->link ; 
+    temp = s->link ;
     while (temp != NULL)
     {
-        temp2 = NULL;
+
         free(temp2);
         temp2 = temp ;
         temp = temp->link;
-        
+
     }
-    s = NULL ;
-    free(s);
-    e = NULL ;
-    free(e);
 
-    // observe academic staff information 
+    // observe academic staff information
 
-    struct academic_staff_information *s2 = malloc(sizeof(struct academic_staff_information)); 
-    struct academic_staff_information *e2 = malloc(sizeof(struct academic_staff_information));  
-    struct academic_staff_information *d2 = NULL;  
-    struct academic_staff_information *t = NULL; 
-    struct academic_staff_information *t2 = NULL; 
+    struct academic_staff_information *s2 = malloc(sizeof(struct academic_staff_information));
+    struct academic_staff_information *e2 = malloc(sizeof(struct academic_staff_information));
+    struct academic_staff_information *d2 = NULL;
+    struct academic_staff_information *t = NULL;
+    struct academic_staff_information *t2 = NULL;
 
     staff_file_ptr = fopen("staff_information.txt" , "r");
 
@@ -1073,7 +1084,7 @@ void admin_observe_users()
     // make link list
     while(feof(staff_file_ptr) == 0)
     {
-        d2 = malloc(sizeof(struct academic_staff_information)); 
+        d2 = malloc(sizeof(struct academic_staff_information));
 
         fscanf(staff_file_ptr , "%s" , d2->gender);
         fscanf(staff_file_ptr , "%s" , d2->name);
@@ -1091,12 +1102,12 @@ void admin_observe_users()
     e2->link = NULL ;
 
     fclose(staff_file_ptr) ;
-    
+
     printf("\n\n%c" , 201);
     for(i = 0 ; i < 164 ; i++)
         printf("%c" , 205);
     printf("%c\n" , 187);
-    
+
     printf("%c" , 186);
     printf("%75s%s%75s" , "" , "ACADEMIC STAFF" , "");
     printf("%c\n" , 186);
@@ -1123,13 +1134,13 @@ void admin_observe_users()
     for(i = 0 ; i < 164 ; i++)
         printf("%c" , 205);
     printf("%c\n" , 186);
-    
-    t = s2 ; 
+
+    t = s2 ;
     j = 1 ;
     // print second tables data
     while(t != NULL)
     {
-       
+
         printf("%c" , 186);
         printf("%-2d%c" , j++ , 179);
         printf("%-7s%c" , t->gender , 179);
@@ -1147,9 +1158,9 @@ void admin_observe_users()
         for(i = 0 ; i < 164 ; i++)
             printf("%c" , 205);
         printf("%c\n" , 186);
-        
+
         t = t->link ;
-        
+
 
     }
 
@@ -1162,21 +1173,17 @@ void admin_observe_users()
         printf("%c" , 205);
     printf("%c\n" , 188);
 
-    // delete link list 
+    // delete link list
     t2 = s2 ;
-    t = s2->link ; 
-    while (t != NULL)
+    t = s2->link ;
+    while (temp != NULL)
     {
-        t2 = NULL;
+
         free(t2);
         t2 = t ;
         t = t->link;
-        
+
     }
-    s2 = NULL ;
-    free(s2);
-    e2 = NULL ;
-    free(e2);
 
     // return to main menu
     printf("\033[34m""\n    Please enter to continue ....""\033[0m");
@@ -1210,7 +1217,7 @@ void admin_backup_menu()
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &admin_choice);
     getchar();
-    // limit admin inputs 
+    // limit admin inputs
     while(admin_choice <= 0 || admin_choice > 7)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
@@ -1231,7 +1238,7 @@ void admin_backup_menu()
          admin_menu();
     }
 
-}  
+}
 
 // switch structure for admin choice in backup file page
 void admin_backup_menu_choice( int admin_choice)
@@ -1275,7 +1282,7 @@ void admin_backup_menu_choice( int admin_choice)
             break;
         }
 
-    } 
+    }
 }
 
 // backup system
@@ -1374,11 +1381,11 @@ void admin_backup(int n)
 
     } else if(n == 6)
     {
-        
+
     }
 }
 
-// login page for department head 
+// login page for department head
 void department_head_login()
 {
     int  head_found = 0;
@@ -1407,14 +1414,14 @@ void department_head_login()
         printf("\n\t\t\t\tPlease enter your user name : ");
         gets(head_user_name);
     }
-    
+
     head_found = department_head_check_login(head_user_name , head_password);
-    
+
     if(head_found == 1)
     {
-        
+
         department_head_menu(head_list(head_user_name));
-    } else 
+    } else
     {
         printf("\033[31m""\n\t\t\t\tERROR! incorrect user name or password.\n""\033[0m");
         // return to main menu
@@ -1425,8 +1432,8 @@ void department_head_login()
              main_menu_choice(main_menu());
         }
     }
-    
-    
+
+
 }
 
 // make link  list  of department head information and check it fo login
@@ -1441,7 +1448,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     struct department_head_information *temp2 = NULL;
 
     head_file_ptr = fopen("department_head_information.txt" , "r");
-    
+
     fscanf(head_file_ptr , "%s" , s->gender);
     fscanf(head_file_ptr , "%s" , s->name);
     fscanf(head_file_ptr , "%s" , s->family);
@@ -1465,7 +1472,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     fscanf(head_file_ptr , "%s" , e->password);
 
     s->link = e ;
-    e->link = NULL; 
+    e->link = NULL;
 
 
     // make link list of head department information
@@ -1486,7 +1493,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
 
         e->link = d ;
         e = d ;
-        
+
     }
     e->link = NULL ;
 
@@ -1507,26 +1514,26 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         temp = temp->link ;
     }
 
-    // delete link list 
+    // delete link list
     temp2 = s ;
-    temp = s->link ; 
+    temp = s->link ;
     while (temp != NULL)
     {
-        temp2 = NULL;
+
         free(temp2);
         temp2 = temp ;
         temp = temp->link;
-        
+
     }
 
     if(head_found == 1)
     {
         return 1 ;
-    } else 
+    } else
     {
         return 0 ;
     }
-    
+
 }
 
 //department head page menu
@@ -1555,8 +1562,8 @@ void department_head_menu(struct department_head_information head)
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &head_choice);
     getchar();
-    // limit department head inputs 
-    while(head_choice <= 0 || head_choice > 7)
+    // limit department head inputs
+    while(head_choice <= 0 || head_choice > 8)
     {
         printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
@@ -1614,7 +1621,7 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
             break;
         }
 
-    } 
+    }
 }
 
 // log new lesson from department head
@@ -1654,7 +1661,7 @@ void department_head_log_lesson( struct department_head_information head)
 
     printf("\n\t\t\t\tPlease enter type of this lesson(theory , parctical , experimental , workshop): ");
     gets(lesson.type);
-    //check 
+    //check
     while(strcmp(lesson.type , "theory") != 0 && strcmp(lesson.type , "parctical") != 0 && strcmp(lesson.type , "experimental") != 0 && strcmp(lesson.type , "workshop") != 0)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
@@ -1682,7 +1689,7 @@ void department_head_log_lesson( struct department_head_information head)
     fprintf(lesson_file_ptr , "%s\n" , lesson.type);
     fprintf(lesson_file_ptr , "%s" , lesson.code);
 
-    
+
 
     fclose(lesson_file_ptr);
 
@@ -1744,9 +1751,9 @@ void department_head_log_score( struct department_head_information head)
     }
 
     printf("\n\t\t\t\tDate : %s" , __DATE__);
-    
+
     printf("\n\n\t\t\t\tTime : %s" , __TIME__);
-    
+
     printf("\n\n\t\t\t\tDepartment head name : %s %s" , head.name , head.family);
 
     // print score information in file
@@ -1829,7 +1836,7 @@ void department_head_edit_score(struct department_head_information head)
     }
 }
 
-// edit system for  students score from department head 
+// edit system for  students score from department head
 void department_head_edit_score_list(char student_id[] , char lesson_code[] , char score[])
 {
     struct student_score *s = malloc(sizeof(struct student_score));
@@ -1857,7 +1864,7 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
     s->link = e ;
     e->link = NULL ;
 
-    
+
     while(feof(score_file_ptr) == 0)
     {
         d = malloc(sizeof(struct student_score));
@@ -1871,7 +1878,7 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
 
         e->link = d ;
         e = d ;
-        
+
     }
     e->link = NULL ;
 
@@ -1888,15 +1895,15 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
     {
         if(!strcmp(temp->student_id , student_id))
         {
-            
+
             if(!strcmp(temp->lesson_code , lesson_code))
             {
-                
+
                 strcpy(temp->score , "");
                 strcpy(temp->score , score );
             }
         }
-        
+
         fprintf(score_file_ptr , "%s" , temp->student_id);
         fprintf(score_file_ptr , "%s" , temp->lesson_code);
         fprintf(score_file_ptr , "%s" , temp->score);
@@ -1905,7 +1912,7 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
         fprintf(score_file_ptr , "%s" , temp->user_name);
 
         temp = temp->link ;
-        
+
 
     }
 
@@ -1913,14 +1920,14 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
 
     // delete link list
     temp2 = s ;
-    temp = s->link ; 
+    temp = s->link ;
     while (temp != NULL)
     {
-        temp2 = NULL;
+
         free(temp2);
         temp2 = temp ;
         temp = temp->link;
-        
+
     }
 
 }
@@ -1932,6 +1939,8 @@ void department_head_edit_lesson(struct department_head_information head)
     char c[100] , enter;
 
     system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
 
     printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
     printf("\n\t\t\t\t|           EDIT LESSONS INFORMATION PAGE          |");
@@ -1945,7 +1954,7 @@ void department_head_edit_lesson(struct department_head_information head)
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &head_choice);
     getchar();
-    // limit admin inputs 
+    // limit admin inputs
     while(head_choice <= 0 || head_choice > 4)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
@@ -1986,127 +1995,7 @@ void department_head_edit_lesson_menu_choice(int head_choice , struct department
     }
 }
 
-// edit system for lessons information
-void department_head_edit_lessons_list(char lesson_code[] , char type[] , char new[])
-{
-    struct lesson_information *s = malloc(sizeof(struct lesson_information));
-    struct lesson_information *e = malloc(sizeof(struct lesson_information));
-    struct lesson_information *d = NULL;
-    struct lesson_information *temp = NULL;
-    struct lesson_information *temp2 = NULL;
-
-    lesson_file_ptr = fopen("lessons_information.txt" , "r");
-
-    fscanf(lesson_file_ptr , "%s" , s->name);
-    fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
-    fscanf(lesson_file_ptr , "%s" , s->type);
-    fscanf(lesson_file_ptr , "%s" , s->code);
-
-    fscanf(lesson_file_ptr , "%s" , e->name);
-    fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
-    fscanf(lesson_file_ptr , "%s" , e->type);
-    fscanf(lesson_file_ptr , "%s" , e->code);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(lesson_file_ptr) == 0)
-    {
-        d = malloc(sizeof(struct lesson_information));
-        
-        fscanf(lesson_file_ptr , "%s" , d->name);
-        fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
-        fscanf(lesson_file_ptr , "%s" , d->type);
-        fscanf(lesson_file_ptr , "%s" , d->code);
-
-        e->link = d ; 
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(lesson_file_ptr);
-
-
-    lesson_file_ptr = fopen("lessons_information.txt" , "w");
-
-    if(!strcmp(type , "name"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-    
-            if(!strcmp(temp->code , lesson_code))
-            {
-                
-                strcpy(temp->name , "");
-                strcpy(temp->name , new);
-            }
-            if(temp == s)
-                fprintf(lesson_file_ptr , "%s\n" , temp->name);
-            else
-                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
-            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
-            fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s" , temp->code);
-
-            temp = temp->link ;
-        }
-    
-    } else if(!strcmp(type , "number of unit"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-    
-            if(!strcmp(temp->code , lesson_code))
-            {
-                
-                strcpy(temp->number_of_unit , "");
-                strcpy(temp->number_of_unit , new);
-            }
-
-            if(temp == s)
-                fprintf(lesson_file_ptr , "%s\n" , temp->name);
-            else
-                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
-            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
-            fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s" , temp->code);
-
-            temp = temp->link ;
-        }
-    
-    } else if(!strcmp(type , "type"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            
-            if(!strcmp(temp->code , lesson_code))
-            {
-                
-                strcpy(temp->type , "");
-                strcpy(temp->type , new);
-            }
-
-            if(temp == s)
-                fprintf(lesson_file_ptr , "%s\n" , temp->name);
-            else
-                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
-            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
-            fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s" , temp->code);
-
-            temp = temp->link ;
-        }
-    
-    }
-
-    fclose(lesson_file_ptr);
-    
-}
-
-// edit lessons name page 
+// edit lessons name page
 void department_head_edit_lessons_name_page(struct department_head_information head)
 {
     struct lesson_information lesson ;
@@ -2140,7 +2029,7 @@ void department_head_edit_lessons_name_page(struct department_head_information h
         gets(lesson.name);
     }
 
-    
+
 
     department_head_edit_lessons_list(lesson.code , "name" , lesson.name);
 
@@ -2155,7 +2044,7 @@ void department_head_edit_lessons_name_page(struct department_head_information h
     }
 }
 
-// edit lessons number of unit page 
+// edit lessons number of unit page
 void department_head_edit_lessons_number_of_unit_page(struct department_head_information head)
 {
     struct lesson_information lesson ;
@@ -2189,7 +2078,7 @@ void department_head_edit_lessons_number_of_unit_page(struct department_head_inf
         gets(lesson.number_of_unit);
     }
 
-    
+
 
     department_head_edit_lessons_list(lesson.code , "number of unit" , lesson.number_of_unit);
 
@@ -2204,7 +2093,7 @@ void department_head_edit_lessons_number_of_unit_page(struct department_head_inf
     }
 }
 
-// edit lessons type page 
+// edit lessons type page
 void department_head_edit_lessons_type_page(struct department_head_information head)
 {
     struct lesson_information lesson ;
@@ -2238,7 +2127,7 @@ void department_head_edit_lessons_type_page(struct department_head_information h
         gets(lesson.type);
     }
 
-    
+
 
     department_head_edit_lessons_list(lesson.code , "type" , lesson.type);
 
@@ -2250,6 +2139,137 @@ void department_head_edit_lessons_type_page(struct department_head_information h
     if(enter == '\n')
     {
         department_head_menu(head);
+    }
+}
+
+// edit system for lessons information
+void department_head_edit_lessons_list(char lesson_code[] , char type[] , char new[])
+{
+    struct lesson_information *s = malloc(sizeof(struct lesson_information));
+    struct lesson_information *e = malloc(sizeof(struct lesson_information));
+    struct lesson_information *d = NULL;
+    struct lesson_information *temp = NULL;
+    struct lesson_information *temp2 = NULL;
+
+    lesson_file_ptr = fopen("lessons_information.txt" , "r");
+
+    fscanf(lesson_file_ptr , "%s" , s->name);
+    fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
+    fscanf(lesson_file_ptr , "%s" , s->type);
+    fscanf(lesson_file_ptr , "%s" , s->code);
+
+    fscanf(lesson_file_ptr , "%s" , e->name);
+    fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
+    fscanf(lesson_file_ptr , "%s" , e->type);
+    fscanf(lesson_file_ptr , "%s" , e->code);
+
+    s->link = e ;
+    e->link = NULL ;
+
+    while(feof(lesson_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct lesson_information));
+
+        fscanf(lesson_file_ptr , "%s" , d->name);
+        fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , d->type);
+        fscanf(lesson_file_ptr , "%s" , d->code);
+
+        e->link = d ;
+        e = d ;
+    }
+    e->link = NULL ;
+
+    fclose(lesson_file_ptr);
+
+
+    lesson_file_ptr = fopen("lessons_information.txt" , "w");
+
+    if(!strcmp(type , "name"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+
+            if(!strcmp(temp->code , lesson_code))
+            {
+
+                strcpy(temp->name , "");
+                strcpy(temp->name , new);
+            }
+            if(temp == s)
+                fprintf(lesson_file_ptr , "%s\n" , temp->name);
+            else
+                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+            fprintf(lesson_file_ptr , "%s\n" , temp->type);
+            fprintf(lesson_file_ptr , "%s" , temp->code);
+
+            temp = temp->link ;
+        }
+
+    } else if(!strcmp(type , "number of unit"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+
+            if(!strcmp(temp->code , lesson_code))
+            {
+
+                strcpy(temp->number_of_unit , "");
+                strcpy(temp->number_of_unit , new);
+            }
+
+            if(temp == s)
+                fprintf(lesson_file_ptr , "%s\n" , temp->name);
+            else
+                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+            fprintf(lesson_file_ptr , "%s\n" , temp->type);
+            fprintf(lesson_file_ptr , "%s" , temp->code);
+
+            temp = temp->link ;
+        }
+
+    } else if(!strcmp(type , "type"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+
+            if(!strcmp(temp->code , lesson_code))
+            {
+
+                strcpy(temp->type , "");
+                strcpy(temp->type , new);
+            }
+
+            if(temp == s)
+                fprintf(lesson_file_ptr , "%s\n" , temp->name);
+            else
+                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+            fprintf(lesson_file_ptr , "%s\n" , temp->type);
+            fprintf(lesson_file_ptr , "%s" , temp->code);
+
+            temp = temp->link ;
+        }
+
+    }
+
+    fclose(lesson_file_ptr);
+
+    // delete link list
+    temp2 = s ;
+    temp = s->link ;
+    while (temp != NULL)
+    {
+
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+
     }
 }
 
@@ -2282,14 +2302,14 @@ void academic_staff_login()
         printf("\n\t\t\t\tPlease enter your password : ");
         gets(staff_user_name);
     }
-    
+
     staff_found = academic_staff_check_login(staff_user_name , staff_password);
-    
+
     if(staff_found == 1)
     {
         academic_staff_menu(staff_list(staff_user_name));
-        
-    } else 
+
+    } else
     {
         printf("\033[31m""\n\t\t\t\tERROR! incorrect user name or password.\n""\033[0m");
         // return to main menu
@@ -2300,7 +2320,7 @@ void academic_staff_login()
              main_menu_choice(main_menu());
         }
     }
-    
+
 }
 
 // make link  list  of academic staff information and check it fo login
@@ -2315,7 +2335,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
     struct academic_staff_information *temp2 = NULL;
 
     staff_file_ptr = fopen("staff_information.txt" , "r");
-    
+
     fscanf(staff_file_ptr , "%s" , s->gender);
     fscanf(staff_file_ptr , "%s" , s->name);
     fscanf(staff_file_ptr , "%s" , s->family);
@@ -2337,7 +2357,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
     fscanf(staff_file_ptr , "%s" , e->password);
 
     s->link = e ;
-    e->link = NULL; 
+    e->link = NULL;
     // make link list of staff department information
     while(feof(staff_file_ptr) == 0)
     {
@@ -2355,7 +2375,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
 
         e->link = d ;
         e = d ;
-        
+
     }
     e->link = NULL ;
 
@@ -2376,27 +2396,27 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
         temp = temp->link ;
     }
 
-    // delete link list 
+    // delete link list
     temp2 = s ;
-    temp = s->link ; 
+    temp = s->link ;
     while (temp != NULL)
     {
-        temp2 = NULL;
+
         free(temp2);
         temp2 = temp ;
         temp = temp->link;
 
     }
-    
+
 
     if(staff_found == 1)
     {
         return 1 ;
-    } else 
+    } else
     {
         return 0 ;
     }
-    
+
 }
 
 // academic staff page menu
@@ -2423,7 +2443,7 @@ void academic_staff_menu(struct academic_staff_information staff)
     printf("\n\t\t\t\tPlease enter your choice : ");
     scanf("%d" , &staff_choice);
     getchar();
-    // limit department head inputs 
+    // limit department head inputs
     while(staff_choice <= 0 || staff_choice > 6)
     {
         printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
@@ -2448,7 +2468,7 @@ void academic_staff_menu_choice(int staff_choice ,  struct academic_staff_inform
         }
         case 2 :
         {
-           
+           academic_staff_edit_students_information(staff);
             break;
         }
         case 3 :
@@ -2472,13 +2492,13 @@ void academic_staff_menu_choice(int staff_choice ,  struct academic_staff_inform
             break;
         }
 
-    } 
+    }
 }
 
 // log new student from academic staff
 void academic_staff_log_student(struct academic_staff_information staff)
 {
-   
+
     char  ch[4] , enter;
     struct student_information student;
 
@@ -2500,7 +2520,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     } else if(!strcmp(student.gender , "male"))
     {
         strcpy(ch , "his");
-    } else 
+    } else
     {
         while(strcmp(student.gender , "female") != 0 && strcmp(student.gender , "male") != 0)
         {
@@ -2554,7 +2574,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth year : " , ch);
-        gets(student.birth_date.year); 
+        gets(student.birth_date.year);
     }
 
     printf("\n\t\t\t\tPlease enter %s birth month : " , ch);
@@ -2564,7 +2584,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth month : " , ch);
-        gets(student.birth_date.month); 
+        gets(student.birth_date.month);
     }
 
     printf("\n\t\t\t\tPlease enter %s birth day : " , ch);
@@ -2574,7 +2594,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth day : " , ch);
-        gets(student.birth_date.day); 
+        gets(student.birth_date.day);
     }
 
     printf("\n\t\t\t\tPlease enter %s birth city : " , ch);
@@ -2607,7 +2627,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
         gets(student.id);
     }
 
-    
+
 
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
     gets(student.phone_number);
@@ -2616,12 +2636,12 @@ void academic_staff_log_student(struct academic_staff_information staff)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
-        gets(student.phone_number); 
+        gets(student.phone_number);
     }
 
     printf("\n\t\t\t\tPlease enter %s email : " , ch);
     gets(student.email);
-    
+
 
     printf("\033[32m""\n\t\t\t\tstudent log successfully complited :)\n""\033[0m");
 
@@ -2639,7 +2659,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     fprintf(staff_file_ptr , "%s\n" , student.id);
     fprintf(staff_file_ptr , "%s\n" , student.phone_number);
     fprintf(staff_file_ptr , "%s" , student.email);
-    
+
     fclose(student_file_ptr);
 
     // return to academic staff page menu
@@ -2649,9 +2669,763 @@ void academic_staff_log_student(struct academic_staff_information staff)
     {
         academic_staff_menu(staff);
     }
-    
 
-     
+
+
+}
+
+// academic staff edit students information page
+void academic_staff_edit_students_information(struct academic_staff_information staff)
+{
+    int staff_choice = 0 ;
+    char c[100] , enter;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|           EDIT STUDENTS INFORMATION PAGE         |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\t1- Edit studentds gender");
+    printf("\n\t\t\t\t2- Edit students name");
+    printf("\n\t\t\t\t3- Edit students family");
+    printf("\n\t\t\t\t4- Edit students code");
+    printf("\n\t\t\t\t5- Edit students birth_date");
+    printf("\n\t\t\t\t6- Edit students birth_city");
+    printf("\n\t\t\t\t7- Edit students field of study");
+    printf("\n\t\t\t\t8- Edit students phone number");
+    printf("\n\t\t\t\t9- Edit students email");
+    printf("\n\t\t\t\t10- Exit\n");
+
+    printf("\n\t\t\t\tPlease enter your choice : ");
+    scanf("%d" , &staff_choice);
+    getchar();
+    // limit admin inputs
+    while(staff_choice <= 0 || staff_choice > 10)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter your choice : ");
+        scanf("%d" , &staff_choice);
+        gets(c);
+    }
+
+    academic_staff_edit_students_information_menu_choice(staff_choice , staff);
+
+}
+
+// switch structure for academic staff choices in edit students information page
+void academic_staff_edit_students_information_menu_choice(int staff_choice , struct academic_staff_information staff)
+{
+    switch(staff_choice)
+    {
+
+        case 1 :
+        {
+            academic_staff_edit_students_gender_page( staff);
+            break;
+        }
+        case 2 :
+        {
+           academic_staff_edit_students_name_page( staff);
+            break;
+        }
+        case 3 :
+        {
+            academic_staff_edit_students_family_page( staff);
+            break;
+        }
+        case 4 :
+        {
+            academic_staff_edit_students_code_page( staff);
+            break;
+        }
+        case 5 :
+        {
+            academic_staff_edit_students_birth_date_page( staff);
+            break;
+        }
+        case 6 :
+        {
+            academic_staff_edit_students_birth_city_page( staff);
+            break;
+        }
+        case 7 :
+        {
+            academic_staff_edit_students_field_of_study_page( staff);
+            break;
+        }
+        case 8 :
+        {
+            academic_staff_edit_students_phone_number_page( staff);
+            break;
+        }
+        case 9 :
+        {
+            academic_staff_edit_students_email_page( staff);
+            break;
+        }
+        case 10 :
+        {
+            academic_staff_menu(staff);
+            break;
+        }
+
+    }
+}
+
+// edit students gender page
+void academic_staff_edit_students_gender_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|             EDIT STUDENTS GENDER PAGE            |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students gender : ");
+    gets(student.gender);
+    // check
+    while(check_string(student.gender) == 0 || ( strcmp(student.gender , "male") != 0 && strcmp(student.gender , "female") != 0 ) )
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students gender : ");
+        gets(student.gender);
+    }
+
+
+    academic_staff_edit_students_information_list(student.id , "gender" , student.gender);
+
+    printf("\033[32m""\n\n\t\t\t\tstudents gender edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit students name page
+void academic_staff_edit_students_name_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|             EDIT STUDENTS NAME PAGE              |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students name : ");
+    gets(student.name);
+    // check
+    while(!check_string(student.name))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students name : ");
+        gets(student.name);
+    }
+
+
+    academic_staff_edit_students_information_list(student.id , "name" , student.name);
+
+    printf("\033[32m""\n\n\t\t\t\tstudents name edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit students family page
+void academic_staff_edit_students_family_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|             EDIT STUDENTS FAMILY PAGE            |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students family : ");
+    gets(student.family);
+    // check
+    while(check_string(student.family) == 0)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students family : ");
+        gets(student.family);
+    }
+
+
+    academic_staff_edit_students_information_list(student.id , "family" , student.family);
+
+    printf("\033[32m""\n\n\t\t\t\tstudents family edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit students code page
+void academic_staff_edit_students_code_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|             EDIT STUDENTS CODE PAGE              |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students code : ");
+    gets(student.code);
+    // check
+    while(check_number(student.code) == 0)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students code : ");
+        gets(student.code);
+    }
+
+
+    academic_staff_edit_students_information_list(student.id , "code" , student.code);
+
+    printf("\033[32m""\n\n\t\t\t\tstudents code edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit students birth date page
+void academic_staff_edit_students_birth_date_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter , date[50] ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|           EDIT STUDENTS BIRTH DATE PAGE          |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students year of birth : ");
+    gets(student.birth_date.year);
+    // check
+    while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) > 4)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students year of birth : ");
+        gets(student.birth_date.year);
+    }
+
+    printf("\n\t\t\t\tPlease enter students month of birth : ");
+    gets(student.birth_date.month);
+    // check
+    while(check_number(student.birth_date.month) == 0 || strlen(student.birth_date.month) > 2)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students month of birth : ");
+        gets(student.birth_date.month);
+    }
+
+    printf("\n\t\t\t\tPlease enter students day of birth : ");
+    gets(student.birth_date.day);
+    // check
+    while(check_number(student.birth_date.day) == 0 || strlen(student.birth_date.day) > 2)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students day of birth : ");
+        gets(student.birth_date.day);
+    }
+
+    sprintf(date , "%s/%s/%s" , student.birth_date.year , student.birth_date.month , student.birth_date.day);
+
+    academic_staff_edit_students_information_list(student.id , "birth date" , date );
+
+    printf("\033[32m""\n\n\t\t\t\tstudents birth date edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit students birth city page
+void academic_staff_edit_students_birth_city_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|           EDIT STUDENTS BIRTH CITY PAGE          |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students birth city : ");
+    gets(student.birth_city);
+    // check
+    while(check_string(student.birth_city) == 0)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students birth city : ");
+        gets(student.birth_city);
+    }
+
+
+    academic_staff_edit_students_information_list(student.id , "birth city" , student.birth_city);
+
+    printf("\033[32m""\n\n\t\t\t\tstudents birth city edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit students field of study page
+void academic_staff_edit_students_field_of_study_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|         EDIT STUDENTS FIELD OF STUDY PAGE        |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students field of study : ");
+    gets(student.field_of_study);
+    // check
+    while(check_string(student.field_of_study) == 0)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students field of study : ");
+        gets(student.field_of_study);
+    }
+
+
+    academic_staff_edit_students_information_list(student.id , "field of study" , student.field_of_study);
+
+    printf("\033[32m""\n\n\t\t\t\tstudents field of study edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit students phone number page
+void academic_staff_edit_students_phone_number_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|          EDIT STUDENTS PHONE NUMBER PAGE         |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students phone number : ");
+    gets(student.phone_number);
+    // check
+    while(check_number(student.phone_number) == 0)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students phone number : ");
+        gets(student.phone_number);
+    }
+
+
+    academic_staff_edit_students_information_list(student.id , "phone number" , student.phone_number);
+
+    printf("\033[32m""\n\n\t\t\t\tstudents phone number edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit students email page
+void academic_staff_edit_students_email_page(struct academic_staff_information staff)
+{
+    struct student_information student ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|             EDIT STUDENTS EMAIL PAGE             |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter students id : ");
+    gets(student.id);
+    // check
+    while(!check_number(student.id))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter students id : ");
+        gets(student.id);
+    }
+
+    printf("\n\t\t\t\tPlease enter students email : ");
+    gets(student.email);
+
+
+    academic_staff_edit_students_information_list(student.id , "email" , student.email);
+
+    printf("\033[32m""\n\n\t\t\t\tstudents email edit successfully :)\n""\033[0m");
+
+    // return to academic staff page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        academic_staff_menu(staff);
+    }
+}
+
+// edit system for students information
+void academic_staff_edit_students_information_list(char students_id[] , char type[] , char new[])
+{
+    struct student_information *s = malloc(sizeof(struct student_information));
+    struct student_information *e = malloc(sizeof(struct student_information));
+    struct student_information *d = NULL ;
+    struct student_information *temp = NULL ;
+    struct student_information *temp2 = NULL ;
+
+    student_file_ptr = fopen("student_information.txt" , "r");
+
+    fscanf(student_file_ptr , "%s" , s->gender);
+    fscanf(student_file_ptr , "%s" , s->name);
+    fscanf(student_file_ptr , "%s" , s->family);
+    fscanf(student_file_ptr , "%s" , s->code);
+    fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year  , s->birth_date.month , s->birth_date.day);
+    fscanf(student_file_ptr , "%s" , s->birth_city);
+    fscanf(student_file_ptr , "%s" , s->field_of_study);
+    fscanf(student_file_ptr , "%s" , s->id);
+    fscanf(student_file_ptr , "%s" , s->phone_number);
+    fscanf(student_file_ptr , "%s" , s->email);
+
+    fscanf(student_file_ptr , "%s" , e->gender);
+    fscanf(student_file_ptr , "%s" , e->name);
+    fscanf(student_file_ptr , "%s" , e->family);
+    fscanf(student_file_ptr , "%s" , e->code);
+    fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year  , e->birth_date.month , e->birth_date.day);
+    fscanf(student_file_ptr , "%s" , e->birth_city);
+    fscanf(student_file_ptr , "%s" , e->field_of_study);
+    fscanf(student_file_ptr , "%s" , e->id);
+    fscanf(student_file_ptr , "%s" , e->phone_number);
+    fscanf(student_file_ptr , "%s" , e->email);
+
+    s->link = e ;
+    e->link = NULL ;
+
+    while(feof(student_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct student_information));
+
+        fscanf(student_file_ptr , "%s" , d->gender);
+        fscanf(student_file_ptr , "%s" , d->name);
+        fscanf(student_file_ptr , "%s" , d->family);
+        fscanf(student_file_ptr , "%s" , d->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year  , d->birth_date.month , d->birth_date.day);
+        fscanf(student_file_ptr , "%s" , d->birth_city);
+        fscanf(student_file_ptr , "%s" , d->field_of_study);
+        fscanf(student_file_ptr , "%s" , d->id);
+        fscanf(student_file_ptr , "%s" , d->phone_number);
+        fscanf(student_file_ptr , "%s" , d->email);
+
+        e->link = d ;
+        e = d ;
+    }
+    e->link = NULL ;
+
+    fclose(student_file_ptr);
+
+    student_file_ptr = fopen("student_information.txt" , "w");
+
+    if(!strcmp(type , "gender"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->gender , "");
+                strcpy(temp->gender , new);
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    } else if(!strcmp(type , "name"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->name , "");
+                strcpy(temp->name , new);
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    }  else if(!strcmp(type , "family"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->family , "");
+                strcpy(temp->family , new);
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    }  else if(!strcmp(type , "code"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->code , "");
+                strcpy(temp->code , new);
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    }  else if(!strcmp(type , "birth date"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->birth_date.year , "");
+                strcpy(temp->birth_date.month , "");
+                strcpy(temp->birth_date.day , "");
+                sscanf(new , "%4s/%2s/%2s" , temp->birth_date.year , temp->birth_date.month ,temp->birth_date.day);
+                
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%s/%s/%s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    } 
+
+
+    fclose(staff_file_ptr);
+
+    // delete link list
+    temp2 = s ;
+    temp = s->link ;
+    while (temp != NULL)
+    {
+
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+
+    }
+
 }
 
 // log students score
@@ -2700,9 +3474,9 @@ void academic_staff_log_score(struct academic_staff_information staff)
     }
 
     printf("\n\t\t\t\tDate : %s" , __DATE__);
-    
+
     printf("\n\n\t\t\t\tTime : %s" , __TIME__);
-    
+
     printf("\n\n\t\t\t\tAcademic staff name : %s %s" , staff.name , staff.family);
 
     // print score information in file
