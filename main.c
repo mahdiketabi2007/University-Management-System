@@ -26,6 +26,8 @@ struct department_head_information
     char code[11];
     char phone_number[12];
     char email[50];
+    char status[50] ;
+    struct date terminate_date;
     char user_name[50];
     char password[50];
     struct department_head_information *link ;
@@ -40,6 +42,8 @@ struct academic_staff_information
     char rank[10];
     char phone_number[12];
     char email[50];
+    char status[50] ;
+    struct date terminate_date;
     char user_name[50];
     char password[50];
     struct academic_staff_information *link ;
@@ -89,6 +93,8 @@ FILE *staff_file_ptr = NULL ;
 FILE *lesson_file_ptr = NULL ;
 FILE *student_file_ptr = NULL ;
 FILE *score_file_ptr = NULL ;
+FILE *terminate_head_file_ptr = NULL ;
+FILE *terminate_staff_file_ptr = NULL ;
 
 FILE *backup_head_file_ptr = NULL ;
 FILE *backup_staff_file_ptr = NULL ;
@@ -118,6 +124,12 @@ void admin_menu_choice(int admin_choice);
 void admin_log_head();
 void admin_log_staff();
 void admin_observe_users();
+void admin_delete_users_menu();
+void admin_delete_head_page();
+void admin_delete_head(char head_name[] , char head_family[] ,char terminate_date[]);
+void admin_delete_staff_page();
+void admin_delete_staff(char hstaff_name[] , char staff_family[] ,char terminate_date[]);
+void admin_delete_users_menu_choice(int admin_choice);
 void admin_backup_menu();
 void admin_backup_menu_choice( int admin_choice);
 void admin_backup(int n);
@@ -326,6 +338,7 @@ struct academic_staff_information staff_list(char staff_user_name[])
     fscanf(staff_file_ptr , "%s" , s->rank);
     fscanf(staff_file_ptr , "%s" , s->phone_number);
     fscanf(staff_file_ptr , "%s" , s->email);
+    fscanf(staff_file_ptr , "%s" , s->status);
     fscanf(staff_file_ptr , "%s" , s->user_name );
     fscanf(staff_file_ptr , "%s" , s->password);
 
@@ -336,6 +349,7 @@ struct academic_staff_information staff_list(char staff_user_name[])
     fscanf(staff_file_ptr , "%s" , e->rank);
     fscanf(staff_file_ptr , "%s" , e->phone_number);
     fscanf(staff_file_ptr , "%s" , e->email);
+    fscanf(staff_file_ptr , "%s" , e->status);
     fscanf(staff_file_ptr , "%s" , e->user_name);
     fscanf(staff_file_ptr , "%s" , e->password);
 
@@ -355,6 +369,7 @@ struct academic_staff_information staff_list(char staff_user_name[])
         fscanf(staff_file_ptr , "%s" , d->rank);
         fscanf(staff_file_ptr , "%s" , d->phone_number);
         fscanf(staff_file_ptr , "%s" , d->email);
+        fscanf(staff_file_ptr , "%s" , d->status);
         fscanf(staff_file_ptr , "%s" , d->user_name);
         fscanf(staff_file_ptr , "%s" , d->password);
 
@@ -636,7 +651,7 @@ void admin_menu_choice(int admin_choice)
         }
         case 4 :
         {
-
+            admin_delete_users_menu();
             break;
         }
         case 5 :
@@ -919,10 +934,15 @@ void admin_log_staff()
 
     printf("\n\t\t\t\tPlease enter %s email : " , ch);
     gets(staff.email);
+
+    strcpy(staff.status , "active");
+
     printf("\n\t\t\t\tPlease enter %s user name : " , ch);
     gets(staff.user_name);
+
     printf("\n\t\t\t\tPlease enter %s password : " , ch);
     strcpy(staff.password , star_password());
+
     printf("\n\t\t\t\tPlease confirm %s password : " , ch);
     strcpy(confirm_password , star_password());
 
@@ -947,6 +967,7 @@ void admin_log_staff()
     fprintf(staff_file_ptr , "%s\n" , staff.rank);
     fprintf(staff_file_ptr , "%s\n" , staff.phone_number);
     fprintf(staff_file_ptr , "%s\n" , staff.email);
+    fprintf(staff_file_ptr , "%s\n" , staff.status);
     fprintf(staff_file_ptr , "%s\n" , staff.user_name);
     fprintf(staff_file_ptr , "%s" , staff.password);
     fclose(staff_file_ptr);
@@ -1129,6 +1150,7 @@ void admin_observe_users()
     fscanf(staff_file_ptr , "%s" , s2->rank);
     fscanf(staff_file_ptr , "%s" , s2->phone_number);
     fscanf(staff_file_ptr , "%s" , s2->email);
+    fscanf(staff_file_ptr , "%s" , s2->status);
     fscanf(staff_file_ptr , "%s" , s2->user_name);
     fscanf(staff_file_ptr , "%s" , s2->password);
 
@@ -1139,6 +1161,7 @@ void admin_observe_users()
     fscanf(staff_file_ptr , "%s" , e2->rank);
     fscanf(staff_file_ptr , "%s" , e2->phone_number);
     fscanf(staff_file_ptr , "%s" , e2->email);
+    fscanf(staff_file_ptr , "%s" , e2->status);
     fscanf(staff_file_ptr , "%s" , e2->user_name);
     fscanf(staff_file_ptr , "%s" , e2->password);
 
@@ -1156,6 +1179,7 @@ void admin_observe_users()
         fscanf(staff_file_ptr , "%s" , d2->rank);
         fscanf(staff_file_ptr , "%s" , d2->phone_number);
         fscanf(staff_file_ptr , "%s" , d2->email);
+        fscanf(staff_file_ptr , "%s" , d2->status);
         fscanf(staff_file_ptr , "%s" , d2->user_name);
         fscanf(staff_file_ptr , "%s" , d2->password);
 
@@ -1254,6 +1278,461 @@ void admin_observe_users()
     if(enter == '\n')
     {
         admin_menu();
+    }
+}
+
+// delete users
+void admin_delete_users_menu()
+{
+     int admin_choice = 0 ;
+    char c[100];
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|             ADMIN DELETE USERS PAGE              |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\t1- Delete department head");
+    printf("\n\t\t\t\t2- Delete academic staff");
+    printf("\n\t\t\t\t3- Exit\n");
+
+    printf("\n\t\t\t\tPlease enter your choice : ");
+    scanf("%d" , &admin_choice);
+    getchar();
+    // limit admin inputs
+    while(admin_choice <= 0 || admin_choice > 3)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter your choice : ");
+        scanf("%d" , &admin_choice);
+        gets(c);
+    }
+
+    admin_delete_users_menu_choice(admin_choice);
+}
+
+// switch structure for admin choice in delete users page
+void admin_delete_users_menu_choice(int admin_choice)
+{
+    switch(admin_choice)
+    {
+        case 1 :
+        {
+            admin_delete_head_page();
+            break;
+        }
+        case 2 :
+        {
+            admin_delete_staff_page();
+            break;
+        }
+        case 3 :
+        {
+            admin_menu();
+            break;
+        }
+    }
+}
+
+// delete head page
+void admin_delete_head_page()
+{
+    
+    char c[100] , head_name[50] , head_family[50]  , t_date[20];
+    struct date terminate_date ;
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|         ADMIN DELETE DEPARTMENT HEAD PAGE        |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+
+    printf("\n\t\t\t\tPlease enter users name : ");
+    gets(head_name);
+    // check 
+    while(!check_string(head_name))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter users name : ");
+        gets(head_name);
+    }
+
+    printf("\n\t\t\t\tPlease enter users family : ");
+    gets(head_family);
+    // check 
+    while(!check_string(head_family))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter users family : ");
+        gets(head_family);
+    }
+
+    printf("\n\t\t\t\tPlease enter year of terminate : ");
+    gets(terminate_date.year);
+    //check 
+    while(check_number(terminate_date.year) == 0 || strlen(terminate_date.year) != 4)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter year of terminate : ");
+        gets(terminate_date.year);
+    }
+
+    printf("\n\t\t\t\tPlease enter month of terminate : ");
+    gets(terminate_date.month);
+    //check 
+    while(check_number(terminate_date.month) == 0 || strlen(terminate_date.month) > 2)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter month of terminate : ");
+        gets(terminate_date.month);
+    }
+    date(terminate_date.month);
+
+    printf("\n\t\t\t\tPlease enter day of terminate : ");
+    gets(terminate_date.day);
+    //check 
+    while(check_number(terminate_date.day) == 0 || strlen(terminate_date.day) > 2)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter day of terminate : ");
+        gets(terminate_date.day);
+    }
+    date(terminate_date.day);
+    
+    sprintf(t_date , "%4s/%2s/%2s" , terminate_date.year  , terminate_date.month , terminate_date.day);
+
+    admin_delete_head(head_name , head_family , t_date);
+}
+
+// delete head
+void admin_delete_head(char head_name[] , char head_family[] , char terminate_date[])
+{
+    struct department_head_information *s = malloc(sizeof(struct department_head_information));
+    struct department_head_information *e = malloc(sizeof(struct department_head_information));
+    struct department_head_information *d = NULL ;
+    struct department_head_information *temp = NULL ;
+    struct department_head_information *temp2 = NULL ;
+
+    head_file_ptr = fopen("department_head_information.txt" , "r");
+
+    fscanf(head_file_ptr , "%s" , s->gender);
+    fscanf(head_file_ptr , "%s" , s->name);
+    fscanf(head_file_ptr , "%s" , s->family);
+    fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+    fscanf(head_file_ptr , "%s" , s->group_name);
+    fscanf(head_file_ptr , "%s" , s->code);
+    fscanf(head_file_ptr , "%s" , s->phone_number);
+    fscanf(head_file_ptr , "%s" , s->email);
+    fscanf(head_file_ptr , "%s" , s->status);
+    fscanf(head_file_ptr , "%s" , s->user_name);
+    fscanf(head_file_ptr , "%s" , s->password);
+
+    fscanf(head_file_ptr , "%s" , e->gender);
+    fscanf(head_file_ptr , "%s" , e->name);
+    fscanf(head_file_ptr , "%s" , e->family);
+    fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+    fscanf(head_file_ptr , "%s" , e->group_name);
+    fscanf(head_file_ptr , "%s" , e->code);
+    fscanf(head_file_ptr , "%s" , e->phone_number);
+    fscanf(head_file_ptr , "%s" , e->email);
+    fscanf(head_file_ptr , "%s" , e->status);
+    fscanf(head_file_ptr , "%s" , e->user_name);
+    fscanf(head_file_ptr , "%s" , e->password);
+
+    s->link = e ;
+    e->link = NULL ;
+
+    while(feof(head_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct department_head_information));
+
+        fscanf(head_file_ptr , "%s" , d->gender);
+        fscanf(head_file_ptr , "%s" , d->name);
+        fscanf(head_file_ptr , "%s" , d->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+        fscanf(head_file_ptr , "%s" , d->group_name);
+        fscanf(head_file_ptr , "%s" , d->code);
+        fscanf(head_file_ptr , "%s" , d->phone_number);
+        fscanf(head_file_ptr , "%s" , d->email);
+        fscanf(head_file_ptr , "%s" , d->status);
+        fscanf(head_file_ptr , "%s" , d->user_name);
+        fscanf(head_file_ptr , "%s" , d->password);
+
+        e->link = d ;
+        e = d ;
+    }
+    e->link = NULL ;
+
+    fclose(head_file_ptr);
+
+    head_file_ptr = fopen("department_head_information.txt" , "w");
+
+    temp = s ;
+    while(temp != NULL)
+    {
+        if(!strcmp(temp->name , head_name))
+        {
+            if(!strcmp(temp->family , head_family))
+            {
+                strcpy(temp->status , "");
+                strcpy(temp->status , "inactive");
+                
+                terminate_head_file_ptr = fopen("terminated_head.txt" , "a");
+
+                sscanf(terminate_date , "%4s/%2s/%2s" , temp->terminate_date.year , temp->terminate_date.month , temp->terminate_date.day);
+
+                if(temp == s)
+                    fprintf(terminate_head_file_ptr , "%s\n" , temp->gender);
+                else 
+                    fprintf(terminate_head_file_ptr , "\n%s\n" , temp->gender);
+                fprintf(terminate_head_file_ptr , "%s\n" , temp->name);
+                fprintf(terminate_head_file_ptr , "%s\n" , temp->family);
+                fprintf(terminate_head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+                fprintf(terminate_head_file_ptr , "%s\n" , temp->group_name);
+                fprintf(terminate_head_file_ptr , "%s\n" , temp->code);
+                fprintf(terminate_head_file_ptr , "%s\n" , temp->phone_number);
+                fprintf(terminate_head_file_ptr , "%s\n" , temp->email);
+                fprintf(terminate_head_file_ptr , "%s\n" , temp->status);
+                fprintf(terminate_head_file_ptr , "%4s/%2s/%2s\n" , temp->terminate_date.year , temp->terminate_date.month, temp->terminate_date.day);
+                fprintf(terminate_head_file_ptr , "%s\n" , temp->user_name);
+                fprintf(terminate_head_file_ptr , "%s" , temp->password);
+
+                fclose(terminate_head_file_ptr);
+
+            }
+        }
+
+        if(temp == s)
+            fprintf(head_file_ptr , "%s\n" , temp->gender);
+        else 
+            fprintf(head_file_ptr , "\n%s\n" , temp->gender);
+        fprintf(head_file_ptr , "%s\n" , temp->name);
+        fprintf(head_file_ptr , "%s\n" , temp->family);
+        fprintf(head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+        fprintf(head_file_ptr , "%s\n" , temp->group_name);
+        fprintf(head_file_ptr , "%s\n" , temp->code);
+        fprintf(head_file_ptr , "%s\n" , temp->phone_number);
+        fprintf(head_file_ptr , "%s\n" , temp->email);
+        fprintf(head_file_ptr , "%s\n" , temp->status);
+        fprintf(head_file_ptr , "%s\n" , temp->user_name);
+        fprintf(head_file_ptr , "%s" , temp->password);
+
+        temp = temp->link ;
+    }
+
+    fclose(head_file_ptr);
+
+    // delete link list
+    temp2 = s ;
+    temp = s->link ;
+    while (temp != NULL)
+    {
+
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+
+    }
+    
+}
+
+// delete staff page
+void admin_delete_staff_page()
+{
+    
+    char c[100] , staff_name[50] , staff_family[50]  , t_date[20];
+    struct date terminate_date ;
+
+    system("cls");
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|         ADMIN DELETE ACADEMIC STAFF PAGE         |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+
+    printf("\n\t\t\t\tPlease enter users name : ");
+    gets(staff_name);
+    // check 
+    while(!check_string(staff_name))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter users name : ");
+        gets(staff_name);
+    }
+
+    printf("\n\t\t\t\tPlease enter users family : ");
+    gets(staff_family);
+    // check 
+    while(!check_string(staff_family))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter users family : ");
+        gets(staff_family);
+    }
+
+    printf("\n\t\t\t\tPlease enter year of terminate : ");
+    gets(terminate_date.year);
+    //check 
+    while(check_number(terminate_date.year) == 0 || strlen(terminate_date.year) != 4)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter year of terminate : ");
+        gets(terminate_date.year);
+    }
+
+    printf("\n\t\t\t\tPlease enter month of terminate : ");
+    gets(terminate_date.month);
+    //check 
+    while(check_number(terminate_date.month) == 0 || strlen(terminate_date.month) > 2)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter month of terminate : ");
+        gets(terminate_date.month);
+    }
+    date(terminate_date.month);
+
+    printf("\n\t\t\t\tPlease enter day of terminate : ");
+    gets(terminate_date.day);
+    //check 
+    while(check_number(terminate_date.day) == 0 || strlen(terminate_date.day) > 2)
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter day of terminate : ");
+        gets(terminate_date.day);
+    }
+    date(terminate_date.day);
+    
+    sprintf(t_date , "%4s/%2s/%2s" , terminate_date.year  , terminate_date.month , terminate_date.day);
+
+    admin_delete_staff(staff_name , staff_family , t_date);
+}
+
+// delete staff
+void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate_date[])
+{
+    struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
+    struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
+    struct academic_staff_information *d = NULL ;
+    struct academic_staff_information *temp = NULL ;
+    struct academic_staff_information *temp2 = NULL ;
+
+    staff_file_ptr = fopen("staff_information.txt" , "r");
+
+    fscanf(staff_file_ptr , "%s" , s->gender);
+    fscanf(staff_file_ptr , "%s" , s->name);
+    fscanf(staff_file_ptr , "%s" , s->family);
+    fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+    fscanf(staff_file_ptr , "%s" , s->rank);
+    fscanf(staff_file_ptr , "%s" , s->phone_number);
+    fscanf(staff_file_ptr , "%s" , s->email);
+    fscanf(staff_file_ptr , "%s" , s->status);
+    fscanf(staff_file_ptr , "%s" , s->user_name);
+    fscanf(staff_file_ptr , "%s" , s->password);
+
+    fscanf(staff_file_ptr , "%s" , e->gender);
+    fscanf(staff_file_ptr , "%s" , e->name);
+    fscanf(staff_file_ptr , "%s" , e->family);
+    fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+    fscanf(staff_file_ptr , "%s" , e->rank);
+    fscanf(staff_file_ptr , "%s" , e->phone_number);
+    fscanf(staff_file_ptr , "%s" , e->email);
+    fscanf(staff_file_ptr , "%s" , e->status);
+    fscanf(staff_file_ptr , "%s" , e->user_name);
+    fscanf(staff_file_ptr , "%s" , e->password);
+
+    s->link = e ;
+    e->link = NULL ;
+
+    while(feof(staff_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct academic_staff_information));
+
+        fscanf(staff_file_ptr , "%s" , d->gender);
+        fscanf(staff_file_ptr , "%s" , d->name);
+        fscanf(staff_file_ptr , "%s" , d->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+        fscanf(staff_file_ptr , "%s" , d->rank);
+        fscanf(staff_file_ptr , "%s" , d->phone_number);
+        fscanf(staff_file_ptr , "%s" , d->email);
+        fscanf(staff_file_ptr , "%s" , d->status);
+        fscanf(staff_file_ptr , "%s" , d->user_name);
+        fscanf(staff_file_ptr , "%s" , d->password);
+        
+        e->link = d ;
+        e = d ;
+    }
+    e->link = NULL ;
+
+    fclose(staff_file_ptr);
+
+    staff_file_ptr = fopen("staff_information.txt" , "w");
+
+    temp = s ;
+    while(temp != NULL)
+    {
+        if(!strcmp(temp->name , staff_name))
+        {
+            if(!strcmp(temp->family , staff_family))
+            {
+                strcpy(temp->status , "");
+                strcpy(temp->status , "inactive");
+                
+                terminate_staff_file_ptr = fopen("terminated_staff.txt" , "a");
+
+                sscanf(terminate_date , "%4s/%2s/%2s" , temp->terminate_date.year , temp->terminate_date.month , temp->terminate_date.day);
+
+                if(temp == s)
+                    fprintf(terminate_staff_file_ptr , "%s\n" , temp->gender);
+                else 
+                    fprintf(terminate_staff_file_ptr , "\n%s\n" , temp->gender);
+                fprintf(terminate_staff_file_ptr , "%s\n" , temp->name);
+                fprintf(terminate_staff_file_ptr , "%s\n" , temp->family);
+                fprintf(terminate_staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+                fprintf(terminate_staff_file_ptr , "%s\n" , temp->rank);
+                fprintf(terminate_staff_file_ptr , "%s\n" , temp->phone_number);
+                fprintf(terminate_staff_file_ptr , "%s\n" , temp->email);
+                fprintf(terminate_staff_file_ptr , "%s\n" , temp->status);
+                fprintf(terminate_staff_file_ptr , "%4s/%2s/%2s\n" , temp->terminate_date.year , temp->terminate_date.month, temp->terminate_date.day);
+                fprintf(terminate_staff_file_ptr , "%s\n" , temp->user_name);
+                fprintf(terminate_staff_file_ptr , "%s" , temp->password);
+
+                fclose(terminate_staff_file_ptr);
+
+            }
+        }
+
+        if(temp == s)
+            fprintf(staff_file_ptr , "%s\n" , temp->gender);
+        else 
+            fprintf(staff_file_ptr , "\n%s\n" , temp->gender);
+        fprintf(staff_file_ptr , "%s\n" , temp->name);
+        fprintf(staff_file_ptr , "%s\n" , temp->family);
+        fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+        fprintf(staff_file_ptr , "%s\n" , temp->rank);
+        fprintf(staff_file_ptr , "%s\n" , temp->phone_number);
+        fprintf(staff_file_ptr , "%s\n" , temp->email);
+        fprintf(staff_file_ptr , "%s\n" , temp->status);
+        fprintf(staff_file_ptr , "%s\n" , temp->user_name);
+        fprintf(staff_file_ptr , "%s" , temp->password);
+
+        temp = temp->link ;
+        
+    }
+
+    fclose(staff_file_ptr);
+
+    // delete link list
+    temp2 = s ;
+    temp = s->link ;
+    while (temp != NULL)
+    {
+
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+
     }
 }
 
@@ -2406,6 +2885,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
     fscanf(staff_file_ptr , "%s" , s->rank);
     fscanf(staff_file_ptr , "%s" , s->phone_number);
     fscanf(staff_file_ptr , "%s" , s->email);
+    fscanf(staff_file_ptr , "%s" , s->status);
     fscanf(staff_file_ptr , "%s" , s->user_name);
     fscanf(staff_file_ptr , "%s" , s->password);
 
@@ -2416,6 +2896,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
     fscanf(staff_file_ptr , "%s" , e->rank);
     fscanf(staff_file_ptr , "%s" , e->phone_number);
     fscanf(staff_file_ptr , "%s" , e->email);
+    fscanf(staff_file_ptr , "%s" , e->status);
     fscanf(staff_file_ptr , "%s" , e->user_name);
     fscanf(staff_file_ptr , "%s" , e->password);
 
@@ -2433,6 +2914,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
         fscanf(staff_file_ptr , "%s" , d->rank);
         fscanf(staff_file_ptr , "%s" , d->phone_number);
         fscanf(staff_file_ptr , "%s" , d->email);
+        fscanf(staff_file_ptr , "%s" , d->status);
         fscanf(staff_file_ptr , "%s" , d->user_name);
         fscanf(staff_file_ptr , "%s" , d->password);
 
