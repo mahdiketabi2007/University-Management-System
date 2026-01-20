@@ -3,7 +3,7 @@
 #include<string.h>
 #include<ctype.h>
 #include<time.h>
-
+#include<conio.h>
 //--------------------- admin username = admin |   admin password = 1212 ---------------------
 
 // ---------------------------------------------------------------------------
@@ -103,6 +103,8 @@ int check_string(char str[]);
 int check_number(char numbr[]);
 struct department_head_information head_list(char head_user_name[]);
 struct academic_staff_information staff_list(char staff_user_name[]);
+void date(char date[]);
+char* star_password();
 // ---------------------------------------------------------------------------
 // protoype functions
 // ---------------------------------------------------------------------------
@@ -389,6 +391,70 @@ struct academic_staff_information staff_list(char staff_user_name[])
 
 }
 
+// date  2 -> 02
+void date(char date[] )
+{
+    char d[10];
+    int i = 0 , j = 0 ; 
+
+    strcpy(d , date);
+    for(i = 0 ; i < 2 ; i++)
+    {
+        date[i] = '0' ;
+    }
+    date[i] = '\0';
+    
+    j = strlen(d);
+    for(i = 1 ; i >= 0 ; i--)
+    {
+        if(j == 0)
+        {
+            break;
+        } 
+        
+        date[i] = d[j-1]; 
+
+        if(j != 0) 
+        {
+            j--;
+        }
+    }
+
+    
+}
+
+/// star password a123b -> *****
+char* star_password()
+{
+    static char str[50] , ch;
+    int i = 0 ;
+
+    while(1)
+    {
+        ch = getch();
+
+        if(ch == '\n' || ch == '\r')
+        {
+            str[i] = '\0';
+            break;
+        } else if (ch == 8)
+        {
+            if(i > 0)
+            {
+                printf("\b \b");
+                i--;
+            }
+        } else
+        {
+            str[i] = ch ;
+            i++;
+            printf("*");
+        }
+    }
+    
+
+    return str ;
+}
 // ---------------------------------------------------------------------------
 // functions
 // ---------------------------------------------------------------------------
@@ -414,7 +480,7 @@ int main_menu()
     scanf("%d" , &choice);
     getchar();
     // limit user inputs
-    while(choice <= 0 || choice > 4)
+    while(choice <= 0 || choice > 4 )
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
@@ -475,12 +541,12 @@ void admin_login()
     }
 
     printf("\n\t\t\t\tPlease enter your password : ");
-    gets(admin_password);
-    while(strcmp(admin_user_name , "") == 0)
+    strcpy(admin_password , star_password());
+    while(strcmp(admin_password , "") == 0)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter your user name : ");
-        gets(admin_user_name);
+        printf("\n\t\t\t\tPlease enter your password : ");
+        strcpy(admin_password , star_password());
     }
 
     if(!strcmp(admin_user_name , "admin"))
@@ -609,28 +675,21 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease enter gender (male / female) : ");
     gets(department_head.gender);
 
+    while(strcmp(department_head.gender , "female") != 0 && strcmp(department_head.gender , "male") != 0)
+    {
+            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+            printf("\n\t\t\t\tPlease enter gender (male / female) : ");
+            gets(department_head.gender);
+    }
     if(!strcmp(department_head.gender , "female"))
     {
         strcpy(ch , "her");
     } else if(!strcmp(department_head.gender , "male"))
     {
         strcpy(ch , "his");
-    } else
-    {
-        while(strcmp(department_head.gender , "female") != 0 && strcmp(department_head.gender , "male") != 0)
-        {
-            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-            printf("\n\t\t\t\tPlease enter gender (male / female) : ");
-            gets(department_head.gender);
-        }
-        if(!strcmp(department_head.gender , "female"))
-        {
-             strcpy(ch , "her");
-        } else if(!strcmp(department_head.gender , "male"))
-        {
-            strcpy(ch , "his");
-        }
     }
+        
+    
 
     printf("\n\t\t\t\tPlease enter %s name : " , ch);
     gets(department_head.name);
@@ -655,7 +714,7 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease enter year of %s  start: " , ch);
     gets(department_head.start_date.year);
     //check year
-    while(check_number(department_head.start_date.year) == 0 || strlen(department_head.start_date.year) > 4)
+    while(check_number(department_head.start_date.year) == 0 || strlen(department_head.start_date.year) != 4)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter year of  %s  srtart: " , ch);
@@ -671,6 +730,7 @@ void admin_log_head()
         printf("\n\t\t\t\tPlease enter month of  %s  srtart: " , ch);
         gets(department_head.start_date.month);
     }
+    date(department_head.start_date.month);
 
     printf("\n\t\t\t\tPlease enter day of %s  atart: " , ch);
     gets(department_head.start_date.day);
@@ -681,6 +741,7 @@ void admin_log_head()
         printf("\n\t\t\t\tPlease enter day of  %s  srtart: " , ch);
         gets(department_head.start_date.day);
     }
+    date(department_head.start_date.day);
 
     printf("\n\t\t\t\tPlease enter %s group name : " , ch);
     gets(department_head.group_name);
@@ -710,9 +771,9 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease enter %s user name : " , ch);
     gets(department_head.user_name);
     printf("\n\t\t\t\tPlease enter %s password : " , ch);
-    gets(department_head.password);
+    strcpy(department_head.password , star_password());
     printf("\n\t\t\t\tPlease confirm %s password : " , ch);
-    gets(confirm_password);
+    strcpy(confirm_password , star_password());
 
     // check passwords matching
     if(!strcmp(department_head.password , confirm_password))
@@ -814,7 +875,7 @@ void admin_log_staff()
     printf("\n\t\t\t\tPlease enter year of %s  start: " , ch);
     gets(staff.start_date.year);
     //check year
-    while(check_number(staff.start_date.year) == 0 || strlen(staff.start_date.year) > 4)
+    while(check_number(staff.start_date.year) == 0 || strlen(staff.start_date.year) != 4)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter year of  %s  start: " , ch);
@@ -830,6 +891,7 @@ void admin_log_staff()
         printf("\n\t\t\t\tPlease enter month of  %s  start: " , ch);
         gets(staff.start_date.month);
     }
+    date(staff.start_date.month);
 
     printf("\n\t\t\t\tPlease enter day of %s  start: " , ch);
     gets(staff.start_date.day);
@@ -840,6 +902,7 @@ void admin_log_staff()
         printf("\n\t\t\t\tPlease enter day of  %s  start: " , ch);
         gets(staff.start_date.day);
     }
+    date(staff.start_date.day);
 
     printf("\n\t\t\t\tPlease enter %s rank : " , ch);
     gets(staff.rank);
@@ -859,9 +922,9 @@ void admin_log_staff()
     printf("\n\t\t\t\tPlease enter %s user name : " , ch);
     gets(staff.user_name);
     printf("\n\t\t\t\tPlease enter %s password : " , ch);
-    gets(staff.password);
+    strcpy(staff.password , star_password());
     printf("\n\t\t\t\tPlease confirm %s password : " , ch);
-    gets(confirm_password);
+    strcpy(confirm_password , star_password());
 
     // check passwords matching
     if(!strcmp(staff.password , confirm_password))
@@ -1407,12 +1470,12 @@ void department_head_login()
     }
 
     printf("\n\t\t\t\tPlease enter your password : ");
-    gets(head_password);
-    while(strcmp(head_user_name , "") == 0)
+    strcpy(head_password , star_password());
+    while(strcmp(head_password , "") == 0)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter your user name : ");
-        gets(head_user_name);
+        printf("\n\t\t\t\tPlease enter your password : ");
+        strcpy(head_password , star_password());
     }
 
     head_found = department_head_check_login(head_user_name , head_password);
@@ -2295,12 +2358,12 @@ void academic_staff_login()
     }
 
     printf("\n\t\t\t\tPlease enter your password : ");
-    gets(staff_password);
+    strcpy(staff_password , star_password());
     while(strcmp(staff_password , "") == 0)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter your password : ");
-        gets(staff_user_name);
+        strcpy(staff_password , star_password());
     }
 
     staff_found = academic_staff_check_login(staff_user_name , staff_password);
@@ -2557,7 +2620,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
         gets(student.family);
     }
 
-    printf("\n\t\t\t\tPlease enter %s fcode : " , ch);
+    printf("\n\t\t\t\tPlease enter %s code : " , ch);
     gets(student.code);
     // check code
     while(!check_number(student.code))
@@ -2570,12 +2633,13 @@ void academic_staff_log_student(struct academic_staff_information staff)
     printf("\n\t\t\t\tPlease enter %s birth year : " , ch);
     gets(student.birth_date.year);
     //check year
-    while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) > 4)
+    while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) != 4)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth year : " , ch);
         gets(student.birth_date.year);
     }
+    
 
     printf("\n\t\t\t\tPlease enter %s birth month : " , ch);
     gets(student.birth_date.month);
@@ -2586,6 +2650,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
         printf("\n\t\t\t\tPlease enter %s birth month : " , ch);
         gets(student.birth_date.month);
     }
+    date(student.birth_date.month);
 
     printf("\n\t\t\t\tPlease enter %s birth day : " , ch);
     gets(student.birth_date.day);
@@ -2596,6 +2661,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
         printf("\n\t\t\t\tPlease enter %s birth day : " , ch);
         gets(student.birth_date.day);
     }
+    date(student.birth_date.day);
 
     printf("\n\t\t\t\tPlease enter %s birth city : " , ch);
     gets(student.birth_city);
@@ -2653,7 +2719,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     fprintf(staff_file_ptr , "%s\n" , student.name);
     fprintf(staff_file_ptr , "%s\n" , student.family);
     fprintf(staff_file_ptr , "%s\n" , student.code);
-    fprintf(staff_file_ptr , "%4s/%1s/%1s\n" , student.birth_date.year ,student.birth_date.month , student.birth_date.day);
+    fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , student.birth_date.year ,student.birth_date.month , student.birth_date.day);
     fprintf(staff_file_ptr , "%s\n" , student.birth_city);
     fprintf(staff_file_ptr , "%s\n" , student.field_of_study);
     fprintf(staff_file_ptr , "%s\n" , student.id);
@@ -2971,7 +3037,7 @@ void academic_staff_edit_students_code_page(struct academic_staff_information st
 void academic_staff_edit_students_birth_date_page(struct academic_staff_information staff)
 {
     struct student_information student ;
-    char enter , date[50] ;
+    char enter , birth_date[50] ;
 
     system("cls");
 
@@ -2994,7 +3060,7 @@ void academic_staff_edit_students_birth_date_page(struct academic_staff_informat
     printf("\n\t\t\t\tPlease enter students year of birth : ");
     gets(student.birth_date.year);
     // check
-    while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) > 4)
+    while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) != 4)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students year of birth : ");
@@ -3010,6 +3076,7 @@ void academic_staff_edit_students_birth_date_page(struct academic_staff_informat
         printf("\n\t\t\t\tPlease enter students month of birth : ");
         gets(student.birth_date.month);
     }
+    date(student.birth_date.month);
 
     printf("\n\t\t\t\tPlease enter students day of birth : ");
     gets(student.birth_date.day);
@@ -3020,10 +3087,11 @@ void academic_staff_edit_students_birth_date_page(struct academic_staff_informat
         printf("\n\t\t\t\tPlease enter students day of birth : ");
         gets(student.birth_date.day);
     }
+    date(student.birth_date.day);
 
-    sprintf(date , "%s/%s/%s" , student.birth_date.year , student.birth_date.month , student.birth_date.day);
+    sprintf(birth_date , "%4s/%2s/%2s" , student.birth_date.year , student.birth_date.month , student.birth_date.day);
 
-    academic_staff_edit_students_information_list(student.id , "birth date" , date );
+    academic_staff_edit_students_information_list(student.id , "birth date" , birth_date );
 
     printf("\033[32m""\n\n\t\t\t\tstudents birth date edit successfully :)\n""\033[0m");
 
@@ -3409,7 +3477,107 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
 
             temp = temp->link ;
         }
-    } 
+    } else if(!strcmp(type , "birth city"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->birth_city , "");
+                strcpy(temp->birth_city , new);
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    } else if(!strcmp(type , "field of study"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->field_of_study , "");
+                strcpy(temp->field_of_study , new);
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    } else if(!strcmp(type , "phone number"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->phone_number , "");
+                strcpy(temp->phone_number , new);
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    } else if(!strcmp(type , "email"))
+    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->id , students_id))
+            {
+                strcpy(temp->email , "");
+                strcpy(temp->email , new);
+            }
+
+            fprintf(student_file_ptr , "%s\n" , temp->gender);
+            fprintf(student_file_ptr , "%s\n" , temp->name);
+            fprintf(student_file_ptr , "%s\n" , temp->family);
+            fprintf(student_file_ptr , "%s\n" , temp->code);
+            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+            fprintf(student_file_ptr , "%s\n" , temp->id);
+            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+            fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+            temp = temp->link ;
+        }
+    }
 
 
     fclose(staff_file_ptr);
