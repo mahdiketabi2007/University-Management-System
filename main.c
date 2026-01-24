@@ -55,6 +55,7 @@ struct lesson_information
     char number_of_unit[10];
     char type[50];
     char code[20];
+    char status[20];
     struct lesson_information *link;
 };
 
@@ -95,6 +96,7 @@ FILE *student_file_ptr = NULL ;
 FILE *score_file_ptr = NULL ;
 FILE *terminate_head_file_ptr = NULL ;
 FILE *terminate_staff_file_ptr = NULL ;
+FILE *deleted_lesson_file_ptr = NULL ;
 
 FILE *backup_head_file_ptr = NULL ;
 FILE *backup_staff_file_ptr = NULL ;
@@ -140,7 +142,7 @@ void department_head_menu(struct department_head_information head);
 void department_head_menu_choice(int head_choice , struct department_head_information head);
 void department_head_log_lesson( struct department_head_information head);
 void department_head_log_score( struct department_head_information head);
-void department_head_edit_score(struct department_head_information head);
+void department_head_edit_score_page(struct department_head_information head);
 void department_head_edit_score_list(char student_id[] , char lesson_code[] , char score[]);
 void department_head_edit_lesson(struct department_head_information head);
 void department_head_edit_lessons_list(char lesson_code[] , char type[] , char new[]);
@@ -148,7 +150,8 @@ void department_head_edit_lesson_menu_choice(int head_choice , struct department
 void department_head_edit_lessons_name_page(struct department_head_information head);
 void department_head_edit_lessons_number_of_unit_page(struct department_head_information head);
 void department_head_edit_lessons_type_page(struct department_head_information head);
-
+void department_head_delete_lesson_page(struct department_head_information head);
+void department_head_delete_lesson_list(char lesson_code[]);
 
 void academic_staff_login();
 int academic_staff_check_login(char staff_user_name[] , char staff_password[]);
@@ -253,6 +256,7 @@ struct department_head_information head_list(char head_user_name[])
     fscanf(head_file_ptr , "%s" , s->code);
     fscanf(head_file_ptr , "%s" , s->phone_number);
     fscanf(head_file_ptr , "%s" , s->email);
+    fscanf(head_file_ptr , "%s" , s->status);
     fscanf(head_file_ptr , "%s" , s->user_name);
     fscanf(head_file_ptr , "%s" , s->password);
 
@@ -264,6 +268,7 @@ struct department_head_information head_list(char head_user_name[])
     fscanf(head_file_ptr , "%s" , e->code);
     fscanf(head_file_ptr , "%s" , e->phone_number);
     fscanf(head_file_ptr , "%s" , e->email);
+    fscanf(head_file_ptr , "%s" , e->status);
     fscanf(head_file_ptr , "%s" , e->user_name);
     fscanf(head_file_ptr , "%s" , e->password);
 
@@ -284,6 +289,7 @@ struct department_head_information head_list(char head_user_name[])
         fscanf(head_file_ptr , "%s" , d->code);
         fscanf(head_file_ptr , "%s" , d->phone_number);
         fscanf(head_file_ptr , "%s" , d->email);
+        fscanf(head_file_ptr , "%s" , d->status);
         fscanf(head_file_ptr , "%s" , d->user_name);
         fscanf(head_file_ptr , "%s" , d->password);
 
@@ -470,6 +476,7 @@ char* star_password()
 
     return str ;
 }
+
 // ---------------------------------------------------------------------------
 // functions
 // ---------------------------------------------------------------------------
@@ -783,10 +790,15 @@ void admin_log_head()
 
     printf("\n\t\t\t\tPlease enter %s email : " , ch);
     gets(department_head.email);
+
+    strcpy(department_head.status , "active");
+
     printf("\n\t\t\t\tPlease enter %s user name : " , ch);
     gets(department_head.user_name);
+
     printf("\n\t\t\t\tPlease enter %s password : " , ch);
     strcpy(department_head.password , star_password());
+
     printf("\n\t\t\t\tPlease confirm %s password : " , ch);
     strcpy(confirm_password , star_password());
 
@@ -812,6 +824,7 @@ void admin_log_head()
     fprintf(head_file_ptr , "%s\n" , department_head.code);
     fprintf(head_file_ptr , "%s\n" , department_head.phone_number);
     fprintf(head_file_ptr , "%s\n" , department_head.email);
+    fprintf(head_file_ptr , "%s\n" , department_head.status);
     fprintf(head_file_ptr , "%s\n" , department_head.user_name);
     fprintf(head_file_ptr , "%s" , department_head.password);
     fclose(head_file_ptr);
@@ -1009,6 +1022,7 @@ void admin_observe_users()
     fscanf(head_file_ptr , "%s" , s->code);
     fscanf(head_file_ptr , "%s" , s->phone_number);
     fscanf(head_file_ptr , "%s" , s->email);
+    fscanf(head_file_ptr , "%s" , s->status);
     fscanf(head_file_ptr , "%s" , s->user_name);
     fscanf(head_file_ptr , "%s" , s->password);
 
@@ -1020,6 +1034,7 @@ void admin_observe_users()
     fscanf(head_file_ptr , "%s" , e->code);
     fscanf(head_file_ptr , "%s" , e->phone_number);
     fscanf(head_file_ptr , "%s" , e->email);
+    fscanf(head_file_ptr , "%s" , e->status);
     fscanf(head_file_ptr , "%s" , e->user_name);
     fscanf(head_file_ptr , "%s" , e->password);
 
@@ -1039,6 +1054,7 @@ void admin_observe_users()
         fscanf(head_file_ptr , "%s" , d->code);
         fscanf(head_file_ptr , "%s" , d->phone_number);
         fscanf(head_file_ptr , "%s" , d->email);
+        fscanf(head_file_ptr , "%s" , d->status);
         fscanf(head_file_ptr , "%s" , d->user_name);
         fscanf(head_file_ptr , "%s" , d->password);
 
@@ -1999,6 +2015,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     fscanf(head_file_ptr , "%s" , s->code);
     fscanf(head_file_ptr , "%s" , s->phone_number);
     fscanf(head_file_ptr , "%s" , s->email);
+    fscanf(head_file_ptr , "%s" , s->status);
     fscanf(head_file_ptr , "%s" , s->user_name);
     fscanf(head_file_ptr , "%s" , s->password);
 
@@ -2010,6 +2027,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
     fscanf(head_file_ptr , "%s" , e->code);
     fscanf(head_file_ptr , "%s" , e->phone_number);
     fscanf(head_file_ptr , "%s" , e->email);
+    fscanf(head_file_ptr , "%s" , e->status);
     fscanf(head_file_ptr , "%s" , e->user_name);
     fscanf(head_file_ptr , "%s" , e->password);
 
@@ -2030,6 +2048,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         fscanf(head_file_ptr , "%s" , d->code);
         fscanf(head_file_ptr , "%s" , d->phone_number);
         fscanf(head_file_ptr , "%s" , d->email);
+        fscanf(head_file_ptr , "%s" , d->status);
         fscanf(head_file_ptr , "%s" , d->user_name);
         fscanf(head_file_ptr , "%s" , d->password);
 
@@ -2134,7 +2153,7 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
         }
         case 3 :
         {
-            department_head_edit_score(head);
+            department_head_edit_score_page(head);
             break;
         }
         case 4 :
@@ -2144,7 +2163,7 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
         }
         case 5 :
         {
-
+            department_head_delete_lesson_page(head);
             break;
         }
         case 6 :
@@ -2221,6 +2240,7 @@ void department_head_log_lesson( struct department_head_information head)
         gets(lesson.code);
     }
 
+    strcpy(lesson.status , "available");
 
 
     // print lesson information in file
@@ -2229,7 +2249,8 @@ void department_head_log_lesson( struct department_head_information head)
     fprintf(lesson_file_ptr , "\n%s\n" , lesson.name);
     fprintf(lesson_file_ptr , "%s\n" , lesson.number_of_unit);
     fprintf(lesson_file_ptr , "%s\n" , lesson.type);
-    fprintf(lesson_file_ptr , "%s" , lesson.code);
+    fprintf(lesson_file_ptr , "%s\n" , lesson.code);
+    fprintf(lesson_file_ptr , "%s" , lesson.status);
 
 
 
@@ -2321,7 +2342,7 @@ void department_head_log_score( struct department_head_information head)
 }
 
 // department head edit score page
-void department_head_edit_score(struct department_head_information head)
+void department_head_edit_score_page(struct department_head_information head)
 {
     char   enter;
     struct student_score score;
@@ -2551,23 +2572,23 @@ void department_head_edit_lessons_name_page(struct department_head_information h
     printf("\n\t\t\t\t|              EDIT LESSONS NAME PAGE              |");
     printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
 
-    printf("\n\t\t\t\tPlease enter lessons code : ");;
+    printf("\n\t\t\t\tPlease enter lessons code : ");
     gets(lesson.code);
     // check
     while(!check_number(lesson.code))
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
-        printf("\n\t\t\t\tPlease enter lessons code : ");;
+        printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
 
-    printf("\n\t\t\t\tPlease enter lessons new name : ");;
+    printf("\n\t\t\t\tPlease enter lessons new name : ");
     gets(lesson.name);
     // check
     while(!check_string(lesson.name))
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
-        printf("\n\t\t\t\tPlease enter lessons new name : ");;
+        printf("\n\t\t\t\tPlease enter lessons new name : ");
         gets(lesson.name);
     }
 
@@ -2600,23 +2621,23 @@ void department_head_edit_lessons_number_of_unit_page(struct department_head_inf
     printf("\n\t\t\t\t|         EDIT LESSONS NUMBER OF UNIT PAGE         |");
     printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
 
-    printf("\n\t\t\t\tPlease enter lessons code : ");;
+    printf("\n\t\t\t\tPlease enter lessons code : ");
     gets(lesson.code);
     // check
     while(!check_number(lesson.code))
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
-        printf("\n\t\t\t\tPlease enter lessons code : ");;
+        printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
 
-    printf("\n\t\t\t\tPlease enter lessons new number of unit : ");;
+    printf("\n\t\t\t\tPlease enter lessons new number of unit : ");
     gets(lesson.number_of_unit);
     // check
     while(!check_number(lesson.number_of_unit))
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
-        printf("\n\t\t\t\tPlease enter lessons new number of unit : ");;
+        printf("\n\t\t\t\tPlease enter lessons new number of unit : ");
         gets(lesson.number_of_unit);
     }
 
@@ -2649,23 +2670,23 @@ void department_head_edit_lessons_type_page(struct department_head_information h
     printf("\n\t\t\t\t|              EDIT LESSONS TYPE PAGE              |");
     printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
 
-    printf("\n\t\t\t\tPlease enter lessons code : ");;
+    printf("\n\t\t\t\tPlease enter lessons code : ");
     gets(lesson.code);
     // check
     while(!check_number(lesson.code))
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
-        printf("\n\t\t\t\tPlease enter lessons code : ");;
+        printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
 
-    printf("\n\t\t\t\tPlease enter lessons new type : ");;
+    printf("\n\t\t\t\tPlease enter lessons new type : ");
     gets(lesson.type);
     // check
     while(!check_string(lesson.type))
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
-        printf("\n\t\t\t\tPlease enter lessons new type : ");;
+        printf("\n\t\t\t\tPlease enter lessons new type : ");
         gets(lesson.type);
     }
 
@@ -2699,11 +2720,13 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
     fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
     fscanf(lesson_file_ptr , "%s" , s->type);
     fscanf(lesson_file_ptr , "%s" , s->code);
+    fscanf(lesson_file_ptr , "%s" , s->status);
 
     fscanf(lesson_file_ptr , "%s" , e->name);
     fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
     fscanf(lesson_file_ptr , "%s" , e->type);
     fscanf(lesson_file_ptr , "%s" , e->code);
+    fscanf(lesson_file_ptr , "%s" , e->status);
 
     s->link = e ;
     e->link = NULL ;
@@ -2716,6 +2739,7 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
         fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
         fscanf(lesson_file_ptr , "%s" , d->type);
         fscanf(lesson_file_ptr , "%s" , d->code);
+        fscanf(lesson_file_ptr , "%s" , d->status);
 
         e->link = d ;
         e = d ;
@@ -2745,7 +2769,8 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
                 fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
             fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
             fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s" , temp->code);
+            fprintf(lesson_file_ptr , "%s\n" , temp->code);
+            fprintf(lesson_file_ptr , "%s" , temp->status);
 
             temp = temp->link ;
         }
@@ -2769,7 +2794,8 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
                 fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
             fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
             fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s" , temp->code);
+            fprintf(lesson_file_ptr , "%s\n" , temp->code);
+            fprintf(lesson_file_ptr , "%s" , temp->status);
 
             temp = temp->link ;
         }
@@ -2793,7 +2819,9 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
                 fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
             fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
             fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s" , temp->code);
+            fprintf(lesson_file_ptr , "%s\n" , temp->code);
+            fprintf(lesson_file_ptr , "%s" , temp->status);
+
 
             temp = temp->link ;
         }
@@ -2801,6 +2829,147 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
     }
 
     fclose(lesson_file_ptr);
+
+    // delete link list
+    temp2 = s ;
+    temp = s->link ;
+    while (temp != NULL)
+    {
+
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+
+    }
+}
+
+// delete lesson page
+void department_head_delete_lesson_page(struct department_head_information head)
+{
+    struct lesson_information lesson ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|                DELETE LESSON PAGE                |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter lessons code : ");
+    gets(lesson.code);
+    // check
+    while(!check_number(lesson.code))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons code : ");
+        gets(lesson.code);
+    }
+
+
+
+    department_head_delete_lesson_list(lesson.code);
+
+    printf("\033[32m""\n\n\t\t\t\tlesson delete successfully :)\n""\033[0m");
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n');
+}
+
+//dlete lesson
+void department_head_delete_lesson_list(char lesson_code[]) 
+{
+    struct lesson_information *s = malloc(sizeof(struct lesson_information));
+    struct lesson_information *e = malloc(sizeof(struct lesson_information));
+    struct lesson_information *d = NULL;
+    struct lesson_information *temp = NULL;
+    struct lesson_information *temp2 = NULL;
+
+    lesson_file_ptr = fopen("lessons_information.txt" , "r");
+
+    fscanf(lesson_file_ptr , "%s" , s->name);
+    fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
+    fscanf(lesson_file_ptr , "%s" , s->type);
+    fscanf(lesson_file_ptr , "%s" , s->code);
+    fscanf(lesson_file_ptr , "%s" , s->status);
+
+    fscanf(lesson_file_ptr , "%s" , e->name);
+    fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
+    fscanf(lesson_file_ptr , "%s" , e->type);
+    fscanf(lesson_file_ptr , "%s" , e->code);
+    fscanf(lesson_file_ptr , "%s" , e->status);
+
+    s->link = e ;
+    e->link = NULL ;
+
+    while(feof(lesson_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct lesson_information));
+
+        fscanf(lesson_file_ptr , "%s" , d->name);
+        fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , d->type);
+        fscanf(lesson_file_ptr , "%s" , d->code);
+        fscanf(lesson_file_ptr , "%s" , d->status);
+
+        e->link = d ;
+        e = d ;
+    }
+    e->link = NULL ;
+
+    fclose(lesson_file_ptr);
+
+
+    lesson_file_ptr = fopen("lessons_information.txt" , "w");
+
+    temp = s ;
+    while(temp != NULL)
+    {
+        if(!strcmp(temp->code , lesson_code))
+        {
+            strcpy(temp->status , "");
+            strcpy(temp->status , "unavailabe");
+        }
+
+        if(temp == s)
+            fprintf(lesson_file_ptr , "%s\n" , temp->name);
+        else
+            fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+        fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+        fprintf(lesson_file_ptr , "%s\n" , temp->type);
+        fprintf(lesson_file_ptr , "%s\n" , temp->code);
+        fprintf(lesson_file_ptr , "%s" , temp->status);
+        temp = temp->link ;
+    }
+
+    fclose(lesson_file_ptr);
+
+    deleted_lesson_file_ptr = fopen("deleted_lesson.txt" , "a");
+
+    temp = s ;
+    while(temp != NULL)
+    {
+        if(!strcmp(temp->code , lesson_code))
+        {
+            strcpy(temp->status , "");
+            strcpy(temp->status , "unavailabe");
+            if(temp == s)
+                fprintf(lesson_file_ptr , "%s\n" , temp->name);
+            else
+                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+            fprintf(lesson_file_ptr , "%s\n" , temp->type);
+            fprintf(lesson_file_ptr , "%s\n" , temp->code);
+            fprintf(lesson_file_ptr , "%s" , temp->code);
+        }
+
+        temp = temp->link ;
+    }
+
+    fclose(deleted_lesson_file_ptr);
 
     // delete link list
     temp2 = s ;
