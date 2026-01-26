@@ -109,6 +109,7 @@ FILE *backup_score_file_ptr = NULL ;
 
 int check_string(char str[]);
 int check_number(char numbr[]);
+int check_email(char email[]);
 struct department_head_information head_list(char head_user_name[]);
 struct academic_staff_information staff_list(char staff_user_name[]);
 void date(char date[]);
@@ -239,6 +240,52 @@ int check_number(char number[])
     {
         return 0 ;
     }
+}
+
+// check emails
+int check_email(char email[])
+{
+    int dot = 0 , at = 0 , len , i = 0 ; 
+
+    len = strlen(email);
+
+    if(len < 10)
+    {
+        return 0 ;
+    }
+
+    for(i = 0 ; i < len ; i++)
+    {
+        if(email[i] == '@')
+        {
+            at = i ;
+        }
+        if(email[i] == '.' && at == 1)
+        {
+            dot = i ;
+        }
+    }
+
+    if(at == 0 || dot == 0)
+    {
+        return 0 ;
+    } else if(email[at+10] != '\0')
+    {
+        return 0 ;
+    }
+
+    for(i = at+1 ; email[i] != '\0' ; i++)
+    {
+        email[i] = tolower(email[i]);
+    }
+
+    if(strstr(email , "gmail.com") == NULL)
+    {
+        return 0 ;
+    }
+
+    
+    return 1 ;
 }
 
 // link list of department head information -> return head name and family
@@ -416,7 +463,7 @@ struct academic_staff_information staff_list(char staff_user_name[])
 
 }
 
-// date  2 -> 02
+// date  1404/2/3 -> 1404/02/03
 void date(char date[] )
 {
     char d[10];
@@ -795,6 +842,13 @@ void admin_log_head()
 
     printf("\n\t\t\t\tPlease enter %s email : " , ch);
     gets(department_head.email);
+    // check email
+    while(!check_email(department_head.email))
+    {
+        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s email : " , ch);
+        gets(department_head.email);
+    }
 
     strcpy(department_head.status , "active");
 
