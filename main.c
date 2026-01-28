@@ -180,6 +180,12 @@ void department_head_passed_students_page(struct department_head_information hea
 void department_head_failed_students_page(struct department_head_information head);
 void department_head_conditional_students_list_take_lesson_page(struct department_head_information head);
 void department_head_conditional_students_list_take_lesson(char lesson_code[]);
+void department_head_setting_page(struct department_head_information head);
+void department_head_setting_menu_choice(int head_choice , struct department_head_information head);
+void department_head_setting(struct department_head_information head , char type[] , char new[]);
+void department_head_setting_password_page(struct department_head_information head);
+void department_head_setting_email_page(struct department_head_information head);
+void department_head_setting_phone_number_page(struct department_head_information head);
 
 void academic_staff_login();
 int academic_staff_check_login(char staff_user_name[] , char staff_password[]);
@@ -283,7 +289,7 @@ int check_email(char email[])
         {
             at = i ;
         }
-        if(email[i] == '.' && at == 1)
+        if(email[i] == '.' && at != 0)
         {
             dot = i ;
         }
@@ -993,7 +999,7 @@ void admin_log_head()
     }
     date(department_head.start_date.month);
 
-    printf("\n\t\t\t\tPlease enter day of %s  atart: " , ch);
+    printf("\n\t\t\t\tPlease enter day of %s  start: " , ch);
     gets(department_head.start_date.day);
     //check day
     while(check_number(department_head.start_date.day) == 0 || strlen(department_head.start_date.day) > 2)
@@ -2843,7 +2849,7 @@ void department_head_menu_choice(int head_choice , struct department_head_inform
         }
         case 7 :
         {
-
+            department_head_setting_page(head);
             break;
         }
         case 8 :
@@ -5432,6 +5438,317 @@ void department_head_conditional_students_list_take_lesson(char lesson_code[])
         temp = temp->link;
 
     } 
+}
+
+// department head setting page
+void department_head_setting_page(struct department_head_information head)
+{
+    int head_choice = 0 ;
+    char c[100];
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|           DEPARTMENT HEAD SETTING PAGE           |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\t1- Edit password");
+    printf("\n\t\t\t\t2- Edit email");
+    printf("\n\t\t\t\t3- Edit phone number");
+    printf("\n\t\t\t\t4- Exit");
+    
+
+    printf("\n\t\t\t\tPlease enter your choice : ");
+    scanf("%d" , &head_choice);
+    getchar();
+    // limit department head inputs
+    while(head_choice <= 0 || head_choice > 4)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter your choice : ");
+        scanf("%d" , &head_choice);
+        gets(c);
+    }
+
+    department_head_setting_menu_choice(head_choice , head);
+}
+
+// switch structure fo head choice in user setting page
+void department_head_setting_menu_choice(int head_choice , struct department_head_information head)
+{
+    switch(head_choice)
+    {
+        case 1 : 
+        {
+            department_head_setting_password_page(head);
+            break ;
+        }
+        case 2 : 
+        {
+            department_head_setting_email_page(head);
+            break ;
+        }
+        case 3 : 
+        {
+            department_head_setting_phone_number_page(head);
+            break ;
+        }
+        case 4 : 
+        {
+            department_head_menu(head);
+            break;
+        }
+    }
+}
+
+// department head setting page (password)
+void department_head_setting_password_page(struct department_head_information head)
+{
+    struct department_head_information hd ;
+    char enter , confirm_password[50] ;
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|        EDIT DEPARTMENT HEAD PASSEORD PAGE        |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter new password : ");
+    gets(hd.password);
+
+    printf("\n\t\t\t\tPlease confirm new password : ");
+    gets(confirm_password);
+    // check
+    if(!strcmp(hd.password , confirm_password))
+    {
+        department_head_setting(head , "password" , hd.password);
+        printf("\033[32m""\n\t\t\t\tYour password edit successfully :)\n""\033[0m");
+    } else 
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! passwords not matched .\n""\033[0m");
+    }
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        department_head_menu(head);
+    }
+
+}
+
+// department head setting page (email)
+void department_head_setting_email_page(struct department_head_information head)
+{
+    struct department_head_information hd ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|         EDIT DEPARTMENT HEAD EMAIL PAGE          |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter new email : ");
+    gets(hd.email);
+    //check
+    while(!check_email(hd.email))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter new email : ");
+        gets(hd.email);
+    }
+    
+    
+    department_head_setting(head , "email" , hd.email);
+        
+    printf("\033[32m""\n\t\t\t\tYour email edit successfully :)\n""\033[0m");
+    
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        department_head_menu(head);
+    }
+}
+
+// department head setting page (phone number)
+void department_head_setting_phone_number_page(struct department_head_information head)
+{
+    struct department_head_information hd ;
+    char enter ;
+
+    system("cls");
+
+    printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
+
+    printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
+    printf("\n\t\t\t\t|      EDIT DEPARTMENT HEAD PPHONE NUMBER PAGE     |");
+    printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
+
+    printf("\n\t\t\t\tPlease enter new phone number : ");
+    gets(hd.phone_number);
+    //check
+    while(!check_number(hd.phone_number))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\n\t\t\t\tPlease enter new phone number : ");
+        gets(hd.phone_number);
+    }
+    
+    
+    department_head_setting(head , "phone number" , hd.phone_number);
+        
+    printf("\033[32m""\n\t\t\t\tYour phone number edit successfully :)\n""\033[0m");
+    
+
+    // return to department head page menu
+    printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
+    enter = getchar();
+    if(enter == '\n')
+    {
+        department_head_menu(head);
+    }
+}
+
+//  department head setting
+void department_head_setting(struct department_head_information head , char type[] , char new[])
+{
+    struct department_head_information *s = malloc(sizeof(struct department_head_information));
+    struct department_head_information *e = malloc(sizeof(struct department_head_information));
+    struct department_head_information *d = NULL;
+    struct department_head_information *temp = NULL;
+    struct department_head_information *temp2 = NULL;
+
+    head_file_ptr = fopen("department_head_information.txt" , "r");
+
+    fscanf(head_file_ptr , "%s" , s->gender);
+    fscanf(head_file_ptr , "%s" , s->name);
+    fscanf(head_file_ptr , "%s" , s->family);
+    fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+    fscanf(head_file_ptr , "%s" , s->group_name);
+    fscanf(head_file_ptr , "%s" , s->code);
+    fscanf(head_file_ptr , "%s" , s->phone_number);
+    fscanf(head_file_ptr , "%s" , s->email);
+    fscanf(head_file_ptr , "%s" , s->status);
+    fscanf(head_file_ptr , "%s" , s->user_name);
+    fscanf(head_file_ptr , "%s" , s->password);
+
+    fscanf(head_file_ptr , "%s" , e->gender);
+    fscanf(head_file_ptr , "%s" , e->name);
+    fscanf(head_file_ptr , "%s" , e->family);
+    fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+    fscanf(head_file_ptr , "%s" , e->group_name);
+    fscanf(head_file_ptr , "%s" , e->code);
+    fscanf(head_file_ptr , "%s" , e->phone_number);
+    fscanf(head_file_ptr , "%s" , e->email);
+    fscanf(head_file_ptr , "%s" , e->status);
+    fscanf(head_file_ptr , "%s" , e->user_name);
+    fscanf(head_file_ptr , "%s" , e->password);
+
+    s->link = e ;
+    e->link = NULL;
+
+
+    // make link list of head department information
+    while(feof(head_file_ptr) == 0)
+    {
+        d = malloc(sizeof(struct department_head_information));
+
+        fscanf(head_file_ptr , "%s" , d->gender);
+        fscanf(head_file_ptr , "%s" , d->name);
+        fscanf(head_file_ptr , "%s" , d->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+        fscanf(head_file_ptr , "%s" , d->group_name);
+        fscanf(head_file_ptr , "%s" , d->code);
+        fscanf(head_file_ptr , "%s" , d->phone_number);
+        fscanf(head_file_ptr , "%s" , d->email);
+        fscanf(head_file_ptr , "%s" , d->status);
+        fscanf(head_file_ptr , "%s" , d->user_name);
+        fscanf(head_file_ptr , "%s" , d->password);
+
+        e->link = d ;
+        e = d ;
+
+    }
+    e->link = NULL ;
+
+    fclose(head_file_ptr);
+
+    temp = s ;
+    while(temp != NULL)
+    {
+        if(!strcmp(type , "password"))
+        {
+            if(!strcmp(temp->user_name , head.user_name))
+            {
+                strcpy(temp->password , "");
+                strcpy(temp->password , new );
+            }
+        } else if(!strcmp(type , "email"))
+        {
+            if(!strcmp(temp->user_name , head.user_name))
+            {
+                strcpy(temp->email , "");
+                strcpy(temp->email , new );
+            }
+        }  else if(!strcmp(type , "phone number"))
+        {
+            if(!strcmp(temp->user_name , head.user_name))
+            {
+                strcpy(temp->phone_number , "");
+                strcpy(temp->phone_number , new );
+            }
+        }
+        temp = temp->link ;
+    }
+
+    head_file_ptr = fopen("department_head_information.txt" , "w");
+
+    temp = s ;
+    while(temp != NULL)
+    {   
+        if(temp == s)
+            fprintf(head_file_ptr , "%s\n" , temp->gender);
+        else
+            fprintf(head_file_ptr , "\n%s\n" , temp->gender);
+        fprintf(head_file_ptr , "%s\n" , temp->name);
+        fprintf(head_file_ptr , "%s\n" , temp->family);
+        fprintf(head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+        fprintf(head_file_ptr , "%s\n" , temp->group_name);
+        fprintf(head_file_ptr , "%s\n" , temp->code);
+        fprintf(head_file_ptr , "%s\n" , temp->phone_number);
+        fprintf(head_file_ptr , "%s\n" , temp->email);
+        fprintf(head_file_ptr , "%s\n" , temp->status);
+        fprintf(head_file_ptr , "%s\n" , temp->user_name);
+        fprintf(head_file_ptr , "%s" , temp->password);
+
+        temp = temp->link ;
+        
+    }
+
+    fclose(head_file_ptr);
+
+    // delete link list
+    temp2 = s ;
+    temp = s->link ;
+    while (temp != NULL)
+    {
+
+        free(temp2);
+        temp2 = temp ;
+        temp = temp->link;
+
+    }
 }
 
 // login page for academic staff
