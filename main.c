@@ -528,6 +528,7 @@ struct student_information student_list(char student_name[] , char student_famil
     struct student_information *d = NULL;
     struct student_information *temp = NULL;
     struct student_information *temp2 = NULL;
+    struct student_information *x;
 
     student_file_ptr = fopen("student_information.txt" , "r");
 
@@ -588,15 +589,18 @@ struct student_information student_list(char student_name[] , char student_famil
         {
            if(!strcmp(temp->family , student_family))
            {
-                 return *temp;
+                x = temp ;
+                break;
            }
         } else if (!strcmp(temp->id , student_id))
         {
-            return *temp;
+            x = temp ;
+            break;
         }
         temp = temp->link ;
     }
 
+    return *x ;
 
     // delete link list
     temp2 = s ;
@@ -622,6 +626,7 @@ struct lesson_information lesson_list(char lesson_code[])
     struct lesson_information *d = NULL;
     struct lesson_information *temp = NULL;
     struct lesson_information *temp2 = NULL;
+    struct lesson_information *x ;
 
     lesson_file_ptr = fopen("lessons_information.txt" , "r");
 
@@ -665,11 +670,12 @@ struct lesson_information lesson_list(char lesson_code[])
     {
         if (!strcmp(temp->code , lesson_code))
         {
-            return *temp;
+            x = temp;
         }
         temp = temp->link ;
     }
 
+    return *x ;
 
     // delete link list
     temp2 = s ;
@@ -1043,7 +1049,7 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease enter %s code : " , ch);
     gets(department_head.code);
     // check code
-    while(!check_number(department_head.code))
+    while(!check_number(department_head.code) && strlen(department_head.code) != 10)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter day of  %s  code: " , ch);
@@ -1053,7 +1059,7 @@ void admin_log_head()
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
     gets(department_head.phone_number);
     //check phone number
-    while(check_number(department_head.phone_number) == 0 || strlen(department_head.phone_number) > 11)
+    while(check_number(department_head.phone_number) == 0 || strlen(department_head.phone_number) != 11)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
@@ -1224,7 +1230,7 @@ void admin_log_staff()
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
     gets(staff.phone_number);
     //check phone number
-    while(check_number(staff.phone_number) == 0 || strlen(staff.phone_number) > 11)
+    while(check_number(staff.phone_number) == 0 || strlen(staff.phone_number) != 11)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
@@ -2950,7 +2956,7 @@ void department_head_log_lesson( struct department_head_information head)
     printf("\n\t\t\t\tPlease enter lessons code : " );
     gets(lesson.code);
     //check
-    while(check_number(lesson.code) == 0 )
+    while(check_number(lesson.code) == 0 && lesson_list(lesson.code).name[0] != '\0' && lesson_list(lesson.code).number_of_unit[0] != '\0')
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : " );
@@ -5633,13 +5639,13 @@ void department_head_setting_phone_number_page(struct department_head_informatio
     printf("%c department head name :  %s %s\n" , 240 , head.name , head.family);
 
     printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
-    printf("\n\t\t\t\t|      EDIT DEPARTMENT HEAD PPHONE NUMBER PAGE     |");
+    printf("\n\t\t\t\t|      EDIT DEPARTMENT HEAD PHONE NUMBER PAGE      |");
     printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
 
     printf("\n\t\t\t\tPlease enter new phone number : ");
     gets(hd.phone_number);
     //check
-    while(!check_number(hd.phone_number))
+    while(!check_number(hd.phone_number) && strlen(hd.phone_number) != 11)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
         printf("\n\t\t\t\tPlease enter new phone number : ");
@@ -6082,7 +6088,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     printf("\n\t\t\t\tPlease enter %s code : " , ch);
     gets(student.code);
     // check code
-    while(!check_number(student.code))
+    while(!check_number(student.code) && strlen(student.code) != 10)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s code : " , ch);
@@ -6145,7 +6151,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     printf("\n\t\t\t\tPlease enter %s id : " , ch);
     gets(student.id);
     //check
-    while(check_number(student.id) == 0)
+    while(check_number(student.id) == 0 && student_list("" , "" ,student.id).name[0] != '\0' && student_list("" , "" ,student.id).family[0] != '\0')
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s id : " , ch);
@@ -6157,7 +6163,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
     gets(student.phone_number);
     //check phone number
-    while(check_number(student.phone_number) == 0 || strlen(student.phone_number) > 11)
+    while(check_number(student.phone_number) == 0 || strlen(student.phone_number) != 11)
     {
         printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
@@ -6479,7 +6485,7 @@ void academic_staff_edit_students_code_page(struct academic_staff_information st
     printf("\n\t\t\t\tPlease enter students code : ");
     gets(student.code);
     // check
-    while(check_number(student.code) == 0)
+    while(check_number(student.code) == 0 && strlen(student.code) != 10)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students code : ");
@@ -6694,7 +6700,7 @@ void academic_staff_edit_students_phone_number_page(struct academic_staff_inform
     printf("\n\t\t\t\tPlease enter students phone number : ");
     gets(student.phone_number);
     // check
-    while(check_number(student.phone_number) == 0)
+    while(check_number(student.phone_number) == 0 && strlen(student.phone_number) != 11)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students phone number : ");
@@ -7297,13 +7303,13 @@ void academic_staff_setting_phone_number_page(struct academic_staff_information 
     printf("%c academic staff name :  %s %s\n" , 240 , staff.name , staff.family);
 
     printf("\033[34m""\n\t\t\t\t+--------------------------------------------------+");
-    printf("\n\t\t\t\t|      EDIT ACADEMIC STAFF PPHONE NUMBER PAGE      |");
+    printf("\n\t\t\t\t|      EDIT ACADEMIC STAFF PHONE NUMBER PAGE       |");
     printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
 
     printf("\n\t\t\t\tPlease enter new phone number : ");
     gets(st.phone_number);
     //check
-    while(!check_number(st.phone_number))
+    while(!check_number(st.phone_number) && strlen(st.phone_number) != 11)
     {
         printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
         printf("\n\t\t\t\tPlease enter new phone number : ");
