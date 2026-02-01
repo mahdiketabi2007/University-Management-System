@@ -110,6 +110,7 @@ FILE *backup_score_file_ptr = NULL ;
 int check_string(char str[]);
 int check_number(char numbr[]);
 int check_email(char email[]);
+int check_password(char password[]);
 struct department_head_information head_list(char head_user_name[]);
 struct academic_staff_information staff_list(char staff_user_name[]);
 struct student_information student_list(char student_name[] , char student_family[]  , char student_id[]);
@@ -331,6 +332,35 @@ int check_email(char email[])
 
     
     return 1 ;
+}
+
+// check password
+int check_password(char password[])
+{
+    int alpha = 0 , num = 0 , ch = 0 , i = 0 ;
+
+    for(i = 0 ; i < strlen(password) ; i++)
+    {
+        if(isdigit(password[i]) == 1)
+        {
+            num = 1 ;
+        } else if (isalpha(password[i]) == 1 || isalpha(password[i]) == 2)
+        {
+            alpha = 1 ;
+        } else if(password[i] == '!' || password[i] == '@' || password[i] == '#' || password[i] == '$' || password[i] == '%' || password[i] == '^' || password[i] == '&' 
+                 || password[i] == '*' || password[i] == '?' || password[i] == '-' || password[i] == '+' || password[i] == '/' )
+        {
+            ch = 1 ;
+        }
+    }
+
+    if(alpha == 1 && num == 1 && ch == 1)
+    {
+        return 1 ;
+    } else
+    {
+        return 0 ;
+    }
 }
 
 // link list of department head information -> return head name and family
@@ -1090,6 +1120,12 @@ void admin_log_head()
 
     printf("\n\t\t\t\tPlease enter %s password : " , ch);
     strcpy(department_head.password , star_password());
+    while(!check_password(department_head.password))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s password : " , ch);
+        strcpy(department_head.password , star_password());
+    }
 
     printf("\n\n\t\t\t\tPlease confirm %s password : " , ch);
     strcpy(confirm_password , star_password());
@@ -1260,6 +1296,12 @@ void admin_log_staff()
 
     printf("\n\t\t\t\tPlease enter %s password : " , ch);
     strcpy(staff.password , star_password());
+    while(!check_password(staff.password))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s password : " , ch);
+        strcpy(staff.password , star_password());
+    }
 
     printf("\n\n\t\t\t\tPlease confirm %s password : " , ch);
     strcpy(confirm_password , star_password());
@@ -5565,7 +5607,13 @@ void department_head_setting_password_page(struct department_head_information he
     printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
 
     printf("\n\t\t\t\tPlease enter new password : ");
-    gets(hd.password);
+    strcpy(hd.password , star_password());
+    while(!check_password(hd.password))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter new password : ");
+        strcpy(hd.password , star_password());
+    }
 
     printf("\n\t\t\t\tPlease confirm new password : ");
     gets(confirm_password);
@@ -7228,8 +7276,15 @@ void academic_staff_setting_password_page(struct academic_staff_information staf
     printf("\n\t\t\t\t|        EDIT ACADEMIC STAFF PASSEORD PAGE         |");
     printf("\n\t\t\t\t+--------------------------------------------------+\n\n""\033[0m");
 
-    printf("\n\t\t\t\tPlease enter new password : ");
-    gets(st.password);
+    printf("\n\t\t\t\tPlease enter new password : " );
+    strcpy(st.password , star_password());
+    while(!check_password(st.password))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\n\t\t\t\tPlease enter new password : ");
+        strcpy(st.password , star_password());
+    }
+
 
     printf("\n\t\t\t\tPlease confirm new password : ");
     gets(confirm_password);
