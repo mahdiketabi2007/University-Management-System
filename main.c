@@ -4,7 +4,7 @@
 #include<ctype.h>
 #include<time.h>
 #include<conio.h>
-//--------------------- admin username = admin |   admin password = admin@12 ---------------------
+//--------------------- admin username = admin |  admin password = admin@12 ---------------------
 
 // ---------------------------------------------------------------------------
 // structs and variables
@@ -111,8 +111,8 @@ int check_string(char str[]);
 int check_number(char numbr[]);
 int check_email(char email[]);
 int check_password(char password[]);
-struct department_head_information head_list(char head_user_name[]);
-struct academic_staff_information staff_list(char staff_user_name[]);
+struct department_head_information head_list(char name[] , char family[] ,char head_user_name[]);
+struct academic_staff_information staff_list(char name[] , char family[] ,char staff_user_name[]);
 struct student_information student_list(char student_name[] , char student_family[]  , char student_id[]);
 struct lesson_information lesson_list(char lesson_code[]);
 void date(char date[]);
@@ -241,6 +241,12 @@ int check_string(char str[])
 {
     int len = 0 , correct_name = 1 , i = 0;
     len = strlen(str);
+
+    if(strlen(str) == 0)
+    {
+        return 0;
+    }
+
     for(i = 0 ; i < len ; i++)
     {
         if(isalpha(str[i]) == 1 || isalpha(str[i]) == 2)
@@ -267,6 +273,12 @@ int check_number(char number[])
 {
     int len = 0 , correct_number = 1 , i = 0;
     len = strlen(number);
+
+    if(strlen(number) == 0)
+    {
+        return 0;
+    }
+
     for(i = 0 ; i < len ; i++)
     {
         if(isdigit(number[i]) == 1)
@@ -339,6 +351,11 @@ int check_password(char password[])
 {
     int alpha = 0 , num = 0 , ch = 0 , i = 0 ;
 
+    if(strlen(password) == 0)
+    {
+        return 0;
+    }
+
     for(i = 0 ; i < strlen(password) ; i++)
     {
         if(isdigit(password[i]) == 1)
@@ -364,359 +381,400 @@ int check_password(char password[])
 }
 
 // link list of department head information -> return head name and family
-struct department_head_information head_list(char head_user_name[])
+struct department_head_information head_list(char name[] , char family[] ,char head_user_name[])
 {
-    struct department_head_information *s = malloc(sizeof(struct department_head_information));
-    struct department_head_information *e = malloc(sizeof(struct department_head_information));
-    struct department_head_information *d = NULL;
-    struct department_head_information *temp = NULL;
-    struct department_head_information *temp2 = NULL;
-    struct department_head_information *x ;
-
     head_file_ptr = fopen("department_head_information.txt" , "r");
 
-    fscanf(head_file_ptr , "%s" , s->gender);
-    fscanf(head_file_ptr , "%s" , s->name);
-    fscanf(head_file_ptr , "%s" , s->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(head_file_ptr , "%s" , s->group_name);
-    fscanf(head_file_ptr , "%s" , s->code);
-    fscanf(head_file_ptr , "%s" , s->phone_number);
-    fscanf(head_file_ptr , "%s" , s->email);
-    fscanf(head_file_ptr , "%s" , s->status);
-    fscanf(head_file_ptr , "%s" , s->user_name);
-    fscanf(head_file_ptr , "%s" , s->password);
-
-    fscanf(head_file_ptr , "%s" , e->gender);
-    fscanf(head_file_ptr , "%s" , e->name);
-    fscanf(head_file_ptr , "%s" , e->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(head_file_ptr , "%s" , e->group_name);
-    fscanf(head_file_ptr , "%s" , e->code);
-    fscanf(head_file_ptr , "%s" , e->phone_number);
-    fscanf(head_file_ptr , "%s" , e->email);
-    fscanf(head_file_ptr , "%s" , e->status);
-    fscanf(head_file_ptr , "%s" , e->user_name);
-    fscanf(head_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL;
-
-
-    // make link list of head department information
-    while(feof(head_file_ptr) == 0)
+    if(head_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct department_head_information));
-
-        fscanf(head_file_ptr , "%s" , d->gender);
-        fscanf(head_file_ptr , "%s" , d->name);
-        fscanf(head_file_ptr , "%s" , d->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(head_file_ptr , "%s" , d->group_name);
-        fscanf(head_file_ptr , "%s" , d->code);
-        fscanf(head_file_ptr , "%s" , d->phone_number);
-        fscanf(head_file_ptr , "%s" , d->email);
-        fscanf(head_file_ptr , "%s" , d->status);
-        fscanf(head_file_ptr , "%s" , d->user_name);
-        fscanf(head_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(head_file_ptr);
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else 
     {
-        if(!strcmp(temp->user_name , head_user_name))
-        { 
-            x = temp ; 
-            break;
+        struct department_head_information *s = malloc(sizeof(struct department_head_information));
+        struct department_head_information *e = malloc(sizeof(struct department_head_information));
+        struct department_head_information *d = NULL;
+        struct department_head_information *temp = NULL;
+        struct department_head_information *temp2 = NULL;
+        struct department_head_information *x ;
+
+        fscanf(head_file_ptr , "%s" , s->gender);
+        fscanf(head_file_ptr , "%s" , s->name);
+        fscanf(head_file_ptr , "%s" , s->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , "%s" , s->group_name);
+        fscanf(head_file_ptr , "%s" , s->code);
+        fscanf(head_file_ptr , "%s" , s->phone_number);
+        fscanf(head_file_ptr , "%s" , s->email);
+        fscanf(head_file_ptr , "%s" , s->status);
+        fscanf(head_file_ptr , "%s" , s->user_name);
+        fscanf(head_file_ptr , "%s" , s->password);
+
+        fscanf(head_file_ptr , "%s" , e->gender);
+        fscanf(head_file_ptr , "%s" , e->name);
+        fscanf(head_file_ptr , "%s" , e->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , "%s" , e->group_name);
+        fscanf(head_file_ptr , "%s" , e->code);
+        fscanf(head_file_ptr , "%s" , e->phone_number);
+        fscanf(head_file_ptr , "%s" , e->email);
+        fscanf(head_file_ptr , "%s" , e->status);
+        fscanf(head_file_ptr , "%s" , e->user_name);
+        fscanf(head_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL;
+
+
+        // make link list of head department information
+        while(feof(head_file_ptr) == 0)
+        {
+            d = malloc(sizeof(struct department_head_information));
+
+            fscanf(head_file_ptr , "%s" , d->gender);
+            fscanf(head_file_ptr , "%s" , d->name);
+            fscanf(head_file_ptr , "%s" , d->family);
+            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , "%s" , d->group_name);
+            fscanf(head_file_ptr , "%s" , d->code);
+            fscanf(head_file_ptr , "%s" , d->phone_number);
+            fscanf(head_file_ptr , "%s" , d->email);
+            fscanf(head_file_ptr , "%s" , d->status);
+            fscanf(head_file_ptr , "%s" , d->user_name);
+            fscanf(head_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+
         }
+        e->link = NULL ;
+
+        fclose(head_file_ptr);
+
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->user_name , head_user_name))
+            { 
+                x = temp ; 
+                break;
+            } else if (!strcmp(temp->name , name))
+            {
+                if(!strcmp(temp->family, family))
+                {
+                    x = temp ; 
+                    break;
+                }
+            }
        
-        temp = temp->link ;
+            temp = temp->link ;
+        }
+
+
+        return *x ;
+
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     }
-
-
-    return *x ;
-       
-    
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
 }
 
 // link list of academic staff information -> return staff name and family
-struct academic_staff_information staff_list(char staff_user_name[])
+struct academic_staff_information staff_list(char name[] , char family[] ,char staff_user_name[])
 {
-    struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *d = NULL;
-    struct academic_staff_information *temp = NULL;
-    struct academic_staff_information *temp2 = NULL;
-    struct academic_staff_information *x ;
-
     staff_file_ptr = fopen("staff_information.txt" , "r");
 
-    fscanf(staff_file_ptr , "%s" , s->gender);
-    fscanf(staff_file_ptr , "%s" , s->name);
-    fscanf(staff_file_ptr , "%s" , s->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(staff_file_ptr , "%s" , s->rank);
-    fscanf(staff_file_ptr , "%s" , s->phone_number);
-    fscanf(staff_file_ptr , "%s" , s->email);
-    fscanf(staff_file_ptr , "%s" , s->status);
-    fscanf(staff_file_ptr , "%s" , s->user_name );
-    fscanf(staff_file_ptr , "%s" , s->password);
-
-    fscanf(staff_file_ptr , "%s" , e->gender);
-    fscanf(staff_file_ptr , "%s" , e->name);
-    fscanf(staff_file_ptr , "%s" , e->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(staff_file_ptr , "%s" , e->rank);
-    fscanf(staff_file_ptr , "%s" , e->phone_number);
-    fscanf(staff_file_ptr , "%s" , e->email);
-    fscanf(staff_file_ptr , "%s" , e->status);
-    fscanf(staff_file_ptr , "%s" , e->user_name);
-    fscanf(staff_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL;
-
-
-    // make link list of staff  information
-    while(feof(staff_file_ptr) == 0)
+    if(staff_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct academic_staff_information));
-
-        fscanf(staff_file_ptr , "%s" , d->gender);
-        fscanf(staff_file_ptr , "%s" , d->name);
-        fscanf(staff_file_ptr , "%s" , d->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(staff_file_ptr , "%s" , d->rank);
-        fscanf(staff_file_ptr , "%s" , d->phone_number);
-        fscanf(staff_file_ptr , "%s" , d->email);
-        fscanf(staff_file_ptr , "%s" , d->status);
-        fscanf(staff_file_ptr , "%s" , d->user_name);
-        fscanf(staff_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(staff_file_ptr);
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(temp->user_name , staff_user_name))
-        { 
-            x = temp ; 
-            break;
+
+        struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *d = NULL;
+        struct academic_staff_information *temp = NULL;
+        struct academic_staff_information *temp2 = NULL;
+        struct academic_staff_information *x ;
+
+        fscanf(staff_file_ptr , "%s" , s->gender);
+        fscanf(staff_file_ptr , "%s" , s->name);
+        fscanf(staff_file_ptr , "%s" , s->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(staff_file_ptr , "%s" , s->rank);
+        fscanf(staff_file_ptr , "%s" , s->phone_number);
+        fscanf(staff_file_ptr , "%s" , s->email);
+        fscanf(staff_file_ptr , "%s" , s->status);
+        fscanf(staff_file_ptr , "%s" , s->user_name );
+        fscanf(staff_file_ptr , "%s" , s->password);
+
+        fscanf(staff_file_ptr , "%s" , e->gender);
+        fscanf(staff_file_ptr , "%s" , e->name);
+        fscanf(staff_file_ptr , "%s" , e->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(staff_file_ptr , "%s" , e->rank);
+        fscanf(staff_file_ptr , "%s" , e->phone_number);
+        fscanf(staff_file_ptr , "%s" , e->email);
+        fscanf(staff_file_ptr , "%s" , e->status);
+        fscanf(staff_file_ptr , "%s" , e->user_name);
+        fscanf(staff_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL;
+
+
+        // make link list of staff  information
+        while(feof(staff_file_ptr) == 0)
+        {
+            d = malloc(sizeof(struct academic_staff_information));
+
+            fscanf(staff_file_ptr , "%s" , d->gender);
+            fscanf(staff_file_ptr , "%s" , d->name);
+            fscanf(staff_file_ptr , "%s" , d->family);
+            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(staff_file_ptr , "%s" , d->rank);
+            fscanf(staff_file_ptr , "%s" , d->phone_number);
+            fscanf(staff_file_ptr , "%s" , d->email);
+            fscanf(staff_file_ptr , "%s" , d->status);
+            fscanf(staff_file_ptr , "%s" , d->user_name);
+            fscanf(staff_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+
         }
-       
-        temp = temp->link ;
+        e->link = NULL ;
+
+        fclose(staff_file_ptr);
+
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->user_name , staff_user_name))
+            { 
+                x = temp ; 
+                break;
+            } else if(!strcmp(temp->name , name))
+            {
+                if(!strcmp(temp->family , family))
+                {
+                    x = temp ; 
+                    break;
+                }
+            }
+        
+            temp = temp->link ;
+        }
+
+
+
+        return *x ;
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     }
-
-    
-    
-    return *x ;
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
 }
 
 // link list of student information
 struct student_information student_list(char student_name[] , char student_family[] , char student_id[])
 {
-    struct student_information *s = malloc(sizeof(struct student_information));
-    struct student_information *e = malloc(sizeof(struct student_information));
-    struct student_information *d = NULL;
-    struct student_information *temp = NULL;
-    struct student_information *temp2 = NULL;
-    struct student_information *x;
 
     student_file_ptr = fopen("student_information.txt" , "r");
 
-    fscanf(student_file_ptr , "%s" , s->gender);
-    fscanf(student_file_ptr , "%s" , s->name);
-    fscanf(student_file_ptr , "%s" , s->family);
-    fscanf(student_file_ptr , "%s" , s->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
-    fscanf(student_file_ptr , "%s" , s->birth_city);
-    fscanf(student_file_ptr , "%s" , s->field_of_study);
-    fscanf(student_file_ptr , "%s" , s->id);
-    fscanf(student_file_ptr , "%s" , s->phone_number);
-    fscanf(student_file_ptr , "%s" , s->email );
-
-    fscanf(student_file_ptr , "%s" , e->gender);
-    fscanf(student_file_ptr , "%s" , e->name);
-    fscanf(student_file_ptr , "%s" , e->family);
-    fscanf(student_file_ptr , "%s" , e->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
-    fscanf(student_file_ptr , "%s" , e->birth_city);
-    fscanf(student_file_ptr , "%s" , e->field_of_study);
-    fscanf(student_file_ptr , "%s" , e->id);
-    fscanf(student_file_ptr , "%s" , e->phone_number);
-    fscanf(student_file_ptr , "%s" , e->email );
-
-    s->link = e ;
-    e->link = NULL;
-
-
-    // make link list of staff  information
-    while(feof(student_file_ptr) == 0)
+    if(student_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_information));
-
-        fscanf(student_file_ptr , "%s" , d->gender);
-        fscanf(student_file_ptr , "%s" , d->name);
-        fscanf(student_file_ptr , "%s" , d->family);
-        fscanf(student_file_ptr , "%s" , d->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
-        fscanf(student_file_ptr , "%s" , d->birth_city);
-        fscanf(student_file_ptr , "%s" , d->field_of_study);
-        fscanf(student_file_ptr , "%s" , d->id);
-        fscanf(student_file_ptr , "%s" , d->phone_number);
-        fscanf(student_file_ptr , "%s" , d->email );
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(student_file_ptr);
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(temp->name , student_name))
+        
+        struct student_information *s = malloc(sizeof(struct student_information));
+        struct student_information *e = malloc(sizeof(struct student_information));
+        struct student_information *d = NULL;
+        struct student_information *temp = NULL;
+        struct student_information *temp2 = NULL;
+        struct student_information *x;
+
+        fscanf(student_file_ptr , "%s" , s->gender);
+        fscanf(student_file_ptr , "%s" , s->name);
+        fscanf(student_file_ptr , "%s" , s->family);
+        fscanf(student_file_ptr , "%s" , s->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , "%s" , s->birth_city);
+        fscanf(student_file_ptr , "%s" , s->field_of_study);
+        fscanf(student_file_ptr , "%s" , s->id);
+        fscanf(student_file_ptr , "%s" , s->phone_number);
+        fscanf(student_file_ptr , "%s" , s->email );
+
+        fscanf(student_file_ptr , "%s" , e->gender);
+        fscanf(student_file_ptr , "%s" , e->name);
+        fscanf(student_file_ptr , "%s" , e->family);
+        fscanf(student_file_ptr , "%s" , e->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , "%s" , e->birth_city);
+        fscanf(student_file_ptr , "%s" , e->field_of_study);
+        fscanf(student_file_ptr , "%s" , e->id);
+        fscanf(student_file_ptr , "%s" , e->phone_number);
+        fscanf(student_file_ptr , "%s" , e->email );
+
+        s->link = e ;
+        e->link = NULL;
+
+
+        // make link list of staff  information
+        while(feof(student_file_ptr) == 0)
         {
-           if(!strcmp(temp->family , student_family))
-           {
+            d = malloc(sizeof(struct student_information));
+
+            fscanf(student_file_ptr , "%s" , d->gender);
+            fscanf(student_file_ptr , "%s" , d->name);
+            fscanf(student_file_ptr , "%s" , d->family);
+            fscanf(student_file_ptr , "%s" , d->code);
+            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , "%s" , d->birth_city);
+            fscanf(student_file_ptr , "%s" , d->field_of_study);
+            fscanf(student_file_ptr , "%s" , d->id);
+            fscanf(student_file_ptr , "%s" , d->phone_number);
+            fscanf(student_file_ptr , "%s" , d->email );
+
+            e->link = d ;
+            e = d ;
+
+        }
+        e->link = NULL ;
+
+        fclose(student_file_ptr);
+
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->name , student_name))
+            {
+               if(!strcmp(temp->family , student_family))
+               {
+                    x = temp ;
+                    break;
+               }
+            } else if (!strcmp(temp->id , student_id))
+            {
                 x = temp ;
                 break;
-           }
-        } else if (!strcmp(temp->id , student_id))
-        {
-            x = temp ;
-            break;
+            }
+            temp = temp->link ;
         }
-        temp = temp->link ;
-    }
 
-    return *x ;
+        return *x ;
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
 
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
 
-    }
+        }
 
     
-
+    }
 }
 
 // link list of lessons information
 struct lesson_information lesson_list(char lesson_code[])
 {
-    struct lesson_information *s = malloc(sizeof(struct lesson_information));
-    struct lesson_information *e = malloc(sizeof(struct lesson_information));
-    struct lesson_information *d = NULL;
-    struct lesson_information *temp = NULL;
-    struct lesson_information *temp2 = NULL;
-    struct lesson_information *x ;
 
     lesson_file_ptr = fopen("lessons_information.txt" , "r");
 
-    fscanf(lesson_file_ptr , "%s" , s->name);
-    fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
-    fscanf(lesson_file_ptr , "%s" , s->type);
-    fscanf(lesson_file_ptr , "%s" , s->code);
-    fscanf(lesson_file_ptr , "%s" , s->status);
-
-    fscanf(lesson_file_ptr , "%s" , e->name);
-    fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
-    fscanf(lesson_file_ptr , "%s" , e->type);
-    fscanf(lesson_file_ptr , "%s" , e->code);
-    fscanf(lesson_file_ptr , "%s" , e->status);
-
-    s->link = e ;
-    e->link = NULL;
-
-
-    // make link list of staff  information
-    while(feof(lesson_file_ptr) == 0)
+    if(lesson_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_information));
-
-        fscanf(lesson_file_ptr , "%s" , d->name);
-        fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
-        fscanf(lesson_file_ptr , "%s" , d->type);
-        fscanf(lesson_file_ptr , "%s" , d->code);
-        fscanf(lesson_file_ptr , "%s" , d->status);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(lesson_file_ptr);
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else 
     {
-        if (!strcmp(temp->code , lesson_code))
+        
+        struct lesson_information *s = malloc(sizeof(struct lesson_information));
+        struct lesson_information *e = malloc(sizeof(struct lesson_information));
+        struct lesson_information *d = NULL;
+        struct lesson_information *temp = NULL;
+        struct lesson_information *temp2 = NULL;
+        struct lesson_information *x ;
+
+        fscanf(lesson_file_ptr , "%s" , s->name);
+        fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , s->type);
+        fscanf(lesson_file_ptr , "%s" , s->code);
+        fscanf(lesson_file_ptr , "%s" , s->status);
+
+        fscanf(lesson_file_ptr , "%s" , e->name);
+        fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , e->type);
+        fscanf(lesson_file_ptr , "%s" , e->code);
+        fscanf(lesson_file_ptr , "%s" , e->status);
+
+        s->link = e ;
+        e->link = NULL;
+
+
+        // make link list of staff  information
+        while(feof(lesson_file_ptr) == 0)
         {
-            x = temp;
+            d = malloc(sizeof(struct student_information));
+
+            fscanf(lesson_file_ptr , "%s" , d->name);
+            fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
+            fscanf(lesson_file_ptr , "%s" , d->type);
+            fscanf(lesson_file_ptr , "%s" , d->code);
+            fscanf(lesson_file_ptr , "%s" , d->status);
+
+            e->link = d ;
+            e = d ;
+
         }
-        temp = temp->link ;
-    }
+        e->link = NULL ;
 
-    return *x ;
+        fclose(lesson_file_ptr);
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
+        temp = s ;
+        while(temp != NULL)
+        {
+            if (!strcmp(temp->code , lesson_code))
+            {
+                x = temp;
+            }
+            temp = temp->link ;
+        }
 
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
+        return *x ;
+        free(x);
 
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     }
 }
 
@@ -812,9 +870,10 @@ int main_menu()
     // limit user inputs
     while(choice <= 0 || choice > 4 )
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &choice);
+        getchar();
         gets(c);
     }
 
@@ -865,7 +924,7 @@ void admin_login()
     gets(admin_user_name);
     while(strcmp(admin_user_name , "") == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your user name : ");
         gets(admin_user_name);
     }
@@ -874,7 +933,7 @@ void admin_login()
     strcpy(admin_password , star_password());
     while(strcmp(admin_password , "") == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your password : ");
         strcpy(admin_password , star_password());
     }
@@ -933,7 +992,7 @@ void admin_menu()
     // limit admin inputs
     while(admin_choice <= 0 || admin_choice > 7)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &admin_choice);
         gets(c);
@@ -1007,7 +1066,7 @@ void admin_log_head()
 
     while(strcmp(department_head.gender , "female") != 0 && strcmp(department_head.gender , "male") != 0)
     {
-            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
             printf("\n\t\t\t\tPlease enter gender (male / female) : ");
             gets(department_head.gender);
     }
@@ -1026,7 +1085,7 @@ void admin_log_head()
     // check name
     while(!check_string(department_head.name))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s name : " , ch);
         gets(department_head.name);
     }
@@ -1036,7 +1095,7 @@ void admin_log_head()
     // check family
     while(!check_string(department_head.family))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s family : " , ch);
         gets(department_head.family);
     }
@@ -1046,8 +1105,8 @@ void admin_log_head()
     //check year
     while(check_number(department_head.start_date.year) == 0 || strlen(department_head.start_date.year) != 4)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter year of  %s  srtart: " , ch);
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter year of %s srtart: " , ch);
         gets(department_head.start_date.year);
     }
 
@@ -1056,8 +1115,8 @@ void admin_log_head()
     //check month
     while(check_number(department_head.start_date.month) == 0 || strlen(department_head.start_date.month) > 2)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter month of  %s  srtart: " , ch);
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter month of %s srtart: " , ch);
         gets(department_head.start_date.month);
     }
     date(department_head.start_date.month);
@@ -1067,22 +1126,28 @@ void admin_log_head()
     //check day
     while(check_number(department_head.start_date.day) == 0 || strlen(department_head.start_date.day) > 2)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter day of  %s  srtart: " , ch);
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter day of %s srtart: " , ch);
         gets(department_head.start_date.day);
     }
     date(department_head.start_date.day);
 
     printf("\n\t\t\t\tPlease enter %s group name : " , ch);
     gets(department_head.group_name);
+    while(!check_string(department_head.group_name))
+    {
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s group name : " , ch);
+        gets(department_head.group_name);
+    }
 
     printf("\n\t\t\t\tPlease enter %s code : " , ch);
     gets(department_head.code);
     // check code
-    while(!check_number(department_head.code) && strlen(department_head.code) != 10)
+    while(check_number(department_head.code) == 0 || strlen(department_head.code) != 10)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter day of  %s  code: " , ch);
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s code: " , ch);
         gets(department_head.code);
     }
 
@@ -1091,7 +1156,7 @@ void admin_log_head()
     //check phone number
     while(check_number(department_head.phone_number) == 0 || strlen(department_head.phone_number) != 11)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
         gets(department_head.phone_number);
     }
@@ -1101,7 +1166,7 @@ void admin_log_head()
     // check email
     while(!check_email(department_head.email))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s email : " , ch);
         gets(department_head.email);
     }
@@ -1110,10 +1175,17 @@ void admin_log_head()
 
     printf("\n\t\t\t\tPlease enter %s user name : " , ch);
     gets(department_head.user_name);
-    // check existance of username
-    while(head_list(department_head.user_name).name[0] != '\0'  && head_list(department_head.user_name).family[0] != '\0'  )
+    // check  username format
+    while(strcmp(department_head.user_name , "") == 0 )
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s user name : " , ch);
+        gets(department_head.user_name);
+    }
+    // check existance of username
+    while((head_list("" , "" ,department_head.user_name).name[0] != '\0'  && head_list("" , "" ,department_head.user_name).family[0] != '\0'))
+    {
+        printf("\033[31m""\t\t\t\tERROR ! Duplicate input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s user name : " , ch);
         gets(department_head.user_name);
     }
@@ -1122,13 +1194,19 @@ void admin_log_head()
     strcpy(department_head.password , star_password());
     while(!check_password(department_head.password))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s password : " , ch);
         strcpy(department_head.password , star_password());
     }
 
     printf("\n\n\t\t\t\tPlease confirm %s password : " , ch);
     strcpy(confirm_password , star_password());
+    while(!strcmp(confirm_password , ""))
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease confirm %s password : " , ch);
+        strcpy(confirm_password , star_password());
+    }
 
     // check passwords matching
     if(!strcmp(department_head.password , confirm_password))
@@ -1136,26 +1214,34 @@ void admin_log_head()
         printf("\033[32m""\n\t\t\t\tDepartment head registation successfully complited :)\n""\033[0m");
         printf("\033[34m""\n\t\t\t\t%s user name = %s""\033[0m", ch , department_head.user_name);
         printf("\033[34m""\n\t\t\t\t%s password = %s""\033[0m" , ch , department_head.password);
+
+        // print head department information in file
+        head_file_ptr = fopen("department_head_information.txt" , "a");
+
+        if(head_file_ptr == NULL)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else 
+        {
+            fprintf(head_file_ptr , "\n%s\n" , department_head.gender);
+            fprintf(head_file_ptr , "%s\n" , department_head.name);
+            fprintf(head_file_ptr , "%s\n" , department_head.family);
+            fprintf(head_file_ptr , "%4s/%2s/%2s\n" , department_head.start_date.year ,department_head.start_date.month , department_head.start_date.day);
+            fprintf(head_file_ptr , "%s\n" , department_head.group_name);
+            fprintf(head_file_ptr , "%s\n" , department_head.code);
+            fprintf(head_file_ptr , "%s\n" , department_head.phone_number);
+            fprintf(head_file_ptr , "%s\n" , department_head.email);
+            fprintf(head_file_ptr , "%s\n" , department_head.status);
+            fprintf(head_file_ptr , "%s\n" , department_head.user_name);
+            fprintf(head_file_ptr , "%s" , department_head.password);
+
+            fclose(head_file_ptr);
+        }
     } else
     {
-        printf("\033[31m""\n\t\t\t\tERROR! passwors not matched.\n""\033[0m");
+        printf("\033[31m""\n\n\t\t\t\tERROR ! passwords not matched.\n""\033[0m");
     }
 
-
-    // print head department information in file
-    head_file_ptr = fopen("department_head_information.txt" , "a");
-    fprintf(head_file_ptr , "\n%s\n" , department_head.gender);
-    fprintf(head_file_ptr , "%s\n" , department_head.name);
-    fprintf(head_file_ptr , "%s\n" , department_head.family);
-    fprintf(head_file_ptr , "%4s/%2s/%2s\n" , department_head.start_date.year ,department_head.start_date.month , department_head.start_date.day);
-    fprintf(head_file_ptr , "%s\n" , department_head.group_name);
-    fprintf(head_file_ptr , "%s\n" , department_head.code);
-    fprintf(head_file_ptr , "%s\n" , department_head.phone_number);
-    fprintf(head_file_ptr , "%s\n" , department_head.email);
-    fprintf(head_file_ptr , "%s\n" , department_head.status);
-    fprintf(head_file_ptr , "%s\n" , department_head.user_name);
-    fprintf(head_file_ptr , "%s" , department_head.password);
-    fclose(head_file_ptr);
 
     // return to admin page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -1195,7 +1281,7 @@ void admin_log_staff()
     {
         while(strcmp(staff.gender , "female") != 0 && strcmp(staff.gender , "male") != 0)
         {
-            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
             printf("\n\t\t\t\tPlease enter gender (male / female) : ");
             gets(staff.gender);
         }
@@ -1213,7 +1299,7 @@ void admin_log_staff()
     // check name
     while(!check_string(staff.name))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s name : " , ch);
         gets(staff.name);
     }
@@ -1223,7 +1309,7 @@ void admin_log_staff()
     // check family
     while(!check_string(staff.family))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s family : " , ch);
         gets(staff.family);
     }
@@ -1233,7 +1319,7 @@ void admin_log_staff()
     //check year
     while(check_number(staff.start_date.year) == 0 || strlen(staff.start_date.year) != 4)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter year of  %s  start: " , ch);
         gets(staff.start_date.year);
     }
@@ -1243,7 +1329,7 @@ void admin_log_staff()
     //check month
     while(check_number(staff.start_date.month) == 0 || strlen(staff.start_date.month) > 2)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter month of  %s  start: " , ch);
         gets(staff.start_date.month);
     }
@@ -1254,7 +1340,7 @@ void admin_log_staff()
     //check day
     while(check_number(staff.start_date.day) == 0 || strlen(staff.start_date.day) > 2)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter day of  %s  start: " , ch);
         gets(staff.start_date.day);
     }
@@ -1262,13 +1348,19 @@ void admin_log_staff()
 
     printf("\n\t\t\t\tPlease enter %s rank : " , ch);
     gets(staff.rank);
+    while(!strcmp(staff.rank , ""))
+    {
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s rank : " , ch);
+        gets(staff.rank);
+    }
 
     printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
     gets(staff.phone_number);
     //check phone number
     while(check_number(staff.phone_number) == 0 || strlen(staff.phone_number) != 11)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
         gets(staff.phone_number);
     }
@@ -1277,7 +1369,7 @@ void admin_log_staff()
     gets(staff.email);
     while(!check_email(staff.email))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s email : " , ch);
         gets(staff.email);
     }
@@ -1286,10 +1378,17 @@ void admin_log_staff()
 
     printf("\n\t\t\t\tPlease enter %s user name : " , ch);
     gets(staff.user_name);
-    // check existance of username
-    while(staff_list(staff.user_name).name[0] != '\0'  && staff_list(staff.user_name).family[0] != '\0'  )
+    // check  username
+    while(strcmp(staff.password , "") == 0 )
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s user name : " , ch);
+        gets(staff.user_name);
+    }
+    // check existance of username
+    while(staff_list("" , "" ,staff.user_name).name[0] != '\0'  && staff_list("" , "" ,staff.user_name).family[0] != '\0' )
+    {
+        printf("\033[31m""\t\t\t\tERROR ! Duplicate input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s user name : " , ch);
         gets(staff.user_name);
     }
@@ -1298,7 +1397,7 @@ void admin_log_staff()
     strcpy(staff.password , star_password());
     while(!check_password(staff.password))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s password : " , ch);
         strcpy(staff.password , star_password());
     }
@@ -1312,25 +1411,34 @@ void admin_log_staff()
         printf("\033[32m""\n\t\t\t\tDepartment head registation successfully complited :)\n""\033[0m");
         printf("\033[34m""\n\t\t\t\t%s user name = %s""\033[0m", ch , staff.user_name);
         printf("\033[34m""\n\t\t\t\t%s password = %s""\033[0m" , ch , staff.password);
+
+        // print head department information in file
+
+        staff_file_ptr = fopen("staff_information.txt" , "a");
+
+        if(staff_file_ptr == NULL)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
+            fprintf(staff_file_ptr , "\n%s\n" , staff.gender);
+            fprintf(staff_file_ptr , "%s\n" , staff.name);
+            fprintf(staff_file_ptr , "%s\n" , staff.family);
+            fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , staff.start_date.year ,staff.start_date.month , staff.start_date.day);
+            fprintf(staff_file_ptr , "%s\n" , staff.rank);
+            fprintf(staff_file_ptr , "%s\n" , staff.phone_number);
+            fprintf(staff_file_ptr , "%s\n" , staff.email);
+            fprintf(staff_file_ptr , "%s\n" , staff.status);
+            fprintf(staff_file_ptr , "%s\n" , staff.user_name);
+            fprintf(staff_file_ptr , "%s" , staff.password);
+
+            fclose(staff_file_ptr);
+        }
     } else
     {
-        printf("\033[31m""\n\t\t\t\tERROR! passwors not matched.\n""\033[0m");
+        printf("\033[31m""\n\n\t\t\t\tERROR! passwords not matched.\n""\033[0m");
     }
 
-
-    // print head department information in file
-    staff_file_ptr = fopen("staff_information.txt" , "a");
-    fprintf(staff_file_ptr , "\n%s\n" , staff.gender);
-    fprintf(staff_file_ptr , "%s\n" , staff.name);
-    fprintf(staff_file_ptr , "%s\n" , staff.family);
-    fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , staff.start_date.year ,staff.start_date.month , staff.start_date.day);
-    fprintf(staff_file_ptr , "%s\n" , staff.rank);
-    fprintf(staff_file_ptr , "%s\n" , staff.phone_number);
-    fprintf(staff_file_ptr , "%s\n" , staff.email);
-    fprintf(staff_file_ptr , "%s\n" , staff.status);
-    fprintf(staff_file_ptr , "%s\n" , staff.user_name);
-    fprintf(staff_file_ptr , "%s" , staff.password);
-    fclose(staff_file_ptr);
 
     // return to admin page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -1353,118 +1461,77 @@ void admin_observe_department_head_list(char type[])
     char enter ;
     
 
-    struct department_head_information *s = malloc(sizeof(struct department_head_information));
-    struct department_head_information *e = malloc(sizeof(struct department_head_information));
-    struct department_head_information *d = NULL;
-    struct department_head_information *temp = NULL;
-    struct department_head_information *temp2 = NULL;
-
     head_file_ptr = fopen("department_head_information.txt" , "r");
 
-    fscanf(head_file_ptr , "%s" , s->gender);
-    fscanf(head_file_ptr , "%s" , s->name);
-    fscanf(head_file_ptr , "%s" , s->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(head_file_ptr , "%s" , s->group_name);
-    fscanf(head_file_ptr , "%s" , s->code);
-    fscanf(head_file_ptr , "%s" , s->phone_number);
-    fscanf(head_file_ptr , "%s" , s->email);
-    fscanf(head_file_ptr , "%s" , s->status);
-    fscanf(head_file_ptr , "%s" , s->user_name);
-    fscanf(head_file_ptr , "%s" , s->password);
-
-    fscanf(head_file_ptr , "%s" , e->gender);
-    fscanf(head_file_ptr , "%s" , e->name);
-    fscanf(head_file_ptr , "%s" , e->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(head_file_ptr , "%s" , e->group_name);
-    fscanf(head_file_ptr , "%s" , e->code);
-    fscanf(head_file_ptr , "%s" , e->phone_number);
-    fscanf(head_file_ptr , "%s" , e->email);
-    fscanf(head_file_ptr , "%s" , e->status);
-    fscanf(head_file_ptr , "%s" , e->user_name);
-    fscanf(head_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    //make link list
-    while(feof(head_file_ptr) == 0)
+    if(head_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct department_head_information));
-
-        fscanf(head_file_ptr , "%s" , d->gender);
-        fscanf(head_file_ptr , "%s" , d->name);
-        fscanf(head_file_ptr , "%s" , d->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(head_file_ptr , "%s" , d->group_name);
-        fscanf(head_file_ptr , "%s" , d->code);
-        fscanf(head_file_ptr , "%s" , d->phone_number);
-        fscanf(head_file_ptr , "%s" , d->email);
-        fscanf(head_file_ptr , "%s" , d->status);
-        fscanf(head_file_ptr , "%s" , d->user_name);
-        fscanf(head_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(head_file_ptr) ;
-
-    printf("\n%c" , 201);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
-
-    printf("%c" , 186);
-    printf("%75s%s%74s" , "" , "DEPARTMENT HEAD" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    printf("%2s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-12s%c" , "NAME" , 179);
-    printf("%-13s%c" , "FAMILY" , 179);
-    printf("%-11s%c" , "STAT DATE" , 179);
-    printf("%-14s%c" , "GROUP NAME" , 179);
-    printf("%-14s%c" , "CODE" , 179);
-    printf("%-13s%c" , "PHONE NUMBER" , 179);
-    printf("%-33s%c" , "EMAIL" , 179);
-    printf("%-9s%c" , "STATUS" , 179);
-    printf("%-13s%c" , "USER NAME" , 179);
-    printf("%-12s" , "PASSWORD");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    temp = s ;
-    j = 1 ;
-    // print tables data
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
+        struct department_head_information *s = malloc(sizeof(struct department_head_information));
+        struct department_head_information *e = malloc(sizeof(struct department_head_information));
+        struct department_head_information *d = NULL;
+        struct department_head_information *temp = NULL;
+        struct department_head_information *temp2 = NULL;
+
+        fscanf(head_file_ptr , "%s" , s->gender);
+        fscanf(head_file_ptr , "%s" , s->name);
+        fscanf(head_file_ptr , "%s" , s->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , "%s" , s->group_name);
+        fscanf(head_file_ptr , "%s" , s->code);
+        fscanf(head_file_ptr , "%s" , s->phone_number);
+        fscanf(head_file_ptr , "%s" , s->email);
+        fscanf(head_file_ptr , "%s" , s->status);
+        fscanf(head_file_ptr , "%s" , s->user_name);
+        fscanf(head_file_ptr , "%s" , s->password);
+
+        fscanf(head_file_ptr , "%s" , e->gender);
+        fscanf(head_file_ptr , "%s" , e->name);
+        fscanf(head_file_ptr , "%s" , e->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , "%s" , e->group_name);
+        fscanf(head_file_ptr , "%s" , e->code);
+        fscanf(head_file_ptr , "%s" , e->phone_number);
+        fscanf(head_file_ptr , "%s" , e->email);
+        fscanf(head_file_ptr , "%s" , e->status);
+        fscanf(head_file_ptr , "%s" , e->user_name);
+        fscanf(head_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        //make link list
+        while(feof(head_file_ptr) == 0)
+        {
+            d = malloc(sizeof(struct department_head_information));
+
+            fscanf(head_file_ptr , "%s" , d->gender);
+            fscanf(head_file_ptr , "%s" , d->name);
+            fscanf(head_file_ptr , "%s" , d->family);
+            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , "%s" , d->group_name);
+            fscanf(head_file_ptr , "%s" , d->code);
+            fscanf(head_file_ptr , "%s" , d->phone_number);
+            fscanf(head_file_ptr , "%s" , d->email);
+            fscanf(head_file_ptr , "%s" , d->status);
+            fscanf(head_file_ptr , "%s" , d->user_name);
+            fscanf(head_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+        }
+        e->link = NULL ;
+
+        fclose(head_file_ptr) ;
+
+        printf("\n%c" , 201);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
 
         printf("%c" , 186);
-        printf("%-2d%c" , j++ , 179);
-        printf("%-7s%c" , temp->gender , 179);
-        printf("%-12s%c" , temp->name , 179);
-        printf("%-13s%c" , temp->family , 179);
-        printf("%4s/%2s/%2s%2c" , temp->start_date.year , temp->start_date.month , temp->start_date.day ,  179);
-        printf("%-14s%c" , temp->group_name , 179);
-        printf("%-14s%c" , temp->code , 179);
-        printf("%-13s%c" , temp->phone_number , 179);
-        printf("%-33s%c" , temp->email , 179);
-        printf("%-9s%c" , temp->status , 179);
-        printf("%-13s%c" , temp->user_name , 179);
-        printf("%-12s" , temp->password);
+        printf("%75s%s%74s" , "" , "DEPARTMENT HEAD" , "");
         printf("%c\n" , 186);
 
         printf("%c" , 186);
@@ -1472,40 +1539,87 @@ void admin_observe_department_head_list(char type[])
             printf("%c" , 205);
         printf("%c\n" , 186);
 
-        temp = temp->link ;
+        printf("%c" , 186);
+        printf("%2s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-12s%c" , "NAME" , 179);
+        printf("%-13s%c" , "FAMILY" , 179);
+        printf("%-11s%c" , "STAT DATE" , 179);
+        printf("%-14s%c" , "GROUP NAME" , 179);
+        printf("%-14s%c" , "CODE" , 179);
+        printf("%-13s%c" , "PHONE NUMBER" , 179);
+        printf("%-33s%c" , "EMAIL" , 179);
+        printf("%-9s%c" , "STATUS" , 179);
+        printf("%-13s%c" , "USER NAME" , 179);
+        printf("%-12s" , "PASSWORD");
+        printf("%c\n" , 186);
 
+        printf("%c" , 186);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
 
-    }
-
-    printf("%c" , 186);
-    printf("%164s" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 200);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
-    if(!strcmp(type , "reports"))
-    {
-        // return to main menu
-        printf("\033[34m""\n    Please enter to continue ....""\033[0m");
-        enter = getchar();
-        if(enter == '\n')
+        temp = s ;
+        j = 1 ;
+        // print tables data
+        while(temp != NULL)
         {
-            admin_menu();
+
+            printf("%c" , 186);
+            printf("%-2d%c" , j++ , 179);
+            printf("%-7s%c" , temp->gender , 179);
+            printf("%-12s%c" , temp->name , 179);
+            printf("%-13s%c" , temp->family , 179);
+            printf("%4s/%2s/%2s%2c" , temp->start_date.year , temp->start_date.month , temp->start_date.day ,  179);
+            printf("%-14s%c" , temp->group_name , 179);
+            printf("%-14s%c" , temp->code , 179);
+            printf("%-13s%c" , temp->phone_number , 179);
+            printf("%-33s%c" , temp->email , 179);
+            printf("%-9s%c" , temp->status , 179);
+            printf("%-13s%c" , temp->user_name , 179);
+            printf("%-12s" , temp->password);
+            printf("%c\n" , 186);
+
+            printf("%c" , 186);
+            for(i = 0 ; i < 164 ; i++)
+                printf("%c" , 205);
+            printf("%c\n" , 186);
+
+            temp = temp->link ;
+
+
+        }
+
+        printf("%c" , 186);
+        printf("%164s" , "");
+        printf("%c\n" , 186);
+
+        printf("%c" , 200);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
+
+        if(!strcmp(type , "reports"))
+        {
+            // return to main menu
+            printf("\033[34m""\n    Please enter to continue ....""\033[0m");
+            enter = getchar();
+            if(enter == '\n')
+            {
+                admin_menu();
+            }
         }
     }
 }
@@ -1521,112 +1635,73 @@ void admin_observe_academic_staff_list(char type[])
     int i = 0  , j = 0;
     char enter ;
 
-    struct academic_staff_information *s2 = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *e2 = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *d2 = NULL;
-    struct academic_staff_information *t = NULL;
-    struct academic_staff_information *t2 = NULL;
-
     staff_file_ptr = fopen("staff_information.txt" , "r");
 
-    fscanf(staff_file_ptr , "%s" , s2->gender);
-    fscanf(staff_file_ptr , "%s" , s2->name);
-    fscanf(staff_file_ptr , "%s" , s2->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
-    fscanf(staff_file_ptr , "%s" , s2->rank);
-    fscanf(staff_file_ptr , "%s" , s2->phone_number);
-    fscanf(staff_file_ptr , "%s" , s2->email);
-    fscanf(staff_file_ptr , "%s" , s2->status);
-    fscanf(staff_file_ptr , "%s" , s2->user_name);
-    fscanf(staff_file_ptr , "%s" , s2->password);
-
-    fscanf(staff_file_ptr , "%s" , e2->gender);
-    fscanf(staff_file_ptr , "%s" , e2->name);
-    fscanf(staff_file_ptr , "%s" , e2->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
-    fscanf(staff_file_ptr , "%s" , e2->rank);
-    fscanf(staff_file_ptr , "%s" , e2->phone_number);
-    fscanf(staff_file_ptr , "%s" , e2->email);
-    fscanf(staff_file_ptr , "%s" , e2->status);
-    fscanf(staff_file_ptr , "%s" , e2->user_name);
-    fscanf(staff_file_ptr , "%s" , e2->password);
-
-    s2->link = e2 ;
-    e2->link = NULL ;
-    // make link list
-    while(feof(staff_file_ptr) == 0)
+    if(staff_file_ptr == NULL)
     {
-        d2 = malloc(sizeof(struct academic_staff_information));
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
+    {   
+        struct academic_staff_information *s2 = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *e2 = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *d2 = NULL;
+        struct academic_staff_information *t = NULL;
+        struct academic_staff_information *t2 = NULL;
 
-        fscanf(staff_file_ptr , "%s" , d2->gender);
-        fscanf(staff_file_ptr , "%s" , d2->name);
-        fscanf(staff_file_ptr , "%s" , d2->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
-        fscanf(staff_file_ptr , "%s" , d2->rank);
-        fscanf(staff_file_ptr , "%s" , d2->phone_number);
-        fscanf(staff_file_ptr , "%s" , d2->email);
-        fscanf(staff_file_ptr , "%s" , d2->status);
-        fscanf(staff_file_ptr , "%s" , d2->user_name);
-        fscanf(staff_file_ptr , "%s" , d2->password);
+        fscanf(staff_file_ptr , "%s" , s2->gender);
+        fscanf(staff_file_ptr , "%s" , s2->name);
+        fscanf(staff_file_ptr , "%s" , s2->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
+        fscanf(staff_file_ptr , "%s" , s2->rank);
+        fscanf(staff_file_ptr , "%s" , s2->phone_number);
+        fscanf(staff_file_ptr , "%s" , s2->email);
+        fscanf(staff_file_ptr , "%s" , s2->status);
+        fscanf(staff_file_ptr , "%s" , s2->user_name);
+        fscanf(staff_file_ptr , "%s" , s2->password);
 
-        e2->link = d2 ;
-        e2 = d2 ;
-    }
-    e2->link = NULL ;
+        fscanf(staff_file_ptr , "%s" , e2->gender);
+        fscanf(staff_file_ptr , "%s" , e2->name);
+        fscanf(staff_file_ptr , "%s" , e2->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
+        fscanf(staff_file_ptr , "%s" , e2->rank);
+        fscanf(staff_file_ptr , "%s" , e2->phone_number);
+        fscanf(staff_file_ptr , "%s" , e2->email);
+        fscanf(staff_file_ptr , "%s" , e2->status);
+        fscanf(staff_file_ptr , "%s" , e2->user_name);
+        fscanf(staff_file_ptr , "%s" , e2->password);
 
-    fclose(staff_file_ptr) ;
+        s2->link = e2 ;
+        e2->link = NULL ;
+        // make link list
+        while(feof(staff_file_ptr) == 0)
+        {
+            d2 = malloc(sizeof(struct academic_staff_information));
 
-    printf("\n\n%c" , 201);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
+            fscanf(staff_file_ptr , "%s" , d2->gender);
+            fscanf(staff_file_ptr , "%s" , d2->name);
+            fscanf(staff_file_ptr , "%s" , d2->family);
+            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
+            fscanf(staff_file_ptr , "%s" , d2->rank);
+            fscanf(staff_file_ptr , "%s" , d2->phone_number);
+            fscanf(staff_file_ptr , "%s" , d2->email);
+            fscanf(staff_file_ptr , "%s" , d2->status);
+            fscanf(staff_file_ptr , "%s" , d2->user_name);
+            fscanf(staff_file_ptr , "%s" , d2->password);
 
-    printf("%c" , 186);
-    printf("%75s%s%75s" , "" , "ACADEMIC STAFF" , "");
-    printf("%c\n" , 186);
+            e2->link = d2 ;
+            e2 = d2 ;
+        }
+        e2->link = NULL ;
 
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
+        fclose(staff_file_ptr) ;
 
-    printf("%c" , 186);
-    printf("%2s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-16s%c" , "NAME" , 179);
-    printf("%-17s%c" , "FAMILY" , 179);
-    printf("%-12s%c" , "STAT DATE" , 179);
-    printf("%-13s%c" , "RANK" , 179);
-    printf("%-13s%c" , "PHONE NUMBER" , 179);
-    printf("%-33s%c" , "EMAIL" , 179);
-    printf("%-9s%c" , "STATUS" , 179);
-    printf("%-16s%c" , "USER NAME" , 179);
-    printf("%-16s" , "PASSWORD");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    t = s2 ;
-    j = 1 ;
-    // print second tables data
-    while(t != NULL)
-    {
+        printf("\n\n%c" , 201);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
 
         printf("%c" , 186);
-        printf("%-2d%c" , j++ , 179);
-        printf("%-7s%c" , t->gender , 179);
-        printf("%-16s%c" , t->name , 179);
-        printf("%-17s%c" , t->family , 179);
-        printf("%4s/%2s/%2s%3c" , t->start_date.year , t->start_date.month , t->start_date.day , 179);
-        printf("%-13s%c" , t->rank , 179);
-        printf("%-13s%c" , t->phone_number , 179);
-        printf("%-33s%c" , t->email , 179);
-        printf("%-9s%c" , t->status , 179);
-        printf("%-16s%c" , t->user_name , 179);
-        printf("%-16s" , t->password);
+        printf("%75s%s%75s" , "" , "ACADEMIC STAFF" , "");
         printf("%c\n" , 186);
 
         printf("%c" , 186);
@@ -1634,38 +1709,83 @@ void admin_observe_academic_staff_list(char type[])
             printf("%c" , 205);
         printf("%c\n" , 186);
 
-        t = t->link ;
+        printf("%c" , 186);
+        printf("%2s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-16s%c" , "NAME" , 179);
+        printf("%-17s%c" , "FAMILY" , 179);
+        printf("%-12s%c" , "STAT DATE" , 179);
+        printf("%-13s%c" , "RANK" , 179);
+        printf("%-13s%c" , "PHONE NUMBER" , 179);
+        printf("%-33s%c" , "EMAIL" , 179);
+        printf("%-9s%c" , "STATUS" , 179);
+        printf("%-16s%c" , "USER NAME" , 179);
+        printf("%-16s" , "PASSWORD");
+        printf("%c\n" , 186);
+
+        printf("%c" , 186);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        t = s2 ;
+        j = 1 ;
+        // print second tables data
+        while(t != NULL)
+        {
+
+            printf("%c" , 186);
+            printf("%-2d%c" , j++ , 179);
+            printf("%-7s%c" , t->gender , 179);
+            printf("%-16s%c" , t->name , 179);
+            printf("%-17s%c" , t->family , 179);
+            printf("%4s/%2s/%2s%3c" , t->start_date.year , t->start_date.month , t->start_date.day , 179);
+            printf("%-13s%c" , t->rank , 179);
+            printf("%-13s%c" , t->phone_number , 179);
+            printf("%-33s%c" , t->email , 179);
+            printf("%-9s%c" , t->status , 179);
+            printf("%-16s%c" , t->user_name , 179);
+            printf("%-16s" , t->password);
+            printf("%c\n" , 186);
+
+            printf("%c" , 186);
+            for(i = 0 ; i < 164 ; i++)
+                printf("%c" , 205);
+            printf("%c\n" , 186);
+
+            t = t->link ;
 
 
-    }
+        }
 
-    printf("%c" , 186);
-    printf("%164s" , "");
-    printf("%c\n" , 186);
+        printf("%c" , 186);
+        printf("%164s" , "");
+        printf("%c\n" , 186);
 
-    printf("%c" , 200);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
+        printf("%c" , 200);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
 
-    // delete link list
-    t2 = s2 ;
-    t = s2->link ;
-    while (t != NULL)
-    {
+        // delete link list
+        t2 = s2 ;
+        t = s2->link ;
+        while (t != NULL)
+        {
 
-        free(t2);
-        t2 = t ;
-        t = t->link;
+            free(t2);
+            t2 = t ;
+            t = t->link;
 
-    }
+        }
 
-    // return to main menu
-    printf("\033[34m""\n    Please enter to continue ....""\033[0m");
-    enter = getchar();
-    if(enter == '\n')
-    {
-        admin_menu();
+        // return to main menu
+        printf("\033[34m""\n    Please enter to continue ....""\033[0m");
+        enter = getchar();
+        if(enter == '\n')
+        {
+            admin_menu();
+        }
     }
 }
 
@@ -1691,7 +1811,7 @@ void admin_delete_users_menu()
     // limit admin inputs
     while(admin_choice <= 0 || admin_choice > 3)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &admin_choice);
         gets(c);
@@ -1729,6 +1849,7 @@ void admin_delete_head_page()
     
     char enter , head_name[50] , head_family[50]  , t_date[20];
     struct date terminate_date ;
+    struct department_head_information hd ;
 
     system("cls");
 
@@ -1742,7 +1863,7 @@ void admin_delete_head_page()
     // check 
     while(!check_string(head_name))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter users name : ");
         gets(head_name);
     }
@@ -1752,48 +1873,57 @@ void admin_delete_head_page()
     // check 
     while(!check_string(head_family))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter users family : ");
         gets(head_family);
     }
 
-    printf("\n\t\t\t\tPlease enter year of terminate : ");
-    gets(terminate_date.year);
-    //check 
-    while(check_number(terminate_date.year) == 0 || strlen(terminate_date.year) != 4)
+    hd = head_list(head_name , head_family , "");
+    
+    if(head_list(hd.name , hd.family , hd.user_name).name[0] == '\0')
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! User not found .""\033[0m");
+    } else
+    {
+        
         printf("\n\t\t\t\tPlease enter year of terminate : ");
         gets(terminate_date.year);
-    }
+        //check 
+        while(check_number(terminate_date.year) == 0 || strlen(terminate_date.year) != 4)
+        {
+            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+            printf("\n\t\t\t\tPlease enter year of terminate : ");
+            gets(terminate_date.year);
+        }
 
-    printf("\n\t\t\t\tPlease enter month of terminate : ");
-    gets(terminate_date.month);
-    //check 
-    while(check_number(terminate_date.month) == 0 || strlen(terminate_date.month) > 2)
-    {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter month of terminate : ");
         gets(terminate_date.month);
-    }
-    date(terminate_date.month);
+        //check 
+        while(check_number(terminate_date.month) == 0 || strlen(terminate_date.month) > 2)
+        {
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+            printf("\n\t\t\t\tPlease enter month of terminate : ");
+            gets(terminate_date.month);
+        }
+        date(terminate_date.month);
 
-    printf("\n\t\t\t\tPlease enter day of terminate : ");
-    gets(terminate_date.day);
-    //check 
-    while(check_number(terminate_date.day) == 0 || strlen(terminate_date.day) > 2)
-    {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
         printf("\n\t\t\t\tPlease enter day of terminate : ");
         gets(terminate_date.day);
+        //check 
+        while(check_number(terminate_date.day) == 0 || strlen(terminate_date.day) > 2)
+        {
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+            printf("\n\t\t\t\tPlease enter day of terminate : ");
+            gets(terminate_date.day);
+        }
+        date(terminate_date.day);
+
+        sprintf(t_date , "%4s/%2s/%2s" , terminate_date.year  , terminate_date.month , terminate_date.day);
+
+        admin_delete_head(head_name , head_family , t_date);
+
+        printf("\033[32m""\n\t\t\t\tuser delete successfully :)\n""\033[0m");
     }
-    date(terminate_date.day);
-    
-    sprintf(t_date , "%4s/%2s/%2s" , terminate_date.year  , terminate_date.month , terminate_date.day);
-
-    admin_delete_head(head_name , head_family , t_date);
-
-    printf("\033[32m""\n\t\t\t\tuser delete successfully :)\n""\033[0m");
 
     // return to admin page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -1807,131 +1937,148 @@ void admin_delete_head_page()
 // delete head
 void admin_delete_head(char head_name[] , char head_family[] , char terminate_date[])
 {
-    struct department_head_information *s = malloc(sizeof(struct department_head_information));
-    struct department_head_information *e = malloc(sizeof(struct department_head_information));
-    struct department_head_information *d = NULL ;
-    struct department_head_information *temp = NULL ;
-    struct department_head_information *temp2 = NULL ;
-
     head_file_ptr = fopen("department_head_information.txt" , "r");
 
-    fscanf(head_file_ptr , "%s" , s->gender);
-    fscanf(head_file_ptr , "%s" , s->name);
-    fscanf(head_file_ptr , "%s" , s->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(head_file_ptr , "%s" , s->group_name);
-    fscanf(head_file_ptr , "%s" , s->code);
-    fscanf(head_file_ptr , "%s" , s->phone_number);
-    fscanf(head_file_ptr , "%s" , s->email);
-    fscanf(head_file_ptr , "%s" , s->status);
-    fscanf(head_file_ptr , "%s" , s->user_name);
-    fscanf(head_file_ptr , "%s" , s->password);
-
-    fscanf(head_file_ptr , "%s" , e->gender);
-    fscanf(head_file_ptr , "%s" , e->name);
-    fscanf(head_file_ptr , "%s" , e->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(head_file_ptr , "%s" , e->group_name);
-    fscanf(head_file_ptr , "%s" , e->code);
-    fscanf(head_file_ptr , "%s" , e->phone_number);
-    fscanf(head_file_ptr , "%s" , e->email);
-    fscanf(head_file_ptr , "%s" , e->status);
-    fscanf(head_file_ptr , "%s" , e->user_name);
-    fscanf(head_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(head_file_ptr) == 0)
+    if(head_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct department_head_information));
-
-        fscanf(head_file_ptr , "%s" , d->gender);
-        fscanf(head_file_ptr , "%s" , d->name);
-        fscanf(head_file_ptr , "%s" , d->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(head_file_ptr , "%s" , d->group_name);
-        fscanf(head_file_ptr , "%s" , d->code);
-        fscanf(head_file_ptr , "%s" , d->phone_number);
-        fscanf(head_file_ptr , "%s" , d->email);
-        fscanf(head_file_ptr , "%s" , d->status);
-        fscanf(head_file_ptr , "%s" , d->user_name);
-        fscanf(head_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(head_file_ptr);
-
-    head_file_ptr = fopen("department_head_information.txt" , "w");
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(temp->name , head_name))
+        struct department_head_information *s = malloc(sizeof(struct department_head_information));
+        struct department_head_information *e = malloc(sizeof(struct department_head_information));
+        struct department_head_information *d = NULL ;
+        struct department_head_information *temp = NULL ;
+        struct department_head_information *temp2 = NULL ;
+
+        fscanf(head_file_ptr , "%s" , s->gender);
+        fscanf(head_file_ptr , "%s" , s->name);
+        fscanf(head_file_ptr , "%s" , s->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , "%s" , s->group_name);
+        fscanf(head_file_ptr , "%s" , s->code);
+        fscanf(head_file_ptr , "%s" , s->phone_number);
+        fscanf(head_file_ptr , "%s" , s->email);
+        fscanf(head_file_ptr , "%s" , s->status);
+        fscanf(head_file_ptr , "%s" , s->user_name);
+        fscanf(head_file_ptr , "%s" , s->password);
+
+        fscanf(head_file_ptr , "%s" , e->gender);
+        fscanf(head_file_ptr , "%s" , e->name);
+        fscanf(head_file_ptr , "%s" , e->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , "%s" , e->group_name);
+        fscanf(head_file_ptr , "%s" , e->code);
+        fscanf(head_file_ptr , "%s" , e->phone_number);
+        fscanf(head_file_ptr , "%s" , e->email);
+        fscanf(head_file_ptr , "%s" , e->status);
+        fscanf(head_file_ptr , "%s" , e->user_name);
+        fscanf(head_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        while(feof(head_file_ptr) == 0)
         {
-            if(!strcmp(temp->family , head_family))
-            {
-                strcpy(temp->status , "");
-                strcpy(temp->status , "inactive");
-                
-                terminate_head_file_ptr = fopen("terminated_head.txt" , "a");
+            d = malloc(sizeof(struct department_head_information));
 
-                sscanf(terminate_date , "%4s/%2s/%2s" , temp->terminate_date.year , temp->terminate_date.month , temp->terminate_date.day);
+            fscanf(head_file_ptr , "%s" , d->gender);
+            fscanf(head_file_ptr , "%s" , d->name);
+            fscanf(head_file_ptr , "%s" , d->family);
+            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , "%s" , d->group_name);
+            fscanf(head_file_ptr , "%s" , d->code);
+            fscanf(head_file_ptr , "%s" , d->phone_number);
+            fscanf(head_file_ptr , "%s" , d->email);
+            fscanf(head_file_ptr , "%s" , d->status);
+            fscanf(head_file_ptr , "%s" , d->user_name);
+            fscanf(head_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+        }
+        e->link = NULL ;
+
+        fclose(head_file_ptr);
+
+        head_file_ptr = fopen("department_head_information.txt" , "w");
+
+        if(head_file_ptr == NULL)
+        {
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
+            temp = s ;
+            while(temp != NULL)
+            {
+                if(!strcmp(temp->name , head_name))
+                {
+                    if(!strcmp(temp->family , head_family))
+                    {
+                        strcpy(temp->status , "");
+                        strcpy(temp->status , "inactive");
+
+                        terminate_head_file_ptr = fopen("terminated_head.txt" , "a");
+
+                        if(terminate_head_file_ptr == NULL)
+                        {
+                            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+                        } else
+                        {
+                            sscanf(terminate_date , "%4s/%2s/%2s" , temp->terminate_date.year , temp->terminate_date.month , temp->terminate_date.day);
+
+                            if(temp == s)
+                                fprintf(terminate_head_file_ptr , "%s\n" , temp->gender);
+                            else 
+                                fprintf(terminate_head_file_ptr , "\n%s\n" , temp->gender);
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->name);
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->family);
+                            fprintf(terminate_head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->group_name);
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->code);
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->phone_number);
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->email);
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->status);
+                            fprintf(terminate_head_file_ptr , "%4s/%2s/%2s\n" , temp->terminate_date.year , temp->terminate_date.month, temp->terminate_date.day);
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->user_name);
+                            fprintf(terminate_head_file_ptr , "%s" , temp->password);
+
+                            fclose(terminate_head_file_ptr);
+                        }
+                    }
+                }
 
                 if(temp == s)
-                    fprintf(terminate_head_file_ptr , "%s\n" , temp->gender);
+                    fprintf(head_file_ptr , "%s\n" , temp->gender);
                 else 
-                    fprintf(terminate_head_file_ptr , "\n%s\n" , temp->gender);
-                fprintf(terminate_head_file_ptr , "%s\n" , temp->name);
-                fprintf(terminate_head_file_ptr , "%s\n" , temp->family);
-                fprintf(terminate_head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
-                fprintf(terminate_head_file_ptr , "%s\n" , temp->group_name);
-                fprintf(terminate_head_file_ptr , "%s\n" , temp->code);
-                fprintf(terminate_head_file_ptr , "%s\n" , temp->phone_number);
-                fprintf(terminate_head_file_ptr , "%s\n" , temp->email);
-                fprintf(terminate_head_file_ptr , "%s\n" , temp->status);
-                fprintf(terminate_head_file_ptr , "%4s/%2s/%2s\n" , temp->terminate_date.year , temp->terminate_date.month, temp->terminate_date.day);
-                fprintf(terminate_head_file_ptr , "%s\n" , temp->user_name);
-                fprintf(terminate_head_file_ptr , "%s" , temp->password);
+                    fprintf(head_file_ptr , "\n%s\n" , temp->gender);
+                fprintf(head_file_ptr , "%s\n" , temp->name);
+                fprintf(head_file_ptr , "%s\n" , temp->family);
+                fprintf(head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+                fprintf(head_file_ptr , "%s\n" , temp->group_name);
+                fprintf(head_file_ptr , "%s\n" , temp->code);
+                fprintf(head_file_ptr , "%s\n" , temp->phone_number);
+                fprintf(head_file_ptr , "%s\n" , temp->email);
+                fprintf(head_file_ptr , "%s\n" , temp->status);
+                fprintf(head_file_ptr , "%s\n" , temp->user_name);
+                fprintf(head_file_ptr , "%s" , temp->password);
 
-                fclose(terminate_head_file_ptr);
+                temp = temp->link ;
+            }
+
+            fclose(head_file_ptr);
+
+            // delete link list
+            temp2 = s ;
+            temp = s->link ;
+            while (temp != NULL)
+            {
+
+                free(temp2);
+                temp2 = temp ;
+                temp = temp->link;
 
             }
         }
-
-        if(temp == s)
-            fprintf(head_file_ptr , "%s\n" , temp->gender);
-        else 
-            fprintf(head_file_ptr , "\n%s\n" , temp->gender);
-        fprintf(head_file_ptr , "%s\n" , temp->name);
-        fprintf(head_file_ptr , "%s\n" , temp->family);
-        fprintf(head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
-        fprintf(head_file_ptr , "%s\n" , temp->group_name);
-        fprintf(head_file_ptr , "%s\n" , temp->code);
-        fprintf(head_file_ptr , "%s\n" , temp->phone_number);
-        fprintf(head_file_ptr , "%s\n" , temp->email);
-        fprintf(head_file_ptr , "%s\n" , temp->status);
-        fprintf(head_file_ptr , "%s\n" , temp->user_name);
-        fprintf(head_file_ptr , "%s" , temp->password);
-
-        temp = temp->link ;
-    }
-
-    fclose(head_file_ptr);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
     }
     
 }
@@ -1942,6 +2089,7 @@ void admin_delete_staff_page()
     
     char enter , staff_name[50] , staff_family[50]  , t_date[20];
     struct date terminate_date ;
+    struct academic_staff_information stf ;
 
     system("cls");
 
@@ -1955,7 +2103,7 @@ void admin_delete_staff_page()
     // check 
     while(!check_string(staff_name))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter users name : ");
         gets(staff_name);
     }
@@ -1965,48 +2113,58 @@ void admin_delete_staff_page()
     // check 
     while(!check_string(staff_family))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter users family : ");
         gets(staff_family);
     }
 
-    printf("\n\t\t\t\tPlease enter year of terminate : ");
-    gets(terminate_date.year);
-    //check 
-    while(check_number(terminate_date.year) == 0 || strlen(terminate_date.year) != 4)
+    stf = staff_list(staff_name , staff_family , "");
+
+    if(staff_list(stf.name , stf.family , "").name[0] == '\0')
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! User not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter year of terminate : ");
         gets(terminate_date.year);
-    }
-
-    printf("\n\t\t\t\tPlease enter month of terminate : ");
-    gets(terminate_date.month);
-    //check 
-    while(check_number(terminate_date.month) == 0 || strlen(terminate_date.month) > 2)
-    {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        //check 
+        while(check_number(terminate_date.year) == 0 || strlen(terminate_date.year) != 4)
+        {
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+            printf("\n\t\t\t\tPlease enter year of terminate : ");
+            gets(terminate_date.year);
+        }
+    
         printf("\n\t\t\t\tPlease enter month of terminate : ");
         gets(terminate_date.month);
-    }
-    date(terminate_date.month);
-
-    printf("\n\t\t\t\tPlease enter day of terminate : ");
-    gets(terminate_date.day);
-    //check 
-    while(check_number(terminate_date.day) == 0 || strlen(terminate_date.day) > 2)
-    {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        //check 
+        while(check_number(terminate_date.month) == 0 || strlen(terminate_date.month) > 2)
+        {
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+            printf("\n\t\t\t\tPlease enter month of terminate : ");
+            gets(terminate_date.month);
+        }
+        date(terminate_date.month);
+    
         printf("\n\t\t\t\tPlease enter day of terminate : ");
         gets(terminate_date.day);
-    }
-    date(terminate_date.day);
+        //check 
+        while(check_number(terminate_date.day) == 0 || strlen(terminate_date.day) > 2)
+        {
+            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+            printf("\n\t\t\t\tPlease enter day of terminate : ");
+            gets(terminate_date.day);
+        }
+        date(terminate_date.day);
+        
+        sprintf(t_date , "%4s/%2s/%2s" , terminate_date.year  , terminate_date.month , terminate_date.day);
     
-    sprintf(t_date , "%4s/%2s/%2s" , terminate_date.year  , terminate_date.month , terminate_date.day);
+        admin_delete_staff(staff_name , staff_family , t_date);
+    
+        printf("\033[32m""\n\t\t\t\tuser delete successfully :)\n""\033[0m");
+    }
 
-    admin_delete_staff(staff_name , staff_family , t_date);
-
-    printf("\033[32m""\n\t\t\t\tuser delete successfully :)\n""\033[0m");
+    
 
     // return to admin page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -2020,127 +2178,148 @@ void admin_delete_staff_page()
 // delete staff
 void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate_date[])
 {
-    struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *d = NULL ;
-    struct academic_staff_information *temp = NULL ;
-    struct academic_staff_information *temp2 = NULL ;
 
     staff_file_ptr = fopen("staff_information.txt" , "r");
 
-    fscanf(staff_file_ptr , "%s" , s->gender);
-    fscanf(staff_file_ptr , "%s" , s->name);
-    fscanf(staff_file_ptr , "%s" , s->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(staff_file_ptr , "%s" , s->rank);
-    fscanf(staff_file_ptr , "%s" , s->phone_number);
-    fscanf(staff_file_ptr , "%s" , s->email);
-    fscanf(staff_file_ptr , "%s" , s->status);
-    fscanf(staff_file_ptr , "%s" , s->user_name);
-    fscanf(staff_file_ptr , "%s" , s->password);
-
-    fscanf(staff_file_ptr , "%s" , e->gender);
-    fscanf(staff_file_ptr , "%s" , e->name);
-    fscanf(staff_file_ptr , "%s" , e->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(staff_file_ptr , "%s" , e->rank);
-    fscanf(staff_file_ptr , "%s" , e->phone_number);
-    fscanf(staff_file_ptr , "%s" , e->email);
-    fscanf(staff_file_ptr , "%s" , e->status);
-    fscanf(staff_file_ptr , "%s" , e->user_name);
-    fscanf(staff_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(staff_file_ptr) == 0)
+    if(staff_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct academic_staff_information));
-
-        fscanf(staff_file_ptr , "%s" , d->gender);
-        fscanf(staff_file_ptr , "%s" , d->name);
-        fscanf(staff_file_ptr , "%s" , d->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(staff_file_ptr , "%s" , d->rank);
-        fscanf(staff_file_ptr , "%s" , d->phone_number);
-        fscanf(staff_file_ptr , "%s" , d->email);
-        fscanf(staff_file_ptr , "%s" , d->status);
-        fscanf(staff_file_ptr , "%s" , d->user_name);
-        fscanf(staff_file_ptr , "%s" , d->password);
-        
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(staff_file_ptr);
-
-    staff_file_ptr = fopen("staff_information.txt" , "w");
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(temp->name , staff_name))
+        struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *d = NULL ;
+        struct academic_staff_information *temp = NULL ;
+        struct academic_staff_information *temp2 = NULL ;
+
+        fscanf(staff_file_ptr , "%s" , s->gender);
+        fscanf(staff_file_ptr , "%s" , s->name);
+        fscanf(staff_file_ptr , "%s" , s->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(staff_file_ptr , "%s" , s->rank);
+        fscanf(staff_file_ptr , "%s" , s->phone_number);
+        fscanf(staff_file_ptr , "%s" , s->email);
+        fscanf(staff_file_ptr , "%s" , s->status);
+        fscanf(staff_file_ptr , "%s" , s->user_name);
+        fscanf(staff_file_ptr , "%s" , s->password);
+
+        fscanf(staff_file_ptr , "%s" , e->gender);
+        fscanf(staff_file_ptr , "%s" , e->name);
+        fscanf(staff_file_ptr , "%s" , e->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(staff_file_ptr , "%s" , e->rank);
+        fscanf(staff_file_ptr , "%s" , e->phone_number);
+        fscanf(staff_file_ptr , "%s" , e->email);
+        fscanf(staff_file_ptr , "%s" , e->status);
+        fscanf(staff_file_ptr , "%s" , e->user_name);
+        fscanf(staff_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        while(feof(staff_file_ptr) == 0)
         {
-            if(!strcmp(temp->family , staff_family))
-            {
-                strcpy(temp->status , "");
-                strcpy(temp->status , "inactive");
-                
-                terminate_staff_file_ptr = fopen("terminated_staff.txt" , "a");
+            d = malloc(sizeof(struct academic_staff_information));
 
-                sscanf(terminate_date , "%4s/%2s/%2s" , temp->terminate_date.year , temp->terminate_date.month , temp->terminate_date.day);
+            fscanf(staff_file_ptr , "%s" , d->gender);
+            fscanf(staff_file_ptr , "%s" , d->name);
+            fscanf(staff_file_ptr , "%s" , d->family);
+            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(staff_file_ptr , "%s" , d->rank);
+            fscanf(staff_file_ptr , "%s" , d->phone_number);
+            fscanf(staff_file_ptr , "%s" , d->email);
+            fscanf(staff_file_ptr , "%s" , d->status);
+            fscanf(staff_file_ptr , "%s" , d->user_name);
+            fscanf(staff_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+        }
+        e->link = NULL ;
+
+        fclose(staff_file_ptr);
+
+        staff_file_ptr = fopen("staff_information.txt" , "w");
+
+        if(staff_file_ptr == NULL)
+        {
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
+
+            temp = s ;
+            while(temp != NULL)
+            {
+                if(!strcmp(temp->name , staff_name))
+                {
+                    if(!strcmp(temp->family , staff_family))
+                    {
+                        strcpy(temp->status , "");
+                        strcpy(temp->status , "inactive");
+
+                        terminate_staff_file_ptr = fopen("terminated_staff.txt" , "a");
+
+                        if(terminate_staff_file_ptr == NULL)
+                        {
+                             printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+                        } else
+                        {
+
+                            sscanf(terminate_date , "%4s/%2s/%2s" , temp->terminate_date.year , temp->terminate_date.month , temp->terminate_date.day);
+
+                            if(temp == s)
+                                fprintf(terminate_staff_file_ptr , "%s\n" , temp->gender);
+                            else 
+                                fprintf(terminate_staff_file_ptr , "\n%s\n" , temp->gender);
+                            fprintf(terminate_staff_file_ptr , "%s\n" , temp->name);
+                            fprintf(terminate_staff_file_ptr , "%s\n" , temp->family);
+                            fprintf(terminate_staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+                            fprintf(terminate_staff_file_ptr , "%s\n" , temp->rank);
+                            fprintf(terminate_staff_file_ptr , "%s\n" , temp->phone_number);
+                            fprintf(terminate_staff_file_ptr , "%s\n" , temp->email);
+                            fprintf(terminate_staff_file_ptr , "%s\n" , temp->status);
+                            fprintf(terminate_staff_file_ptr , "%4s/%2s/%2s\n" , temp->terminate_date.year , temp->terminate_date.month, temp->terminate_date.day);
+                            fprintf(terminate_staff_file_ptr , "%s\n" , temp->user_name);
+                            fprintf(terminate_staff_file_ptr , "%s" , temp->password);
+
+                            fclose(terminate_staff_file_ptr);
+                        }
+
+                    }
+                }
 
                 if(temp == s)
-                    fprintf(terminate_staff_file_ptr , "%s\n" , temp->gender);
+                    fprintf(staff_file_ptr , "%s\n" , temp->gender);
                 else 
-                    fprintf(terminate_staff_file_ptr , "\n%s\n" , temp->gender);
-                fprintf(terminate_staff_file_ptr , "%s\n" , temp->name);
-                fprintf(terminate_staff_file_ptr , "%s\n" , temp->family);
-                fprintf(terminate_staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
-                fprintf(terminate_staff_file_ptr , "%s\n" , temp->rank);
-                fprintf(terminate_staff_file_ptr , "%s\n" , temp->phone_number);
-                fprintf(terminate_staff_file_ptr , "%s\n" , temp->email);
-                fprintf(terminate_staff_file_ptr , "%s\n" , temp->status);
-                fprintf(terminate_staff_file_ptr , "%4s/%2s/%2s\n" , temp->terminate_date.year , temp->terminate_date.month, temp->terminate_date.day);
-                fprintf(terminate_staff_file_ptr , "%s\n" , temp->user_name);
-                fprintf(terminate_staff_file_ptr , "%s" , temp->password);
+                    fprintf(staff_file_ptr , "\n%s\n" , temp->gender);
+                fprintf(staff_file_ptr , "%s\n" , temp->name);
+                fprintf(staff_file_ptr , "%s\n" , temp->family);
+                fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+                fprintf(staff_file_ptr , "%s\n" , temp->rank);
+                fprintf(staff_file_ptr , "%s\n" , temp->phone_number);
+                fprintf(staff_file_ptr , "%s\n" , temp->email);
+                fprintf(staff_file_ptr , "%s\n" , temp->status);
+                fprintf(staff_file_ptr , "%s\n" , temp->user_name);
+                fprintf(staff_file_ptr , "%s" , temp->password);
 
-                fclose(terminate_staff_file_ptr);
+                temp = temp->link ;
+
+            }
+
+            fclose(staff_file_ptr);
+
+            // delete link list
+            temp2 = s ;
+            temp = s->link ;
+            while (temp != NULL)
+            {
+
+                free(temp2);
+                temp2 = temp ;
+                temp = temp->link;
 
             }
         }
-
-        if(temp == s)
-            fprintf(staff_file_ptr , "%s\n" , temp->gender);
-        else 
-            fprintf(staff_file_ptr , "\n%s\n" , temp->gender);
-        fprintf(staff_file_ptr , "%s\n" , temp->name);
-        fprintf(staff_file_ptr , "%s\n" , temp->family);
-        fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
-        fprintf(staff_file_ptr , "%s\n" , temp->rank);
-        fprintf(staff_file_ptr , "%s\n" , temp->phone_number);
-        fprintf(staff_file_ptr , "%s\n" , temp->email);
-        fprintf(staff_file_ptr , "%s\n" , temp->status);
-        fprintf(staff_file_ptr , "%s\n" , temp->user_name);
-        fprintf(staff_file_ptr , "%s" , temp->password);
-
-        temp = temp->link ;
-        
-    }
-
-    fclose(staff_file_ptr);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
     }
 }
 
@@ -2167,7 +2346,7 @@ void admin_reports_page()
     // limit admin inputs
     while(admin_choice <= 0 || admin_choice > 4)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &admin_choice);
         gets(c);
@@ -2214,121 +2393,81 @@ void admin_observe_terminated_users_list()
     
     // observe terminated head
 
-    struct department_head_information *s = malloc(sizeof(struct department_head_information));
-    struct department_head_information *e = malloc(sizeof(struct department_head_information));
-    struct department_head_information *d = NULL;
-    struct department_head_information *temp = NULL;
-    struct department_head_information *temp2 = NULL;
-
     terminate_head_file_ptr = fopen("terminated_head.txt" , "r");
 
-    fscanf(terminate_head_file_ptr , "%s" , s->gender);
-    fscanf(terminate_head_file_ptr , "%s" , s->name);
-    fscanf(terminate_head_file_ptr , "%s" , s->family);
-    fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(terminate_head_file_ptr , "%s" , s->group_name);
-    fscanf(terminate_head_file_ptr , "%s" , s->code);
-    fscanf(terminate_head_file_ptr , "%s" , s->phone_number);
-    fscanf(terminate_head_file_ptr , "%s" , s->email);
-    fscanf(terminate_head_file_ptr , "%s" , s->status);
-    fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , s->terminate_date.year , s->terminate_date.month , s->terminate_date.day);
-    fscanf(terminate_head_file_ptr , "%s" , s->user_name);
-    fscanf(terminate_head_file_ptr , "%s" , s->password);
-
-    fscanf(terminate_head_file_ptr , "%s" , e->gender);
-    fscanf(terminate_head_file_ptr , "%s" , e->name);
-    fscanf(terminate_head_file_ptr , "%s" , e->family);
-    fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(terminate_head_file_ptr , "%s" , e->group_name);
-    fscanf(terminate_head_file_ptr , "%s" , e->code);
-    fscanf(terminate_head_file_ptr , "%s" , e->phone_number);
-    fscanf(terminate_head_file_ptr , "%s" , e->email);
-    fscanf(terminate_head_file_ptr , "%s" , e->status);
-    fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , e->terminate_date.year , e->terminate_date.month , e->terminate_date.day);
-    fscanf(terminate_head_file_ptr , "%s" , e->user_name);
-    fscanf(terminate_head_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    //make link list
-    while(feof(terminate_head_file_ptr) == 0)
+    if(terminate_head_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct department_head_information));
-
-        fscanf(terminate_head_file_ptr , "%s" , d->gender);
-        fscanf(terminate_head_file_ptr , "%s" , d->name);
-        fscanf(terminate_head_file_ptr , "%s" , d->family);
-        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(terminate_head_file_ptr , "%s" , d->group_name);
-        fscanf(terminate_head_file_ptr , "%s" , d->code);
-        fscanf(terminate_head_file_ptr , "%s" , d->phone_number);
-        fscanf(terminate_head_file_ptr , "%s" , d->email);
-        fscanf(terminate_head_file_ptr , "%s" , d->status);
-        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , d->terminate_date.year , d->terminate_date.month , d->terminate_date.day);
-        fscanf(terminate_head_file_ptr , "%s" , d->user_name);
-        fscanf(terminate_head_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(terminate_head_file_ptr) ;
-
-    printf("\n%c" , 201);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
-
-    printf("%c" , 186);
-    printf("%69s%s%69s" , "" , "TERMINATED DEPARTMENT HEAD" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    printf("%2s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-12s%c" , "NAME" , 179);
-    printf("%-12s%c" , "FAMILY" , 179);
-    printf("%-11s%c" , "STAT DATE" , 179);
-    printf("%-13s%c" , "GROUP NAME" , 179);
-    printf("%-13s%c" , "CODE" , 179);
-    printf("%-13s%c" , "PHONE NUMBER" , 179);
-    printf("%-32s%c" , "EMAIL" , 179);
-    printf("%-14s%c" , "TERMINATE DATE" , 179);
-    printf("%-12s%c" , "USER NAME" , 179);
-    printf("%-12s" , "PASSWORD");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    temp = s ;
-    j = 1 ;
-    // print tables data
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
+        
+        struct department_head_information *s = malloc(sizeof(struct department_head_information));
+        struct department_head_information *e = malloc(sizeof(struct department_head_information));
+        struct department_head_information *d = NULL;
+        struct department_head_information *temp = NULL;
+        struct department_head_information *temp2 = NULL;
+
+        fscanf(terminate_head_file_ptr , "%s" , s->gender);
+        fscanf(terminate_head_file_ptr , "%s" , s->name);
+        fscanf(terminate_head_file_ptr , "%s" , s->family);
+        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(terminate_head_file_ptr , "%s" , s->group_name);
+        fscanf(terminate_head_file_ptr , "%s" , s->code);
+        fscanf(terminate_head_file_ptr , "%s" , s->phone_number);
+        fscanf(terminate_head_file_ptr , "%s" , s->email);
+        fscanf(terminate_head_file_ptr , "%s" , s->status);
+        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , s->terminate_date.year , s->terminate_date.month , s->terminate_date.day);
+        fscanf(terminate_head_file_ptr , "%s" , s->user_name);
+        fscanf(terminate_head_file_ptr , "%s" , s->password);
+
+        fscanf(terminate_head_file_ptr , "%s" , e->gender);
+        fscanf(terminate_head_file_ptr , "%s" , e->name);
+        fscanf(terminate_head_file_ptr , "%s" , e->family);
+        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(terminate_head_file_ptr , "%s" , e->group_name);
+        fscanf(terminate_head_file_ptr , "%s" , e->code);
+        fscanf(terminate_head_file_ptr , "%s" , e->phone_number);
+        fscanf(terminate_head_file_ptr , "%s" , e->email);
+        fscanf(terminate_head_file_ptr , "%s" , e->status);
+        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , e->terminate_date.year , e->terminate_date.month , e->terminate_date.day);
+        fscanf(terminate_head_file_ptr , "%s" , e->user_name);
+        fscanf(terminate_head_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        //make link list
+        while(feof(terminate_head_file_ptr) == 0)
+        {
+            d = malloc(sizeof(struct department_head_information));
+
+            fscanf(terminate_head_file_ptr , "%s" , d->gender);
+            fscanf(terminate_head_file_ptr , "%s" , d->name);
+            fscanf(terminate_head_file_ptr , "%s" , d->family);
+            fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(terminate_head_file_ptr , "%s" , d->group_name);
+            fscanf(terminate_head_file_ptr , "%s" , d->code);
+            fscanf(terminate_head_file_ptr , "%s" , d->phone_number);
+            fscanf(terminate_head_file_ptr , "%s" , d->email);
+            fscanf(terminate_head_file_ptr , "%s" , d->status);
+            fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , d->terminate_date.year , d->terminate_date.month , d->terminate_date.day);
+            fscanf(terminate_head_file_ptr , "%s" , d->user_name);
+            fscanf(terminate_head_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+        }
+        e->link = NULL ;
+
+        fclose(terminate_head_file_ptr) ;
+
+        printf("\n%c" , 201);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
 
         printf("%c" , 186);
-        printf("%-2d%c" , j++ , 179);
-        printf("%-7s%c" , temp->gender , 179);
-        printf("%-12s%c" , temp->name , 179);
-        printf("%-12s%c" , temp->family , 179);
-        printf("%4s/%2s/%2s%2c" , temp->start_date.year , temp->start_date.month , temp->start_date.month ,  179);
-        printf("%-13s%c" , temp->group_name , 179);
-        printf("%-13s%c" , temp->code , 179);
-        printf("%-13s%c" , temp->phone_number , 179);
-        printf("%-32s%c" , temp->email , 179);
-        printf("%4s/%2s/%2s%5c" , temp->terminate_date.year , temp->terminate_date.month ,temp->terminate_date.day , 179);
-        printf("%-12s%c" , temp->user_name , 179);
-        printf("%-12s" , temp->password);
+        printf("%69s%s%69s" , "" , "TERMINATED DEPARTMENT HEAD" , "");
         printf("%c\n" , 186);
 
         printf("%c" , 186);
@@ -2336,144 +2475,151 @@ void admin_observe_terminated_users_list()
             printf("%c" , 205);
         printf("%c\n" , 186);
 
-        temp = temp->link ;
+        printf("%c" , 186);
+        printf("%2s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-12s%c" , "NAME" , 179);
+        printf("%-12s%c" , "FAMILY" , 179);
+        printf("%-11s%c" , "STAT DATE" , 179);
+        printf("%-13s%c" , "GROUP NAME" , 179);
+        printf("%-13s%c" , "CODE" , 179);
+        printf("%-13s%c" , "PHONE NUMBER" , 179);
+        printf("%-32s%c" , "EMAIL" , 179);
+        printf("%-14s%c" , "TERMINATE DATE" , 179);
+        printf("%-12s%c" , "USER NAME" , 179);
+        printf("%-12s" , "PASSWORD");
+        printf("%c\n" , 186);
+
+        printf("%c" , 186);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        temp = s ;
+        j = 1 ;
+        // print tables data
+        while(temp != NULL)
+        {
+
+            printf("%c" , 186);
+            printf("%-2d%c" , j++ , 179);
+            printf("%-7s%c" , temp->gender , 179);
+            printf("%-12s%c" , temp->name , 179);
+            printf("%-12s%c" , temp->family , 179);
+            printf("%4s/%2s/%2s%2c" , temp->start_date.year , temp->start_date.month , temp->start_date.month ,  179);
+            printf("%-13s%c" , temp->group_name , 179);
+            printf("%-13s%c" , temp->code , 179);
+            printf("%-13s%c" , temp->phone_number , 179);
+            printf("%-32s%c" , temp->email , 179);
+            printf("%4s/%2s/%2s%5c" , temp->terminate_date.year , temp->terminate_date.month ,temp->terminate_date.day , 179);
+            printf("%-12s%c" , temp->user_name , 179);
+            printf("%-12s" , temp->password);
+            printf("%c\n" , 186);
+
+            printf("%c" , 186);
+            for(i = 0 ; i < 164 ; i++)
+                printf("%c" , 205);
+            printf("%c\n" , 186);
+
+            temp = temp->link ;
 
 
+        }
+
+        printf("%c" , 186);
+        printf("%164s" , "");
+        printf("%c\n" , 186);
+
+        printf("%c" , 200);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     }
-
-    printf("%c" , 186);
-    printf("%164s" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 200);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
 
     // observe terminated staff
 
-    struct academic_staff_information *s2 = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *e2 = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *d2 = NULL;
-    struct academic_staff_information *t = NULL;
-    struct academic_staff_information *t2 = NULL;
-
     terminate_staff_file_ptr = fopen("terminated_staff.txt" , "r");
 
-    fscanf(terminate_staff_file_ptr , "%s" , s2->gender);
-    fscanf(terminate_staff_file_ptr , "%s" , s2->name);
-    fscanf(terminate_staff_file_ptr , "%s" , s2->family);
-    fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
-    fscanf(terminate_staff_file_ptr , "%s" , s2->rank);
-    fscanf(terminate_staff_file_ptr , "%s" , s2->phone_number);
-    fscanf(terminate_staff_file_ptr , "%s" , s2->email);
-    fscanf(terminate_staff_file_ptr , "%s" , s2->status);
-    fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , s2->terminate_date.year , s2->terminate_date.month , s2->terminate_date.day);
-    fscanf(terminate_staff_file_ptr , "%s" , s2->user_name);
-    fscanf(terminate_staff_file_ptr , "%s" , s2->password);
-
-    fscanf(terminate_staff_file_ptr , "%s" , e2->gender);
-    fscanf(terminate_staff_file_ptr , "%s" , e2->name);
-    fscanf(terminate_staff_file_ptr , "%s" , e2->family);
-    fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
-    fscanf(terminate_staff_file_ptr , "%s" , e2->rank);
-    fscanf(terminate_staff_file_ptr , "%s" , e2->phone_number);
-    fscanf(terminate_staff_file_ptr , "%s" , e2->email);
-    fscanf(terminate_staff_file_ptr , "%s" , e2->status);
-    fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , e2->terminate_date.year , e2->terminate_date.month , e2->terminate_date.day);
-    fscanf(terminate_staff_file_ptr , "%s" , e2->user_name);
-    fscanf(terminate_staff_file_ptr , "%s" , e2->password);
-
-    s2->link = e2 ;
-    e2->link = NULL ;
-    // make link list
-    while(feof(terminate_staff_file_ptr) == 0)
+    if(terminate_staff_file_ptr == NULL)
     {
-        d2 = malloc(sizeof(struct academic_staff_information));
-
-        fscanf(terminate_staff_file_ptr , "%s" , d2->gender);
-        fscanf(terminate_staff_file_ptr , "%s" , d2->name);
-        fscanf(terminate_staff_file_ptr , "%s" , d2->family);
-        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
-        fscanf(terminate_staff_file_ptr , "%s" , d2->rank);
-        fscanf(terminate_staff_file_ptr , "%s" , d2->phone_number);
-        fscanf(terminate_staff_file_ptr , "%s" , d2->email);
-        fscanf(terminate_staff_file_ptr , "%s" , d2->status);
-        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , d2->terminate_date.year , d2->terminate_date.month , d2->terminate_date.day);
-        fscanf(terminate_staff_file_ptr , "%s" , d2->user_name);
-        fscanf(terminate_staff_file_ptr , "%s" , d2->password);
-
-        e2->link = d2 ;
-        e2 = d2 ;
-    }
-    e2->link = NULL ;
-
-    fclose(terminate_staff_file_ptr) ;
-
-    printf("\n\n%c" , 201);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
-
-    printf("%c" , 186);
-    printf("%74s%s%74s" , "" , "TERMINATED STAFF" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    printf("%2s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-14s%c" , "NAME" , 179);
-    printf("%-15s%c" , "FAMILY" , 179);
-    printf("%-12s%c" , "STAT DATE" , 179);
-    printf("%-13s%c" , "RANK" , 179);
-    printf("%-12s%c" , "PHONE NUMBER" , 179);
-    printf("%-32s%c" , "EMAIL" , 179);
-    printf("%-16s%c" , "TERMINATED STAFF" , 179);
-    printf("%-16s%c" , "USER NAME" , 179);
-    printf("%-15s" , "PASSWORD");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    t = s2 ;
-    j = 1 ;
-    // print second tables data
-    while(t != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
+        struct academic_staff_information *s2 = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *e2 = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *d2 = NULL;
+        struct academic_staff_information *t = NULL;
+        struct academic_staff_information *t2 = NULL;
+
+        fscanf(terminate_staff_file_ptr , "%s" , s2->gender);
+        fscanf(terminate_staff_file_ptr , "%s" , s2->name);
+        fscanf(terminate_staff_file_ptr , "%s" , s2->family);
+        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
+        fscanf(terminate_staff_file_ptr , "%s" , s2->rank);
+        fscanf(terminate_staff_file_ptr , "%s" , s2->phone_number);
+        fscanf(terminate_staff_file_ptr , "%s" , s2->email);
+        fscanf(terminate_staff_file_ptr , "%s" , s2->status);
+        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , s2->terminate_date.year , s2->terminate_date.month , s2->terminate_date.day);
+        fscanf(terminate_staff_file_ptr , "%s" , s2->user_name);
+        fscanf(terminate_staff_file_ptr , "%s" , s2->password);
+
+        fscanf(terminate_staff_file_ptr , "%s" , e2->gender);
+        fscanf(terminate_staff_file_ptr , "%s" , e2->name);
+        fscanf(terminate_staff_file_ptr , "%s" , e2->family);
+        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
+        fscanf(terminate_staff_file_ptr , "%s" , e2->rank);
+        fscanf(terminate_staff_file_ptr , "%s" , e2->phone_number);
+        fscanf(terminate_staff_file_ptr , "%s" , e2->email);
+        fscanf(terminate_staff_file_ptr , "%s" , e2->status);
+        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , e2->terminate_date.year , e2->terminate_date.month , e2->terminate_date.day);
+        fscanf(terminate_staff_file_ptr , "%s" , e2->user_name);
+        fscanf(terminate_staff_file_ptr , "%s" , e2->password);
+
+        s2->link = e2 ;
+        e2->link = NULL ;
+        // make link list
+        while(feof(terminate_staff_file_ptr) == 0)
+        {
+            d2 = malloc(sizeof(struct academic_staff_information));
+
+            fscanf(terminate_staff_file_ptr , "%s" , d2->gender);
+            fscanf(terminate_staff_file_ptr , "%s" , d2->name);
+            fscanf(terminate_staff_file_ptr , "%s" , d2->family);
+            fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
+            fscanf(terminate_staff_file_ptr , "%s" , d2->rank);
+            fscanf(terminate_staff_file_ptr , "%s" , d2->phone_number);
+            fscanf(terminate_staff_file_ptr , "%s" , d2->email);
+            fscanf(terminate_staff_file_ptr , "%s" , d2->status);
+            fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , d2->terminate_date.year , d2->terminate_date.month , d2->terminate_date.day);
+            fscanf(terminate_staff_file_ptr , "%s" , d2->user_name);
+            fscanf(terminate_staff_file_ptr , "%s" , d2->password);
+
+            e2->link = d2 ;
+            e2 = d2 ;
+        }
+        e2->link = NULL ;
+
+        fclose(terminate_staff_file_ptr) ;
+
+        printf("\n\n%c" , 201);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
 
         printf("%c" , 186);
-        printf("%-2d%c" , j++ , 179);
-        printf("%-7s%c" , t->gender , 179);
-        printf("%-14s%c" , t->name , 179);
-        printf("%-15s%c" , t->family , 179);
-        printf("%4s/%2s/%2s%3c" , t->start_date.year , t->start_date.month , t->start_date.day , 179);
-        printf("%-13s%c" , t->rank , 179);
-        printf("%-12s%c" , t->phone_number , 179);
-        printf("%-32s%c" , t->email , 179);
-        printf("%4s/%2s/%2s%7c" , t->terminate_date.year, t->terminate_date.month , t->terminate_date.day , 179);
-        printf("%-16s%c" , t->user_name , 179);
-        printf("%-15s" , t->password);
+        printf("%74s%s%74s" , "" , "TERMINATED STAFF" , "");
         printf("%c\n" , 186);
 
         printf("%c" , 186);
@@ -2481,32 +2627,76 @@ void admin_observe_terminated_users_list()
             printf("%c" , 205);
         printf("%c\n" , 186);
 
-        t = t->link ;
+        printf("%c" , 186);
+        printf("%2s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-14s%c" , "NAME" , 179);
+        printf("%-15s%c" , "FAMILY" , 179);
+        printf("%-12s%c" , "STAT DATE" , 179);
+        printf("%-13s%c" , "RANK" , 179);
+        printf("%-12s%c" , "PHONE NUMBER" , 179);
+        printf("%-32s%c" , "EMAIL" , 179);
+        printf("%-16s%c" , "TERMINATED STAFF" , 179);
+        printf("%-16s%c" , "USER NAME" , 179);
+        printf("%-15s" , "PASSWORD");
+        printf("%c\n" , 186);
+
+        printf("%c" , 186);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        t = s2 ;
+        j = 1 ;
+        // print second tables data
+        while(t != NULL)
+        {
+
+            printf("%c" , 186);
+            printf("%-2d%c" , j++ , 179);
+            printf("%-7s%c" , t->gender , 179);
+            printf("%-14s%c" , t->name , 179);
+            printf("%-15s%c" , t->family , 179);
+            printf("%4s/%2s/%2s%3c" , t->start_date.year , t->start_date.month , t->start_date.day , 179);
+            printf("%-13s%c" , t->rank , 179);
+            printf("%-12s%c" , t->phone_number , 179);
+            printf("%-32s%c" , t->email , 179);
+            printf("%4s/%2s/%2s%7c" , t->terminate_date.year, t->terminate_date.month , t->terminate_date.day , 179);
+            printf("%-16s%c" , t->user_name , 179);
+            printf("%-15s" , t->password);
+            printf("%c\n" , 186);
+
+            printf("%c" , 186);
+            for(i = 0 ; i < 164 ; i++)
+                printf("%c" , 205);
+            printf("%c\n" , 186);
+
+            t = t->link ;
 
 
+        }
+
+        printf("%c" , 186);
+        printf("%164s" , "");
+        printf("%c\n" , 186);
+
+        printf("%c" , 200);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
+
+        // delete link list
+        t2 = s2 ;
+        t = s2->link ;
+        while (t != NULL)
+        {
+
+            free(t2);
+            t2 = t ;
+            t = t->link;
+
+        }
     }
-
-    printf("%c" , 186);
-    printf("%164s" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 200);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
-
-    // delete link list
-    t2 = s2 ;
-    t = s2->link ;
-    while (t != NULL)
-    {
-
-        free(t2);
-        t2 = t ;
-        t = t->link;
-
-    }
-
     // return to main menu
     printf("\033[34m""\n    Please enter to continue ....""\033[0m");
     enter = getchar();
@@ -2543,7 +2733,7 @@ void admin_backup_menu()
     // limit admin inputs
     while(admin_choice <= 0 || admin_choice > 7)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &admin_choice);
         gets(c);
@@ -2616,91 +2806,161 @@ void admin_backup(int n)
     {
         head_file_ptr = fopen("department_head_information.txt" , "r");
 
-        sprintf(file_name , "backup_department_head_information(%s).txt" , __DATE__);
-
-        backup_head_file_ptr = fopen(file_name ,  "w");
-
-        c = fgetc(head_file_ptr);
-        while(feof(head_file_ptr) == 0)
+        if(head_file_ptr == NULL)
         {
-            fputc(c , backup_head_file_ptr);
-            c = fgetc(head_file_ptr);
-        }
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
 
-        fclose(head_file_ptr);
-        fclose(backup_head_file_ptr);
+            sprintf(file_name , "backup_department_head_information(%s).txt" , __DATE__);
+
+            backup_head_file_ptr = fopen(file_name ,  "w");
+
+            if(backup_head_file_ptr= NULL)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+            } else
+            {
+
+                c = fgetc(head_file_ptr);
+                while(feof(head_file_ptr) == 0)
+                {
+                    fputc(c , backup_head_file_ptr);
+                    c = fgetc(head_file_ptr);
+                }
+
+                fclose(head_file_ptr);
+                fclose(backup_head_file_ptr);
+            }
+        }
 
     } else if(n == 2)
     {
         staff_file_ptr = fopen("staff_information.txt" , "r");
 
-        sprintf(file_name , "backup_staff_information(%s).txt" , __DATE__);
-
-        backup_staff_file_ptr = fopen(file_name ,  "w");
-
-        c = fgetc(staff_file_ptr);
-        while(feof(staff_file_ptr) == 0)
+        if(staff_file_ptr == NULL)
         {
-            fputc(c , backup_staff_file_ptr);
-            c = fgetc(staff_file_ptr);
-        }
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
 
-        fclose(staff_file_ptr);
-        fclose(backup_staff_file_ptr);
+            sprintf(file_name , "backup_staff_information(%s).txt" , __DATE__);
+
+            backup_staff_file_ptr = fopen(file_name ,  "w");
+
+            if(backup_staff_file_ptr= NULL)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+            } else
+            {
+
+                c = fgetc(staff_file_ptr);
+                while(feof(staff_file_ptr) == 0)
+                {
+                    fputc(c , backup_staff_file_ptr);
+                    c = fgetc(staff_file_ptr);
+                }
+            
+                fclose(staff_file_ptr);
+                fclose(backup_staff_file_ptr);
+            }
+        }
 
     } else if(n == 3)
     {
         student_file_ptr = fopen("student_information.txt" , "r");
 
-        sprintf(file_name , "backup_student_information(%s).txt" , __DATE__);
-
-        backup_student_file_ptr = fopen(file_name ,  "w");
-
-        c = fgetc(student_file_ptr);
-        while(feof(student_file_ptr) == 0)
+        if(student_file_ptr == NULL)
         {
-            fputc(c , backup_student_file_ptr);
-            c = fgetc(student_file_ptr);
-        }
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else 
+        {
 
-        fclose(student_file_ptr);
-        fclose(backup_student_file_ptr);
+            sprintf(file_name , "backup_student_information(%s).txt" , __DATE__);
+
+            backup_student_file_ptr = fopen(file_name ,  "w");
+
+            if(backup_student_file_ptr == NULL)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+            } else
+            {
+
+                c = fgetc(student_file_ptr);
+                while(feof(student_file_ptr) == 0)
+                {
+                    fputc(c , backup_student_file_ptr);
+                    c = fgetc(student_file_ptr);
+                }
+
+                fclose(student_file_ptr);
+                fclose(backup_student_file_ptr);
+            }
+        }
 
     } else if(n == 4)
     {
         lesson_file_ptr = fopen("lessons_information.txt" , "r");
 
-        sprintf(file_name , "backup_lessons_information(%s).txt" , __DATE__);
-
-        backup_lesson_file_ptr = fopen(file_name ,  "w");
-
-        c = fgetc(lesson_file_ptr);
-        while(feof(lesson_file_ptr) == 0)
+        if(lesson_file_ptr == NULL)
         {
-            fputc(c , backup_lesson_file_ptr);
-            c = fgetc(lesson_file_ptr);
-        }
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
 
-        fclose(lesson_file_ptr);
-        fclose(backup_lesson_file_ptr);
+            sprintf(file_name , "backup_lessons_information(%s).txt" , __DATE__);
+
+            backup_lesson_file_ptr = fopen(file_name ,  "w");
+
+            if(backup_lesson_file_ptr == NULL)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+            } else
+            {
+
+                c = fgetc(lesson_file_ptr);
+                while(feof(lesson_file_ptr) == 0)
+                {
+                    fputc(c , backup_lesson_file_ptr);
+                    c = fgetc(lesson_file_ptr);
+                }
+
+                fclose(lesson_file_ptr);
+                fclose(backup_lesson_file_ptr);
+            }
+        }
 
     } else if(n == 5)
     {
         score_file_ptr = fopen("scores_information.txt" , "r");
 
-        sprintf(file_name , "backup_scores_information(%s).txt" , __DATE__);
-
-        backup_score_file_ptr = fopen(file_name ,  "w");
-
-        c = fgetc(score_file_ptr);
-        while(feof(score_file_ptr) == 0)
+        if(score_file_ptr == NULL)
         {
-            fputc(c , backup_score_file_ptr);
-            c = fgetc(score_file_ptr);
-        }
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
 
-        fclose(score_file_ptr);
-        fclose(backup_score_file_ptr);
+            sprintf(file_name , "backup_scores_information(%s).txt" , __DATE__);
+
+            backup_score_file_ptr = fopen(file_name ,  "w");
+
+            if(backup_score_file_ptr == NULL)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+            } else
+            {
+
+                c = fgetc(score_file_ptr);
+                while(feof(score_file_ptr) == 0)
+                {
+                    fputc(c , backup_score_file_ptr);
+                    c = fgetc(score_file_ptr);
+                }
+
+                fclose(score_file_ptr);
+                fclose(backup_score_file_ptr);
+            }
+        }
 
     } else if(n == 6)
     {
@@ -2724,7 +2984,7 @@ void department_head_login()
     gets(head_user_name);
     while(strcmp(head_user_name , "") == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your user name : ");
         gets(head_user_name);
     }
@@ -2733,7 +2993,7 @@ void department_head_login()
     strcpy(head_password , star_password());
     while(strcmp(head_password , "") == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your password : ");
         strcpy(head_password , star_password());
     }
@@ -2743,10 +3003,10 @@ void department_head_login()
     if(head_found == 1)
     {
 
-        department_head_menu(head_list(head_user_name));
+        department_head_menu(head_list("" , "" ,head_user_name));
     } else
     {
-        printf("\033[31m""\n\t\t\t\tERROR! incorrect user name or password.\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! incorrect user name or password.\n""\033[0m");
         // return to main menu
         printf("\033[34m""\n\t\t\t\tPlease enter to continue ....""\033[0m");
         enter = getchar();
@@ -2764,102 +3024,107 @@ int department_head_check_login(char head_user_name[] , char head_password[])
 {
     int head_found = 0 ;
 
-    struct department_head_information *s = malloc(sizeof(struct department_head_information));
-    struct department_head_information *e = malloc(sizeof(struct department_head_information));
-    struct department_head_information *d = NULL;
-    struct department_head_information *temp = NULL;
-    struct department_head_information *temp2 = NULL;
-
     head_file_ptr = fopen("department_head_information.txt" , "r");
 
-    fscanf(head_file_ptr , "%s" , s->gender);
-    fscanf(head_file_ptr , "%s" , s->name);
-    fscanf(head_file_ptr , "%s" , s->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(head_file_ptr , "%s" , s->group_name);
-    fscanf(head_file_ptr , "%s" , s->code);
-    fscanf(head_file_ptr , "%s" , s->phone_number);
-    fscanf(head_file_ptr , "%s" , s->email);
-    fscanf(head_file_ptr , "%s" , s->status);
-    fscanf(head_file_ptr , "%s" , s->user_name);
-    fscanf(head_file_ptr , "%s" , s->password);
-
-    fscanf(head_file_ptr , "%s" , e->gender);
-    fscanf(head_file_ptr , "%s" , e->name);
-    fscanf(head_file_ptr , "%s" , e->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(head_file_ptr , "%s" , e->group_name);
-    fscanf(head_file_ptr , "%s" , e->code);
-    fscanf(head_file_ptr , "%s" , e->phone_number);
-    fscanf(head_file_ptr , "%s" , e->email);
-    fscanf(head_file_ptr , "%s" , e->status);
-    fscanf(head_file_ptr , "%s" , e->user_name);
-    fscanf(head_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL;
-
-
-    // make link list of head department information
-    while(feof(head_file_ptr) == 0)
+    if(head_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct department_head_information));
-
-        fscanf(head_file_ptr , "%s" , d->gender);
-        fscanf(head_file_ptr , "%s" , d->name);
-        fscanf(head_file_ptr , "%s" , d->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(head_file_ptr , "%s" , d->group_name);
-        fscanf(head_file_ptr , "%s" , d->code);
-        fscanf(head_file_ptr , "%s" , d->phone_number);
-        fscanf(head_file_ptr , "%s" , d->email);
-        fscanf(head_file_ptr , "%s" , d->status);
-        fscanf(head_file_ptr , "%s" , d->user_name);
-        fscanf(head_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(head_file_ptr);
-
-    temp = s ;
-    // search user name and password
-    while(temp != NULL)
-    {
-        if(!strcmp(temp->user_name , head_user_name))
-        {
-            if(!strcmp(temp->password , head_password))
-            {
-                head_found = 1 ;
-                break;
-            }
-        }
-        temp = temp->link ;
-    }
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
-    if(head_found == 1)
-    {
-        return 1 ;
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
     } else
-    {
-        return 0 ;
-    }
+    {   
+        struct department_head_information *s = malloc(sizeof(struct department_head_information));
+        struct department_head_information *e = malloc(sizeof(struct department_head_information));
+        struct department_head_information *d = NULL;
+        struct department_head_information *temp = NULL;
+        struct department_head_information *temp2 = NULL;
 
+        fscanf(head_file_ptr , "%s" , s->gender);
+        fscanf(head_file_ptr , "%s" , s->name);
+        fscanf(head_file_ptr , "%s" , s->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , "%s" , s->group_name);
+        fscanf(head_file_ptr , "%s" , s->code);
+        fscanf(head_file_ptr , "%s" , s->phone_number);
+        fscanf(head_file_ptr , "%s" , s->email);
+        fscanf(head_file_ptr , "%s" , s->status);
+        fscanf(head_file_ptr , "%s" , s->user_name);
+        fscanf(head_file_ptr , "%s" , s->password);
+
+        fscanf(head_file_ptr , "%s" , e->gender);
+        fscanf(head_file_ptr , "%s" , e->name);
+        fscanf(head_file_ptr , "%s" , e->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , "%s" , e->group_name);
+        fscanf(head_file_ptr , "%s" , e->code);
+        fscanf(head_file_ptr , "%s" , e->phone_number);
+        fscanf(head_file_ptr , "%s" , e->email);
+        fscanf(head_file_ptr , "%s" , e->status);
+        fscanf(head_file_ptr , "%s" , e->user_name);
+        fscanf(head_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL;
+
+
+        // make link list of head department information
+        while(feof(head_file_ptr) == 0)
+        {
+            d = malloc(sizeof(struct department_head_information));
+
+            fscanf(head_file_ptr , "%s" , d->gender);
+            fscanf(head_file_ptr , "%s" , d->name);
+            fscanf(head_file_ptr , "%s" , d->family);
+            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , "%s" , d->group_name);
+            fscanf(head_file_ptr , "%s" , d->code);
+            fscanf(head_file_ptr , "%s" , d->phone_number);
+            fscanf(head_file_ptr , "%s" , d->email);
+            fscanf(head_file_ptr , "%s" , d->status);
+            fscanf(head_file_ptr , "%s" , d->user_name);
+            fscanf(head_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+
+        }
+        e->link = NULL ;
+
+        fclose(head_file_ptr);
+
+        temp = s ;
+        // search user name and password
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->user_name , head_user_name))
+            {
+                if(!strcmp(temp->password , head_password))
+                {
+                    head_found = 1 ;
+                    break;
+                }
+            }
+            temp = temp->link ;
+        }
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
+
+        if(head_found == 1)
+        {
+            return 1 ;
+        } else
+        {
+            return 0 ;
+        }
+    }
 }
 
 //department head page menu
@@ -2891,7 +3156,7 @@ void department_head_menu(struct department_head_information head)
     // limit department head inputs
     while(head_choice <= 0 || head_choice > 8)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &head_choice);
         gets(c);
@@ -2970,7 +3235,7 @@ void department_head_log_lesson( struct department_head_information head)
     // check name
     while(!check_string(lesson.name))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons name : ");
         gets(lesson.name);
     }
@@ -2980,7 +3245,7 @@ void department_head_log_lesson( struct department_head_information head)
     // check
     while(!check_number(lesson.number_of_unit))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter number of unit : ");
         gets(lesson.number_of_unit);
     }
@@ -2990,17 +3255,24 @@ void department_head_log_lesson( struct department_head_information head)
     //check
     while(strcmp(lesson.type , "theory") != 0 && strcmp(lesson.type , "parctical") != 0 && strcmp(lesson.type , "experimental") != 0 && strcmp(lesson.type , "workshop") != 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter type of this lesson(theory , parctical , experimental , workshop): ");
         gets(lesson.type);
     }
 
     printf("\n\t\t\t\tPlease enter lessons code : " );
     gets(lesson.code);
-    //check
-    while(check_number(lesson.code) == 0 && lesson_list(lesson.code).name[0] != '\0' && lesson_list(lesson.code).number_of_unit[0] != '\0')
+    //check lesson code
+    while(check_number(lesson.code) == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\n\t\t\t\tPlease enter lessons code : " );
+        gets(lesson.code);
+    }
+    //check existence lesson code
+    while(lesson_list(lesson.code).name[0] != '\0' && lesson_list(lesson.code).number_of_unit[0] != '\0')
+    {
+        printf("\033[31m""\t\t\t\tERROR ! Duplicate input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : " );
         gets(lesson.code);
     }
@@ -3011,17 +3283,23 @@ void department_head_log_lesson( struct department_head_information head)
     // print lesson information in file
     lesson_file_ptr = fopen("lessons_information.txt" , "a");
 
-    fprintf(lesson_file_ptr , "\n%s\n" , lesson.name);
-    fprintf(lesson_file_ptr , "%s\n" , lesson.number_of_unit);
-    fprintf(lesson_file_ptr , "%s\n" , lesson.type);
-    fprintf(lesson_file_ptr , "%s\n" , lesson.code);
-    fprintf(lesson_file_ptr , "%s" , lesson.status);
+    if(lesson_file_ptr == NULL)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
+    {
 
+        fprintf(lesson_file_ptr , "\n%s\n" , lesson.name);
+        fprintf(lesson_file_ptr , "%s\n" , lesson.number_of_unit);
+        fprintf(lesson_file_ptr , "%s\n" , lesson.type);
+        fprintf(lesson_file_ptr , "%s\n" , lesson.code);
+        fprintf(lesson_file_ptr , "%s" , lesson.status);
 
+        fclose(lesson_file_ptr);
 
-    fclose(lesson_file_ptr);
+        printf("\033[32m""\n\t\t\t\tlesson log successfully complited :)\n""\033[0m");
+    }
 
-    printf("\033[32m""\n\t\t\t\tlesson log successfully complited :)\n""\033[0m");
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -3038,6 +3316,8 @@ void department_head_log_score( struct department_head_information head)
 {
     char   enter;
     struct student_score score;
+    struct student_information st;
+    struct lesson_information les;
 
     system("cls");
 
@@ -3053,48 +3333,73 @@ void department_head_log_score( struct department_head_information head)
     // check id
     while(!check_number(score.student_id))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students id  : ");
         gets(score.student_id);
     }
 
-    printf("\n\t\t\t\tPlease enter lessons code : ");
-    gets(score.lesson_code);
-    // check code
-    while(!check_number(score.lesson_code))
+    st = student_list("" , "" , score.student_id);
+
+    if(student_list(st.name , st.family , st.id).id[0] == '\0')
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+         printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(score.lesson_code);
+        // check code
+        while(!check_number(score.lesson_code))
+        {
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+            printf("\n\t\t\t\tPlease enter lessons code : ");
+            gets(score.lesson_code);
+        }
+
+        les = lesson_list(score.lesson_code);
+
+        if(lesson_list(les.code).name[0] == '\0')
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Lesson not found .""\033[0m");
+        } else
+        {
+            printf("\n\t\t\t\tPlease enter score : ");
+            gets(score.score);
+            //check score
+            while(!check_number(score.score))
+            {   
+                printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+                printf("\n\t\t\t\tPlease enter score : ");
+                gets(score.score);
+            }   
+
+            printf("\n\t\t\t\tDate : %s" , __DATE__);
+
+            printf("\n\n\t\t\t\tTime : %s" , __TIME__);
+
+            ("\n\n\t\t\t\tDepartment head name : %s %s" , head.name , head.family);
+            
+            // print score information in file
+            score_file_ptr = fopen("scores_information.txt" , "a");
+
+            if(score_file_ptr == NULL)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+            } else
+            {
+                fprintf(score_file_ptr , "\n%s\n" , score.student_id);
+                fprintf(score_file_ptr , "%s\n" , score.lesson_code);
+                fprintf(score_file_ptr , "%s\n" , score.score);
+                fprintf(score_file_ptr , "%s\n" , __DATE__);
+                fprintf(score_file_ptr , "%s\n" , __TIME__);
+                fprintf( score_file_ptr ,"%s %s" , head.name , head.family);
+            
+                 fclose(score_file_ptr);
+            
+                printf("\033[32m""\n\n\t\t\t\tscore log successfully complited :)\n""\033[0m");
+            }
+        }
+        
     }
-
-    printf("\n\t\t\t\tPlease enter score : ");
-    gets(score.score);
-    //check score
-    while(!check_number(score.score))
-    {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter score : ");
-        gets(score.score);
-    }
-
-    printf("\n\t\t\t\tDate : %s" , __DATE__);
-
-    printf("\n\n\t\t\t\tTime : %s" , __TIME__);
-
-    printf("\n\n\t\t\t\tDepartment head name : %s %s" , head.name , head.family);
-
-    // print score information in file
-    score_file_ptr = fopen("scores_information.txt" , "a");
-    fprintf(score_file_ptr , "\n%s\n" , score.student_id);
-    fprintf(score_file_ptr , "%s\n" , score.lesson_code);
-    fprintf(score_file_ptr , "%s\n" , score.score);
-    fprintf(score_file_ptr , "%s\n" , __DATE__);
-    fprintf(score_file_ptr , "%s\n" , __TIME__);
-    fprintf( score_file_ptr ,"%s %s" , head.name , head.family);
-     fclose(score_file_ptr);
-
-    printf("\033[32m""\n\n\t\t\t\tscore log successfully complited :)\n""\033[0m");
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -3111,6 +3416,8 @@ void department_head_edit_score_page(struct department_head_information head)
 {
     char   enter;
     struct student_score score;
+    struct student_information st ;
+    struct lesson_information les ;
 
     system("cls");
 
@@ -3126,34 +3433,51 @@ void department_head_edit_score_page(struct department_head_information head)
     // check id
     while(!check_number(score.student_id))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students id  : ");
         gets(score.student_id );
     }
 
-    printf("\n\t\t\t\tPlease enter lessons code : ");
-    gets(score.lesson_code );
-    // check code
-    while(!check_number(score.lesson_code))
+    st = student_list("" , "" , score.student_id);
+
+    if(student_list(st.name , st.family , st.id).id[0] == '\0')
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+         printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+        printf("\n\t\t\t\tPlease enter lessons code : ");
+        gets(score.lesson_code);
+        // check code
+        while(!check_number(score.lesson_code))
+    {
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(score.lesson_code);
     }
 
-    printf("\n\t\t\t\tPlease enter score : ");
-    gets(score.score);
-    //check score
-    while(!check_number(score.score))
-    {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter score : ");
-        gets(score.score);
+        les = lesson_list(score.lesson_code);
+
+        if(lesson_list(les.code).name[0] == '\0')
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Lesson not found .""\033[0m");
+        } else
+        {
+            printf("\n\t\t\t\tPlease enter score : ");
+            gets(score.score);
+            //check score
+            while(!check_number(score.score))
+            {   
+                printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+                printf("\n\t\t\t\tPlease enter score : ");
+                gets(score.score);
+            } 
+            
+            department_head_edit_score_list(score.student_id , score.lesson_code , score.score);
+
+            printf("\033[32m""\n\n\t\t\t\tscore edit successfully :)\n""\033[0m");
+        }
+        
     }
-
-    department_head_edit_score_list(score.student_id , score.lesson_code , score.score);
-
-    printf("\033[32m""\n\n\t\t\t\tscore edit successfully :)\n""\033[0m");
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -3167,104 +3491,118 @@ void department_head_edit_score_page(struct department_head_information head)
 // edit system for  students score from department head
 void department_head_edit_score_list(char student_id[] , char lesson_code[] , char score[])
 {
-    struct student_score *s = malloc(sizeof(struct student_score));
-    struct student_score *e = malloc(sizeof(struct student_score));
-    struct student_score *d = NULL;
-    struct student_score *temp = NULL;
-    struct student_score *temp2 = NULL;
-
+    
     score_file_ptr = fopen("scores_information.txt" , "r");
 
-    fgets(s->student_id , sizeof(d->student_id) , score_file_ptr);
-    fgets(s->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
-    fgets(s->score , sizeof(d->score) , score_file_ptr);
-    fgets(s->date , sizeof(d->date) , score_file_ptr);
-    fgets(s->time , sizeof(d->time) , score_file_ptr);
-    fgets(s->user_name , sizeof(d->user_name) ,  score_file_ptr );
-
-    fgets(e->student_id , sizeof(d->student_id) , score_file_ptr);
-    fgets(e->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
-    fgets(e->score , sizeof(d->score) , score_file_ptr);
-    fgets(e->date , sizeof(d->date) , score_file_ptr);
-    fgets(e->time , sizeof(d->time) , score_file_ptr);
-    fgets(e->user_name , sizeof(d->user_name) ,  score_file_ptr );
-
-    s->link = e ;
-    e->link = NULL ;
-
-
-    while(feof(score_file_ptr) == 0)
+    if(score_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_score));
-
-        fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
-        fgets(d->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
-        fgets(d->score , sizeof(d->score) , score_file_ptr);
-        fgets(d->date , sizeof(d->date) , score_file_ptr);
-        fgets(d->time , sizeof(d->time) , score_file_ptr);
-        fgets(d->user_name , sizeof(d->user_name) ,  score_file_ptr );
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(score_file_ptr);
-
-    score_file_ptr = fopen("scores_information.txt" , "w");
-
-    strcat(student_id , "\n");
-    strcat(lesson_code , "\n");
-    strcat(score , "\n");
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(temp->student_id , student_id))
+
+        struct student_score *s = malloc(sizeof(struct student_score));
+        struct student_score *e = malloc(sizeof(struct student_score));
+        struct student_score *d = NULL;
+        struct student_score *temp = NULL;
+        struct student_score *temp2 = NULL;
+
+        fgets(s->student_id , sizeof(d->student_id) , score_file_ptr);
+        fgets(s->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+        fgets(s->score , sizeof(d->score) , score_file_ptr);
+        fgets(s->date , sizeof(d->date) , score_file_ptr);
+        fgets(s->time , sizeof(d->time) , score_file_ptr);
+        fgets(s->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+        fgets(e->student_id , sizeof(d->student_id) , score_file_ptr);
+        fgets(e->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+        fgets(e->score , sizeof(d->score) , score_file_ptr);
+        fgets(e->date , sizeof(d->date) , score_file_ptr);
+        fgets(e->time , sizeof(d->time) , score_file_ptr);
+        fgets(e->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+        s->link = e ;
+        e->link = NULL ;
+
+
+        while(feof(score_file_ptr) == 0)
+        {
+            d = malloc(sizeof(struct student_score));
+
+            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            fgets(d->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
+            fgets(d->score , sizeof(d->score) , score_file_ptr);
+            fgets(d->date , sizeof(d->date) , score_file_ptr);
+            fgets(d->time , sizeof(d->time) , score_file_ptr);
+            fgets(d->user_name , sizeof(d->user_name) ,  score_file_ptr );
+
+            e->link = d ;
+            e = d ;
+
+        }
+        e->link = NULL ;
+
+        fclose(score_file_ptr);
+
+        score_file_ptr = fopen("scores_information.txt" , "w");
+
+        if(score_file_ptr == NULL)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
         {
 
-            if(!strcmp(temp->lesson_code , lesson_code))
+            strcat(student_id , "\n");
+            strcat(lesson_code , "\n");
+            strcat(score , "\n");
+
+            temp = s ;
+            while(temp != NULL)
+            {
+                if(!strcmp(temp->student_id , student_id))
+                {
+
+                    if(!strcmp(temp->lesson_code , lesson_code))
+                    {
+
+                        strcpy(temp->score , "");
+                        strcpy(temp->score , score );
+                    }
+                }
+
+                fprintf(score_file_ptr , "%s" , temp->student_id);
+                fprintf(score_file_ptr , "%s" , temp->lesson_code);
+                fprintf(score_file_ptr , "%s" , temp->score);
+                fprintf(score_file_ptr , "%s" , temp->date);
+                fprintf(score_file_ptr , "%s" , temp->time);
+                fprintf(score_file_ptr , "%s" , temp->user_name);
+
+                temp = temp->link ;
+
+
+            }
+
+            fclose(score_file_ptr);
+
+            // delete link list
+            temp2 = s ;
+            temp = s->link ;
+            while (temp != NULL)
             {
 
-                strcpy(temp->score , "");
-                strcpy(temp->score , score );
+                free(temp2);
+                temp2 = temp ;
+                temp = temp->link;
+
             }
         }
-
-        fprintf(score_file_ptr , "%s" , temp->student_id);
-        fprintf(score_file_ptr , "%s" , temp->lesson_code);
-        fprintf(score_file_ptr , "%s" , temp->score);
-        fprintf(score_file_ptr , "%s" , temp->date);
-        fprintf(score_file_ptr , "%s" , temp->time);
-        fprintf(score_file_ptr , "%s" , temp->user_name);
-
-        temp = temp->link ;
-
-
     }
-
-    fclose(score_file_ptr);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
 }
 
 // department head edit lessons information page
 void department_head_edit_lesson(struct department_head_information head)
 {
     int head_choice = 0 ;
-    char c[100] , enter;
+    char c[100];
 
     system("cls");
 
@@ -3285,7 +3623,7 @@ void department_head_edit_lesson(struct department_head_information head)
     // limit admin inputs
     while(head_choice <= 0 || head_choice > 4)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &head_choice);
         gets(c);
@@ -3326,7 +3664,7 @@ void department_head_edit_lesson_menu_choice(int head_choice , struct department
 // edit lessons name page
 void department_head_edit_lessons_name_page(struct department_head_information head)
 {
-    struct lesson_information lesson ;
+    struct lesson_information lesson , les ;
     char enter ;
 
     system("cls");
@@ -3342,27 +3680,36 @@ void department_head_edit_lessons_name_page(struct department_head_information h
     // check
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
 
-    printf("\n\t\t\t\tPlease enter lessons new name : ");
-    gets(lesson.name);
-    // check
-    while(!check_string(lesson.name))
+    les = lesson_list(lesson.code);
+
+    if(lesson_list(les.code).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Lesson not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter lessons new name : ");
         gets(lesson.name);
+        // check
+        while(!check_string(lesson.name))
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter lessons new name : ");
+            gets(lesson.name);
+        }
+
+
+
+        department_head_edit_lessons_list(lesson.code , "name" , lesson.name);
+
+        printf("\033[32m""\n\n\t\t\t\tedit lessons name successfully complited :)\n""\033[0m");
+
     }
-
-
-
-    department_head_edit_lessons_list(lesson.code , "name" , lesson.name);
-
-    printf("\033[32m""\n\n\t\t\t\tedit lessons name successfully complited :)\n""\033[0m");
-
+    
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
     enter = getchar();
@@ -3375,7 +3722,7 @@ void department_head_edit_lessons_name_page(struct department_head_information h
 // edit lessons number of unit page
 void department_head_edit_lessons_number_of_unit_page(struct department_head_information head)
 {
-    struct lesson_information lesson ;
+    struct lesson_information lesson , les;
     char enter ;
 
     system("cls");
@@ -3391,26 +3738,37 @@ void department_head_edit_lessons_number_of_unit_page(struct department_head_inf
     // check
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
 
-    printf("\n\t\t\t\tPlease enter lessons new number of unit : ");
-    gets(lesson.number_of_unit);
-    // check
-    while(!check_number(lesson.number_of_unit))
+    les = lesson_list(lesson.code);
+
+    if(lesson_list(les.code).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Lesson not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter lessons new number of unit : ");
         gets(lesson.number_of_unit);
+        // check
+        while(!check_number(lesson.number_of_unit))
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter lessons new number of unit : ");
+            gets(lesson.number_of_unit);
+        }
+
+
+
+        department_head_edit_lessons_list(lesson.code , "number of unit" , lesson.number_of_unit);
+
+        printf("\033[32m""\n\n\t\t\t\tedit lessons number of unit successfully complited :)\n""\033[0m");
+
     }
 
-
-
-    department_head_edit_lessons_list(lesson.code , "number of unit" , lesson.number_of_unit);
-
-    printf("\033[32m""\n\n\t\t\t\tedit lessons number of unit successfully complited :)\n""\033[0m");
+    
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -3424,7 +3782,7 @@ void department_head_edit_lessons_number_of_unit_page(struct department_head_inf
 // edit lessons type page
 void department_head_edit_lessons_type_page(struct department_head_information head)
 {
-    struct lesson_information lesson ;
+    struct lesson_information lesson , les ;
     char enter ;
 
     system("cls");
@@ -3440,27 +3798,37 @@ void department_head_edit_lessons_type_page(struct department_head_information h
     // check
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
 
-    printf("\n\t\t\t\tPlease enter lessons new type : ");
-    gets(lesson.type);
-    // check
-    while(!check_string(lesson.type))
+    les = lesson_list(lesson.code);
+
+    if(lesson_list(les.code).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Lesson not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter lessons new type : ");
         gets(lesson.type);
+        // check
+        while(strcmp(lesson.type , "theory") != 0 && strcmp(lesson.type , "parctical") != 0 && strcmp(lesson.type , "experimental") != 0 && strcmp(lesson.type , "workshop") != 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter lessons new type : ");
+            gets(lesson.type);
+        }
+
+
+
+        department_head_edit_lessons_list(lesson.code , "type" , lesson.type);
+
+        printf("\033[32m""\n\n\t\t\t\tedit lessons type successfully complited :)\n""\033[0m");
+
     }
 
-
-
-    department_head_edit_lessons_list(lesson.code , "type" , lesson.type);
-
-    printf("\033[32m""\n\n\t\t\t\tedit lessons type successfully complited :)\n""\033[0m");
-
+    
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
     enter = getchar();
@@ -3473,145 +3841,158 @@ void department_head_edit_lessons_type_page(struct department_head_information h
 // edit system for lessons information
 void department_head_edit_lessons_list(char lesson_code[] , char type[] , char new[])
 {
-    struct lesson_information *s = malloc(sizeof(struct lesson_information));
-    struct lesson_information *e = malloc(sizeof(struct lesson_information));
-    struct lesson_information *d = NULL;
-    struct lesson_information *temp = NULL;
-    struct lesson_information *temp2 = NULL;
-
     lesson_file_ptr = fopen("lessons_information.txt" , "r");
 
-    fscanf(lesson_file_ptr , "%s" , s->name);
-    fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
-    fscanf(lesson_file_ptr , "%s" , s->type);
-    fscanf(lesson_file_ptr , "%s" , s->code);
-    fscanf(lesson_file_ptr , "%s" , s->status);
-
-    fscanf(lesson_file_ptr , "%s" , e->name);
-    fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
-    fscanf(lesson_file_ptr , "%s" , e->type);
-    fscanf(lesson_file_ptr , "%s" , e->code);
-    fscanf(lesson_file_ptr , "%s" , e->status);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(lesson_file_ptr) == 0)
+    if(lesson_file_ptr== NULL)
     {
-        d = malloc(sizeof(struct lesson_information));
-
-        fscanf(lesson_file_ptr , "%s" , d->name);
-        fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
-        fscanf(lesson_file_ptr , "%s" , d->type);
-        fscanf(lesson_file_ptr , "%s" , d->code);
-        fscanf(lesson_file_ptr , "%s" , d->status);
-
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(lesson_file_ptr);
-
-
-    lesson_file_ptr = fopen("lessons_information.txt" , "w");
-
-    if(!strcmp(type , "name"))
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        temp = s ;
-        while(temp != NULL)
+        struct lesson_information *s = malloc(sizeof(struct lesson_information));
+        struct lesson_information *e = malloc(sizeof(struct lesson_information));
+        struct lesson_information *d = NULL;
+        struct lesson_information *temp = NULL;
+        struct lesson_information *temp2 = NULL;
+
+        fscanf(lesson_file_ptr , "%s" , s->name);
+        fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , s->type);
+        fscanf(lesson_file_ptr , "%s" , s->code);
+        fscanf(lesson_file_ptr , "%s" , s->status);
+
+        fscanf(lesson_file_ptr , "%s" , e->name);
+        fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , e->type);
+        fscanf(lesson_file_ptr , "%s" , e->code);
+        fscanf(lesson_file_ptr , "%s" , e->status);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        while(feof(lesson_file_ptr) == 0)
+        {
+            d = malloc(sizeof(struct lesson_information));
+
+            fscanf(lesson_file_ptr , "%s" , d->name);
+            fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
+            fscanf(lesson_file_ptr , "%s" , d->type);
+            fscanf(lesson_file_ptr , "%s" , d->code);
+            fscanf(lesson_file_ptr , "%s" , d->status);
+
+            e->link = d ;
+            e = d ;
+        }
+        e->link = NULL ;
+
+        fclose(lesson_file_ptr);
+
+
+        lesson_file_ptr = fopen("lessons_information.txt" , "w");
+
+        if(lesson_file_ptr == NULL)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
         {
 
-            if(!strcmp(temp->code , lesson_code))
+            if(!strcmp(type , "name"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+
+                    if(!strcmp(temp->code , lesson_code))
+                    {
+
+                        strcpy(temp->name , "");
+                        strcpy(temp->name , new);
+                    }
+                    if(temp == s)
+                        fprintf(lesson_file_ptr , "%s\n" , temp->name);
+                    else
+                        fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->type);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->code);
+                    fprintf(lesson_file_ptr , "%s" , temp->status);
+
+                    temp = temp->link ;
+                }
+
+            } else if(!strcmp(type , "number of unit"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+
+                    if(!strcmp(temp->code , lesson_code))
+                    {
+
+                        strcpy(temp->number_of_unit , "");
+                        strcpy(temp->number_of_unit , new);
+                    }
+
+                    if(temp == s)
+                        fprintf(lesson_file_ptr , "%s\n" , temp->name);
+                    else
+                        fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->type);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->code);
+                    fprintf(lesson_file_ptr , "%s" , temp->status);
+
+                    temp = temp->link ;
+                }
+
+            } else if(!strcmp(type , "type"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+
+                    if(!strcmp(temp->code , lesson_code))
+                    {
+
+                        strcpy(temp->type , "");
+                        strcpy(temp->type , new);
+                    }
+
+                    if(temp == s)
+                        fprintf(lesson_file_ptr , "%s\n" , temp->name);
+                    else
+                        fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->type);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->code);
+                    fprintf(lesson_file_ptr , "%s" , temp->status);
+
+
+                    temp = temp->link ;
+                }
+
+            }
+
+            fclose(lesson_file_ptr);
+
+            // delete link list
+            temp2 = s ;
+            temp = s->link ;
+            while (temp != NULL)
             {
 
-                strcpy(temp->name , "");
-                strcpy(temp->name , new);
+                free(temp2);
+                temp2 = temp ;
+                temp = temp->link;
+
             }
-            if(temp == s)
-                fprintf(lesson_file_ptr , "%s\n" , temp->name);
-            else
-                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
-            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
-            fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s\n" , temp->code);
-            fprintf(lesson_file_ptr , "%s" , temp->status);
-
-            temp = temp->link ;
         }
-
-    } else if(!strcmp(type , "number of unit"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-
-            if(!strcmp(temp->code , lesson_code))
-            {
-
-                strcpy(temp->number_of_unit , "");
-                strcpy(temp->number_of_unit , new);
-            }
-
-            if(temp == s)
-                fprintf(lesson_file_ptr , "%s\n" , temp->name);
-            else
-                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
-            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
-            fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s\n" , temp->code);
-            fprintf(lesson_file_ptr , "%s" , temp->status);
-
-            temp = temp->link ;
-        }
-
-    } else if(!strcmp(type , "type"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-
-            if(!strcmp(temp->code , lesson_code))
-            {
-
-                strcpy(temp->type , "");
-                strcpy(temp->type , new);
-            }
-
-            if(temp == s)
-                fprintf(lesson_file_ptr , "%s\n" , temp->name);
-            else
-                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
-            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
-            fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s\n" , temp->code);
-            fprintf(lesson_file_ptr , "%s" , temp->status);
-
-
-            temp = temp->link ;
-        }
-
-    }
-
-    fclose(lesson_file_ptr);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
     }
 }
 
 // delete lesson page
 void department_head_delete_lesson_page(struct department_head_information head)
 {
-    struct lesson_information lesson ;
+    struct lesson_information lesson , les;
     char enter ;
 
     system("cls");
@@ -3627,125 +4008,155 @@ void department_head_delete_lesson_page(struct department_head_information head)
     // check
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
 
+    les = lesson_list(lesson.code);
 
+    if(lesson_list(les.code).name[0] == '\0')
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! Lesson not found .""\033[0m");
+    } else
+    {
+        department_head_delete_lesson_list(lesson.code);
 
-    department_head_delete_lesson_list(lesson.code);
+        printf("\033[32m""\n\n\t\t\t\tlesson delete successfully :)\n""\033[0m");
 
-    printf("\033[32m""\n\n\t\t\t\tlesson delete successfully :)\n""\033[0m");
+    }
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
     enter = getchar();
-    if(enter == '\n');
+    if(enter == '\n')
+    {
+        department_head_menu(head);
+    }
 }
 
 //delete lesson
 void department_head_delete_lesson_list(char lesson_code[]) 
 {
-    struct lesson_information *s = malloc(sizeof(struct lesson_information));
-    struct lesson_information *e = malloc(sizeof(struct lesson_information));
-    struct lesson_information *d = NULL;
-    struct lesson_information *temp = NULL;
-    struct lesson_information *temp2 = NULL;
-
     lesson_file_ptr = fopen("lessons_information.txt" , "r");
 
-    fscanf(lesson_file_ptr , "%s" , s->name);
-    fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
-    fscanf(lesson_file_ptr , "%s" , s->type);
-    fscanf(lesson_file_ptr , "%s" , s->code);
-    fscanf(lesson_file_ptr , "%s" , s->status);
-
-    fscanf(lesson_file_ptr , "%s" , e->name);
-    fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
-    fscanf(lesson_file_ptr , "%s" , e->type);
-    fscanf(lesson_file_ptr , "%s" , e->code);
-    fscanf(lesson_file_ptr , "%s" , e->status);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(lesson_file_ptr) == 0)
+    if(lesson_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct lesson_information));
-
-        fscanf(lesson_file_ptr , "%s" , d->name);
-        fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
-        fscanf(lesson_file_ptr , "%s" , d->type);
-        fscanf(lesson_file_ptr , "%s" , d->code);
-        fscanf(lesson_file_ptr , "%s" , d->status);
-
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(lesson_file_ptr);
-
-
-    lesson_file_ptr = fopen("lessons_information.txt" , "w");
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(temp->code , lesson_code))
+
+        struct lesson_information *s = malloc(sizeof(struct lesson_information));
+        struct lesson_information *e = malloc(sizeof(struct lesson_information));
+        struct lesson_information *d = NULL;
+        struct lesson_information *temp = NULL;
+        struct lesson_information *temp2 = NULL;
+
+        fscanf(lesson_file_ptr , "%s" , s->name);
+        fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , s->type);
+        fscanf(lesson_file_ptr , "%s" , s->code);
+        fscanf(lesson_file_ptr , "%s" , s->status);
+
+        fscanf(lesson_file_ptr , "%s" , e->name);
+        fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , e->type);
+        fscanf(lesson_file_ptr , "%s" , e->code);
+        fscanf(lesson_file_ptr , "%s" , e->status);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        while(feof(lesson_file_ptr) == 0)
         {
-            strcpy(temp->status , "");
-            strcpy(temp->status , "unavailabe");
+            d = malloc(sizeof(struct lesson_information));
+
+            fscanf(lesson_file_ptr , "%s" , d->name);
+            fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
+            fscanf(lesson_file_ptr , "%s" , d->type);
+            fscanf(lesson_file_ptr , "%s" , d->code);
+            fscanf(lesson_file_ptr , "%s" , d->status);
+
+            e->link = d ;
+            e = d ;
+        }
+        e->link = NULL ;
+
+        fclose(lesson_file_ptr);
+
+        lesson_file_ptr = fopen("lessons_information.txt" , "w");
+
+        if(lesson_file_ptr == NULL)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
+
+            temp = s ;
+            while(temp != NULL)
+            {
+                if(!strcmp(temp->code , lesson_code))
+                {
+                    strcpy(temp->status , "");
+                    strcpy(temp->status , "unavailabe");
+                }
+
+                if(temp == s)
+                    fprintf(lesson_file_ptr , "%s\n" , temp->name);
+                else
+                    fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+                fprintf(lesson_file_ptr , "%s\n" , temp->type);
+                fprintf(lesson_file_ptr , "%s\n" , temp->code);
+                fprintf(lesson_file_ptr , "%s" , temp->status);
+                temp = temp->link ;
+            }
         }
 
-        if(temp == s)
-            fprintf(lesson_file_ptr , "%s\n" , temp->name);
-        else
-            fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
-        fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
-        fprintf(lesson_file_ptr , "%s\n" , temp->type);
-        fprintf(lesson_file_ptr , "%s\n" , temp->code);
-        fprintf(lesson_file_ptr , "%s" , temp->status);
-        temp = temp->link ;
-    }
+        fclose(lesson_file_ptr);
 
-    fclose(lesson_file_ptr);
+        deleted_lesson_file_ptr = fopen("deleted_lesson.txt" , "a");
 
-    deleted_lesson_file_ptr = fopen("deleted_lesson.txt" , "a");
-
-    temp = s ;
-    while(temp != NULL)
-    {
-        if(!strcmp(temp->code , lesson_code))
+        if(deleted_lesson_file_ptr == NULL)
         {
-            strcpy(temp->status , "");
-            strcpy(temp->status , "unavailabe");
-            if(temp == s)
-                fprintf(lesson_file_ptr , "%s\n" , temp->name);
-            else
-                fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
-            fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
-            fprintf(lesson_file_ptr , "%s\n" , temp->type);
-            fprintf(lesson_file_ptr , "%s\n" , temp->code);
-            fprintf(lesson_file_ptr , "%s" , temp->code);
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
+
+            temp = s ;
+            while(temp != NULL)
+            {
+                if(!strcmp(temp->code , lesson_code))
+                {
+                    strcpy(temp->status , "");
+                    strcpy(temp->status , "unavailabe");
+                    if(temp == s)
+                        fprintf(lesson_file_ptr , "%s\n" , temp->name);
+                    else
+                        fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->type);
+                    fprintf(lesson_file_ptr , "%s\n" , temp->code);
+                    fprintf(lesson_file_ptr , "%s" , temp->code);
+                }
+
+                temp = temp->link ;
+            }
+
+            fclose(deleted_lesson_file_ptr);
         }
 
-        temp = temp->link ;
-    }
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
 
-    fclose(deleted_lesson_file_ptr);
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
+        }
     }
 }
 
@@ -3786,7 +4197,7 @@ void department_head_reports_page(struct department_head_information head)
     // limit department head inputs
     while(head_choice <= 0 || head_choice > 16)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &head_choice);
         gets(c);
@@ -3908,7 +4319,7 @@ void department_head_find_student_page(struct department_head_information head)
     // limit department head inputs
     while(head_choice <= 0 || head_choice > 3)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &head_choice);
         gets(c);
@@ -3960,7 +4371,7 @@ void department_head_find_student_name_page(struct department_head_information h
     // check name
     while(!check_string(student.name))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students name : ");
         gets(student.name);
     }
@@ -3970,25 +4381,31 @@ void department_head_find_student_name_page(struct department_head_information h
     // check family
     while(!check_string(student.family))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students family : ");
         gets(student.family);
     } 
 
     st = student_list(student.name , student.family , "");
 
-    printf("\033[32m""\n\t\t\t\t+------------------------------------------------+");
-    printf("\n\t\t\t\t| gender = %-37s |" , st.gender);
-    printf("\n\t\t\t\t| name = %-39s |" , st.name);
-    printf("\n\t\t\t\t| family = %-37s |" ,  st.family);
-    printf("\n\t\t\t\t| code = %-39s |" , st.code);
-    printf("\n\t\t\t\t| birth date = %4s/%2s/%-25s |" , st.birth_date.year , st.birth_date.month , st.birth_date.day);
-    printf("\n\t\t\t\t| birth city = %-33s |" , st.birth_city);
-    printf("\n\t\t\t\t| field of study = %-29s |" , st.field_of_study);
-    printf("\n\t\t\t\t| id = %-41s |" , st.id);
-    printf("\n\t\t\t\t| phone number = %-31s |" , st.phone_number);
-    printf("\n\t\t\t\t| email = %-38s |" , st.email);
-    printf("\n\t\t\t\t+------------------------------------------------+""\033[0m");
+    if(student_list(st.name , st.family , st.id).name[0] == '\0')
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+        printf("\033[32m""\n\t\t\t\t+------------------------------------------------+");
+        printf("\n\t\t\t\t| gender = %-37s |" , st.gender);
+        printf("\n\t\t\t\t| name = %-39s |" , st.name);
+        printf("\n\t\t\t\t| family = %-37s |" ,  st.family);
+        printf("\n\t\t\t\t| code = %-39s |" , st.code);
+        printf("\n\t\t\t\t| birth date = %4s/%2s/%-25s |" , st.birth_date.year , st.birth_date.month , st.birth_date.day);
+        printf("\n\t\t\t\t| birth city = %-33s |" , st.birth_city);
+        printf("\n\t\t\t\t| field of study = %-29s |" , st.field_of_study);
+        printf("\n\t\t\t\t| id = %-41s |" , st.id);
+        printf("\n\t\t\t\t| phone number = %-31s |" , st.phone_number);
+        printf("\n\t\t\t\t| email = %-38s |" , st.email);
+        printf("\n\t\t\t\t+------------------------------------------------+""\033[0m");
+    }
     
 
     // return to department head page menu
@@ -4021,25 +4438,31 @@ void department_head_find_student_id_page(struct department_head_information hea
     // check id
     while(!check_number(student.id))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
     st = student_list("" , "" , student.id);
 
-    printf("\033[32m""\n\t\t\t\t+------------------------------------------------+");
-    printf("\n\t\t\t\t| gender = %-37s |" , st.gender);
-    printf("\n\t\t\t\t| name = %-39s |" , st.name);
-    printf("\n\t\t\t\t| family = %-37s |" ,  st.family);
-    printf("\n\t\t\t\t| code = %-39s |" , st.code);
-    printf("\n\t\t\t\t| birth date = %4s/%2s/%-25s |" , st.birth_date.year , st.birth_date.month , st.birth_date.day);
-    printf("\n\t\t\t\t| birth city = %-33s |" , st.birth_city);
-    printf("\n\t\t\t\t| field of study = %-29s |" , st.field_of_study);
-    printf("\n\t\t\t\t| id = %-41s |" , st.id);
-    printf("\n\t\t\t\t| phone number = %-31s |" , st.phone_number);
-    printf("\n\t\t\t\t| email = %-38s |" , st.email);
-    printf("\n\t\t\t\t+------------------------------------------------+""\033[0m");
+    if(student_list(st.name , st.family , st.id).name[0] == '\0')
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+        printf("\033[32m""\n\t\t\t\t+------------------------------------------------+");
+        printf("\n\t\t\t\t| gender = %-37s |" , st.gender);
+        printf("\n\t\t\t\t| name = %-39s |" , st.name);
+        printf("\n\t\t\t\t| family = %-37s |" ,  st.family);
+        printf("\n\t\t\t\t| code = %-39s |" , st.code);
+        printf("\n\t\t\t\t| birth date = %4s/%2s/%-25s |" , st.birth_date.year , st.birth_date.month , st.birth_date.day);
+        printf("\n\t\t\t\t| birth city = %-33s |" , st.birth_city);
+        printf("\n\t\t\t\t| field of study = %-29s |" , st.field_of_study);
+        printf("\n\t\t\t\t| id = %-41s |" , st.id);
+        printf("\n\t\t\t\t| phone number = %-31s |" , st.phone_number);
+        printf("\n\t\t\t\t| email = %-38s |" , st.email);
+        printf("\n\t\t\t\t+------------------------------------------------+""\033[0m");
+    }
     
 
     // return to department head page menu
@@ -4059,118 +4482,75 @@ void department_head_student_list(struct department_head_information head)
 
     int i = 0  , j = 0;
     char enter ;
-    
-
-    struct student_information *s = malloc(sizeof(struct student_information));
-    struct student_information *e = malloc(sizeof(struct student_information));
-    struct student_information *d = NULL;
-    struct student_information *temp = NULL;
-    struct student_information *temp2 = NULL;
 
     student_file_ptr = fopen("student_information.txt" , "r");
 
-    fscanf(student_file_ptr , "%s" , s->gender);
-    fscanf(student_file_ptr , "%s" , s->name);
-    fscanf(student_file_ptr , "%s" , s->family);
-    fscanf(student_file_ptr , "%s" , s->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
-    fscanf(student_file_ptr , "%s" , s->birth_city);
-    fscanf(student_file_ptr , "%s" , s->field_of_study);
-    fscanf(student_file_ptr , "%s" , s->id);
-    fscanf(student_file_ptr , "%s" , s->phone_number);
-    fscanf(student_file_ptr , "%s" , s->email);
-
-    fscanf(student_file_ptr , "%s" , e->gender);
-    fscanf(student_file_ptr , "%s" , e->name);
-    fscanf(student_file_ptr , "%s" , e->family);
-    fscanf(student_file_ptr , "%s" , e->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
-    fscanf(student_file_ptr , "%s" , e->birth_city);
-    fscanf(student_file_ptr , "%s" , e->field_of_study);
-    fscanf(student_file_ptr , "%s" , e->id);
-    fscanf(student_file_ptr , "%s" , e->phone_number);
-    fscanf(student_file_ptr , "%s" , e->email);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    //make link list
-    while(feof(student_file_ptr) == 0)
+    if(student_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_information));
-
-        fscanf(student_file_ptr , "%s" , d->gender);
-        fscanf(student_file_ptr , "%s" , d->name);
-        fscanf(student_file_ptr , "%s" , d->family);
-        fscanf(student_file_ptr , "%s" , d->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
-        fscanf(student_file_ptr , "%s" , d->birth_city);
-        fscanf(student_file_ptr , "%s" , d->field_of_study);
-        fscanf(student_file_ptr , "%s" , d->id);
-        fscanf(student_file_ptr , "%s" , d->phone_number);
-        fscanf(student_file_ptr , "%s" , d->email);
-
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(student_file_ptr) ;
-
-    printf("\n%c" , 201);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
-
-    printf("%c" , 186);
-    printf("%78s%s%78s" , "" , "STUDENTS" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    printf("%2s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-15s%c" , "NAME" , 179);
-    printf("%-15s%c" , "FAMILY" , 179);
-    printf("%-14s%c" , "CODE" , 179);
-    printf("%-11s%c" , "BIRTH DATE" , 179);
-    printf("%-14s%c" , "BIRTH CITY" , 179);
-    printf("%-16s%c" , "FIELD OF STUDY" , 179);
-    printf("%-13s%c" , "ID" , 179);
-    printf("%-13s%c" , "PHONE NUMBER" , 179);
-    printf("%-34s" , "EMAIL" );
-    
-    
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    temp = s ;
-    j = 1 ;
-    // print tables data
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
+        struct student_information *s = malloc(sizeof(struct student_information));
+        struct student_information *e = malloc(sizeof(struct student_information));
+        struct student_information *d = NULL;
+        struct student_information *temp = NULL;
+        struct student_information *temp2 = NULL;
+
+        fscanf(student_file_ptr , "%s" , s->gender);
+        fscanf(student_file_ptr , "%s" , s->name);
+        fscanf(student_file_ptr , "%s" , s->family);
+        fscanf(student_file_ptr , "%s" , s->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , "%s" , s->birth_city);
+        fscanf(student_file_ptr , "%s" , s->field_of_study);
+        fscanf(student_file_ptr , "%s" , s->id);
+        fscanf(student_file_ptr , "%s" , s->phone_number);
+        fscanf(student_file_ptr , "%s" , s->email);
+
+        fscanf(student_file_ptr , "%s" , e->gender);
+        fscanf(student_file_ptr , "%s" , e->name);
+        fscanf(student_file_ptr , "%s" , e->family);
+        fscanf(student_file_ptr , "%s" , e->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , "%s" , e->birth_city);
+        fscanf(student_file_ptr , "%s" , e->field_of_study);
+        fscanf(student_file_ptr , "%s" , e->id);
+        fscanf(student_file_ptr , "%s" , e->phone_number);
+        fscanf(student_file_ptr , "%s" , e->email);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        //make link list
+        while(feof(student_file_ptr) == 0)
+        {
+            d = malloc(sizeof(struct student_information));
+
+            fscanf(student_file_ptr , "%s" , d->gender);
+            fscanf(student_file_ptr , "%s" , d->name);
+            fscanf(student_file_ptr , "%s" , d->family);
+            fscanf(student_file_ptr , "%s" , d->code);
+            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , "%s" , d->birth_city);
+            fscanf(student_file_ptr , "%s" , d->field_of_study);
+            fscanf(student_file_ptr , "%s" , d->id);
+            fscanf(student_file_ptr , "%s" , d->phone_number);
+            fscanf(student_file_ptr , "%s" , d->email);
+
+            e->link = d ;
+            e = d ;
+        }
+        e->link = NULL ;
+
+        fclose(student_file_ptr) ;
+
+        printf("\n%c" , 201);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
 
         printf("%c" , 186);
-        printf("%-2d%c" , j++ , 179);
-        printf("%-7s%c" , temp->gender , 179);
-        printf("%-15s%c" , temp->name , 179);
-        printf("%-15s%c" , temp->family , 179);
-        printf("%-14s%c" , temp->code , 179);
-        printf("%4s/%2s/%2s%2c" , temp->birth_date.year , temp->birth_date.month , temp->birth_date.month ,  179);
-        printf("%-14s%c" , temp->birth_city ,  179);
-        printf("%-16s%c" , temp->field_of_study, 179);
-        printf("%-13s%c" , temp->id, 179);
-        printf("%-13s%c" , temp->phone_number , 179);
-        printf("%-34s" , temp->email);
-        
+        printf("%78s%s%78s" , "" , "STUDENTS" , "");
         printf("%c\n" , 186);
 
         printf("%c" , 186);
@@ -4178,32 +4558,79 @@ void department_head_student_list(struct department_head_information head)
             printf("%c" , 205);
         printf("%c\n" , 186);
 
-        temp = temp->link ;
+        printf("%c" , 186);
+        printf("%2s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-15s%c" , "NAME" , 179);
+        printf("%-15s%c" , "FAMILY" , 179);
+        printf("%-14s%c" , "CODE" , 179);
+        printf("%-11s%c" , "BIRTH DATE" , 179);
+        printf("%-14s%c" , "BIRTH CITY" , 179);
+        printf("%-16s%c" , "FIELD OF STUDY" , 179);
+        printf("%-13s%c" , "ID" , 179);
+        printf("%-13s%c" , "PHONE NUMBER" , 179);
+        printf("%-34s" , "EMAIL" );
 
 
+        printf("%c\n" , 186);
+
+        printf("%c" , 186);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        temp = s ;
+        j = 1 ;
+        // print tables data
+        while(temp != NULL)
+        {
+
+            printf("%c" , 186);
+            printf("%-2d%c" , j++ , 179);
+            printf("%-7s%c" , temp->gender , 179);
+            printf("%-15s%c" , temp->name , 179);
+            printf("%-15s%c" , temp->family , 179);
+            printf("%-14s%c" , temp->code , 179);
+            printf("%4s/%2s/%2s%2c" , temp->birth_date.year , temp->birth_date.month , temp->birth_date.month ,  179);
+            printf("%-14s%c" , temp->birth_city ,  179);
+            printf("%-16s%c" , temp->field_of_study, 179);
+            printf("%-13s%c" , temp->id, 179);
+            printf("%-13s%c" , temp->phone_number , 179);
+            printf("%-34s" , temp->email);
+
+            printf("%c\n" , 186);
+
+            printf("%c" , 186);
+            for(i = 0 ; i < 164 ; i++)
+                printf("%c" , 205);
+            printf("%c\n" , 186);
+
+            temp = temp->link ;
+
+
+        }
+
+        printf("%c" , 186);
+        printf("%164s" , "");
+        printf("%c\n" , 186);
+
+        printf("%c" , 200);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     }
-
-    printf("%c" , 186);
-    printf("%164s" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 200);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
     
     // return to department head menu
     printf("\033[34m""\n    Please enter to continue ....""\033[0m");
@@ -4224,118 +4651,96 @@ void department_head_lesson_list(struct department_head_information head , char 
     int i = 0  , j = 0;
     char enter ;
     
-
-    struct lesson_information *s = malloc(sizeof(struct lesson_information));
-    struct lesson_information *e = malloc(sizeof(struct lesson_information));
-    struct lesson_information *d = NULL;
-    struct lesson_information *temp = NULL;
-    struct lesson_information *temp2 = NULL;
-
     student_file_ptr = fopen("lessons_information.txt" , "r");
 
-    
-    fscanf(student_file_ptr , "%s" , s->name);
-    fscanf(student_file_ptr , "%s" , s->number_of_unit);
-    fscanf(student_file_ptr , "%s" , s->type);
-    fscanf(student_file_ptr , "%s" , s->code);
-    fscanf(student_file_ptr , "%s" , s->status);
-
-    fscanf(student_file_ptr , "%s" , e->name);
-    fscanf(student_file_ptr , "%s" , e->number_of_unit);
-    fscanf(student_file_ptr , "%s" , e->type);
-    fscanf(student_file_ptr , "%s" , e->code);
-    fscanf(student_file_ptr , "%s" , e->status);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    //make link list
-    while(feof(student_file_ptr) == 0)
+    if(student_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_information));
-
-        fscanf(student_file_ptr , "%s" , d->name);
-        fscanf(student_file_ptr , "%s" , d->number_of_unit);
-        fscanf(student_file_ptr , "%s" , d->type);
-        fscanf(student_file_ptr , "%s" , d->code);
-        fscanf(student_file_ptr , "%s" , d->status);
-
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(student_file_ptr) ;
-
-    printf("\n\t\t\t%c" , 201);
-    for(i = 0 ; i < 94 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
-
-    printf("\t\t\t%c" , 186);
-
-    if(!strcmp(type , "all"))
-        printf("%42s%s%41s" , "" , "ALL LESSONS" , "");
-    else if(!strcmp(type , "unavailable"))
-        printf("%38s%s%37s" , "" , "UNAVAILABLE LESSONS" , "");
-    else if(!strcmp(type , "available"))
-        printf("%39s%s%38s" , "" , "AVAILABLE LESSONS" , "");
-
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    for(i = 0 ; i < 94 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    printf("%5s%c" , "" , 179);
-    printf("%-20s%c" , "NAME" , 179);
-    printf("%-15s%c" , "NUMBER OF UNIT" , 179);
-    printf("%-15s%c" , "TYPE" , 179);
-    printf("%-15s%c" , "CODE" , 179);
-    printf("%-19s" , "STATUS" );
-    
-    
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    for(i = 0 ; i < 94 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    if(!strcmp(type , "all"))
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        temp = s ;
-        j = 1 ;
-        // print tables data
-        while(temp != NULL)
+
+        struct lesson_information *s = malloc(sizeof(struct lesson_information));
+        struct lesson_information *e = malloc(sizeof(struct lesson_information));
+        struct lesson_information *d = NULL;
+        struct lesson_information *temp = NULL;
+        struct lesson_information *temp2 = NULL;
+
+        fscanf(student_file_ptr , "%s" , s->name);
+        fscanf(student_file_ptr , "%s" , s->number_of_unit);
+        fscanf(student_file_ptr , "%s" , s->type);
+        fscanf(student_file_ptr , "%s" , s->code);
+        fscanf(student_file_ptr , "%s" , s->status);
+
+        fscanf(student_file_ptr , "%s" , e->name);
+        fscanf(student_file_ptr , "%s" , e->number_of_unit);
+        fscanf(student_file_ptr , "%s" , e->type);
+        fscanf(student_file_ptr , "%s" , e->code);
+        fscanf(student_file_ptr , "%s" , e->status);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        //make link list
+        while(feof(student_file_ptr) == 0)
         {
-            printf("\t\t\t%c" , 186);
-            printf("%-5d%c" , j++ , 179);
-            printf("%-20s%c" , temp->name , 179);
-            printf("%-15s%c" , temp->number_of_unit, 179);
-            printf("%-15s%c" , temp->type , 179);
-            printf("%-15s%c" , temp->code , 179);
-            printf("%-19s" , temp->status);
+            d = malloc(sizeof(struct student_information));
 
-            printf("%c\n" , 186);
+            fscanf(student_file_ptr , "%s" , d->name);
+            fscanf(student_file_ptr , "%s" , d->number_of_unit);
+            fscanf(student_file_ptr , "%s" , d->type);
+            fscanf(student_file_ptr , "%s" , d->code);
+            fscanf(student_file_ptr , "%s" , d->status);
 
-            printf("\t\t\t%c" , 186);
-            for(i = 0 ; i < 94 ; i++)
-                printf("%c" , 205);
-            printf("%c\n" , 186);
-
-            temp = temp->link ;
+            e->link = d ;
+            e = d ;
         }
-    } else if(!strcmp(type , "unavailable"))
-    {
-        temp = s ;
-        j = 1 ;
-        // print tables data
-        while(temp != NULL)
+        e->link = NULL ;
+
+        fclose(student_file_ptr) ;
+
+        printf("\n\t\t\t%c" , 201);
+        for(i = 0 ; i < 94 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
+
+        printf("\t\t\t%c" , 186);
+
+        if(!strcmp(type , "all"))
+            printf("%42s%s%41s" , "" , "ALL LESSONS" , "");
+        else if(!strcmp(type , "unavailable"))
+            printf("%38s%s%37s" , "" , "UNAVAILABLE LESSONS" , "");
+        else if(!strcmp(type , "available"))
+            printf("%39s%s%38s" , "" , "AVAILABLE LESSONS" , "");
+
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 186);
+        for(i = 0 ; i < 94 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 186);
+        printf("%5s%c" , "" , 179);
+        printf("%-20s%c" , "NAME" , 179);
+        printf("%-15s%c" , "NUMBER OF UNIT" , 179);
+        printf("%-15s%c" , "TYPE" , 179);
+        printf("%-15s%c" , "CODE" , 179);
+        printf("%-19s" , "STATUS" );
+
+
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 186);
+        for(i = 0 ; i < 94 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        if(!strcmp(type , "all"))
         {
-            if(!strcmp(temp->status , "unavailable"))
+            temp = s ;
+            j = 1 ;
+            // print tables data
+            while(temp != NULL)
             {
                 printf("\t\t\t%c" , 186);
                 printf("%-5d%c" , j++ , 179);
@@ -4351,60 +4756,86 @@ void department_head_lesson_list(struct department_head_information head , char 
                 for(i = 0 ; i < 94 ; i++)
                     printf("%c" , 205);
                 printf("%c\n" , 186);
-            }
 
-            temp = temp->link ;
-        }
-    } else if(!strcmp(type , "available"))
-    {
-        temp = s ;
-        j = 1 ;
-        // print tables data
-        while(temp != NULL)
+                temp = temp->link ;
+            }
+        } else if(!strcmp(type , "unavailable"))
         {
-            if(!strcmp(temp->status , "available"))
+            temp = s ;
+            j = 1 ;
+            // print tables data
+            while(temp != NULL)
             {
-                printf("\t\t\t%c" , 186);
-                printf("%-5d%c" , j++ , 179);
-                printf("%-20s%c" , temp->name , 179);
-                printf("%-15s%c" , temp->number_of_unit, 179);
-                printf("%-15s%c" , temp->type , 179);
-                printf("%-15s%c" , temp->code , 179);
-                printf("%-19s" , temp->status);
-                
-                printf("%c\n" , 186);
-                
-                printf("\t\t\t%c" , 186);
-                for(i = 0 ; i < 94 ; i++)
-                    printf("%c" , 205);
-                printf("%c\n" , 186);
-            }
+                if(!strcmp(temp->status , "unavailable"))
+                {
+                    printf("\t\t\t%c" , 186);
+                    printf("%-5d%c" , j++ , 179);
+                    printf("%-20s%c" , temp->name , 179);
+                    printf("%-15s%c" , temp->number_of_unit, 179);
+                    printf("%-15s%c" , temp->type , 179);
+                    printf("%-15s%c" , temp->code , 179);
+                    printf("%-19s" , temp->status);
 
-            temp = temp->link ;
+                    printf("%c\n" , 186);
+
+                    printf("\t\t\t%c" , 186);
+                    for(i = 0 ; i < 94 ; i++)
+                        printf("%c" , 205);
+                    printf("%c\n" , 186);
+                }
+
+                temp = temp->link ;
+            }
+        } else if(!strcmp(type , "available"))
+        {
+            temp = s ;
+            j = 1 ;
+            // print tables data
+            while(temp != NULL)
+            {
+                if(!strcmp(temp->status , "available"))
+                {
+                    printf("\t\t\t%c" , 186);
+                    printf("%-5d%c" , j++ , 179);
+                    printf("%-20s%c" , temp->name , 179);
+                    printf("%-15s%c" , temp->number_of_unit, 179);
+                    printf("%-15s%c" , temp->type , 179);
+                    printf("%-15s%c" , temp->code , 179);
+                    printf("%-19s" , temp->status);
+
+                    printf("%c\n" , 186);
+
+                    printf("\t\t\t%c" , 186);
+                    for(i = 0 ; i < 94 ; i++)
+                        printf("%c" , 205);
+                    printf("%c\n" , 186);
+                }
+
+                temp = temp->link ;
+            }
+        }
+
+        printf("\t\t\t%c" , 186);
+        printf("%94s" , "");
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 200);
+        for(i = 0 ; i < 94 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
         }
     }
-
-    printf("\t\t\t%c" , 186);
-    printf("%94s" , "");
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 200);
-    for(i = 0 ; i < 94 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
     
     // return to department head menu
     printf("\033[34m""\n\t\t\tPlease enter to continue ....""\033[0m");
@@ -4435,7 +4866,7 @@ void department_head_student_scores_page(struct department_head_information head
     // check id
     while(!check_number(student.id))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
@@ -4460,228 +4891,235 @@ void department_head_students_scores_list(char student_id[] , char lesson_code[]
 
     system("cls");
 
-    struct student_score *s = malloc(sizeof(struct student_score)) ;
-    struct student_score *e = malloc(sizeof(struct student_score)) ;
-    struct student_score *d = NULL ;
-    struct student_score *temp = NULL ;
-    struct student_score *temp2 = NULL ;
-    struct student_score *temp3 = NULL ;
-    struct student_score *t = NULL ;
-    
     score_file_ptr = fopen("scores_information.txt" , "r");
 
-    fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
-    fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
-    fgets(s->score , sizeof(s->score) ,score_file_ptr);
-    fgets(s->date , sizeof(s->date) , score_file_ptr);
-    fgets(s->time , sizeof(s->time) , score_file_ptr);
-    fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
-
-    fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
-    fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
-    fgets(e->score , sizeof(e->score) ,score_file_ptr);
-    fgets(e->date , sizeof(e->date) , score_file_ptr);
-    fgets(e->time , sizeof(e->time) , score_file_ptr);
-    fgets(e->user_name , sizeof(e->user_name) , score_file_ptr);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(score_file_ptr) == 0)
+    if(score_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_score)) ;
-
-        fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
-        fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
-        fgets(d->score , sizeof(d->score) ,score_file_ptr);
-        fgets(d->date , sizeof(d->date) , score_file_ptr);
-        fgets(d->time , sizeof(d->time) , score_file_ptr);
-        fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
-
-        e->link = d ;
-        e = d ;
-
-        n++;
-    }
-    e->link = NULL ;
-
-    fclose(score_file_ptr) ;
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
 
-        temp->student_id[strcspn(temp->student_id , "\n")] = '\0' ;
-        temp->lesson_code[strcspn(temp->lesson_code , "\n")] = '\0' ;
-        temp->score[strcspn(temp->score , "\n")] = '\0' ;
-        temp->date[strcspn(temp->date , "\n")] = '\0' ;
-        temp->time[strcspn(temp->time , "\n")] = '\0' ;
-        temp->user_name[strcspn(temp->user_name , "\n")] = '\0' ;
+        struct student_score *s = malloc(sizeof(struct student_score)) ;
+        struct student_score *e = malloc(sizeof(struct student_score)) ;
+        struct student_score *d = NULL ;
+        struct student_score *temp = NULL ;
+        struct student_score *temp2 = NULL ;
+        struct student_score *temp3 = NULL ;
+        struct student_score *t = NULL ;
+        
+        fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
+        fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
+        fgets(s->score , sizeof(s->score) ,score_file_ptr);
+        fgets(s->date , sizeof(s->date) , score_file_ptr);
+        fgets(s->time , sizeof(s->time) , score_file_ptr);
+        fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
 
-        temp = temp->link ;
+        fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
+        fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
+        fgets(e->score , sizeof(e->score) ,score_file_ptr);
+        fgets(e->date , sizeof(e->date) , score_file_ptr);
+        fgets(e->time , sizeof(e->time) , score_file_ptr);
+        fgets(e->user_name , sizeof(e->user_name) , score_file_ptr);
 
-    }
+        s->link = e ;
+        e->link = NULL ;
 
-    temp = s ;
-
-    //sort list
-    if(!strcmp(type , "sorted"))
-    {
-        for(i = 0 ; i < n && temp != NULL ; i++)
+        while(feof(score_file_ptr) == 0)
         {
-            temp = temp2 = s ;
-            temp3 = s->link; 
-            while(temp != NULL)
+            d = malloc(sizeof(struct student_score)) ;
+
+            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
+            fgets(d->score , sizeof(d->score) ,score_file_ptr);
+            fgets(d->date , sizeof(d->date) , score_file_ptr);
+            fgets(d->time , sizeof(d->time) , score_file_ptr);
+            fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
+
+            e->link = d ;
+            e = d ;
+
+            n++;
+        }
+        e->link = NULL ;
+
+        fclose(score_file_ptr) ;
+
+        temp = s ;
+        while(temp != NULL)
+        {
+
+            temp->student_id[strcspn(temp->student_id , "\n")] = '\0' ;
+            temp->lesson_code[strcspn(temp->lesson_code , "\n")] = '\0' ;
+            temp->score[strcspn(temp->score , "\n")] = '\0' ;
+            temp->date[strcspn(temp->date , "\n")] = '\0' ;
+            temp->time[strcspn(temp->time , "\n")] = '\0' ;
+            temp->user_name[strcspn(temp->user_name , "\n")] = '\0' ;
+
+            temp = temp->link ;
+
+        }
+
+        temp = s ;
+
+        //sort list
+        if(!strcmp(type , "sorted"))
+        {
+            for(i = 0 ; i < n && temp != NULL ; i++)
             {
-                student = student_list("" , "" , temp->student_id);
-                student2 = student_list("" , "" , temp3->student_id);
-
-                if(strcmp(student.family , student2.family) > 0)
+                temp = temp2 = s ;
+                temp3 = s->link; 
+                while(temp != NULL)
                 {
-                    if(temp == s)
+                    student = student_list("" , "" , temp->student_id);
+                    student2 = student_list("" , "" , temp3->student_id);
+
+                    if(strcmp(student.family , student2.family) > 0)
                     {
-                        temp->link = temp3->link ;
-                        temp3->link = temp ;
+                        if(temp == s)
+                        {
+                            temp->link = temp3->link ;
+                            temp3->link = temp ;
 
-                        temp3 = temp2 = s ;
+                            temp3 = temp2 = s ;
 
-                        t = temp ; 
-                        temp = temp3 ;
-                        temp3 = t ;
-                    } else if(temp3 == e)
-                    {
-                        temp->link = temp3->link;
-                        temp3->link = temp;
-                        temp2->link = temp3;
+                            t = temp ; 
+                            temp = temp3 ;
+                            temp3 = t ;
+                        } else if(temp3 == e)
+                        {
+                            temp->link = temp3->link;
+                            temp3->link = temp;
+                            temp2->link = temp3;
 
-                        t = temp ;
-                        temp = temp3 ;
-                        temp3 = t;
+                            t = temp ;
+                            temp = temp3 ;
+                            temp3 = t;
 
-                        e = temp3 ;
-                    } else
-                    {
-                        temp->link = temp3->link ;
-                        temp3->link = temp ;
-                        temp2->link = temp3 ;
+                            e = temp3 ;
+                        } else
+                        {
+                            temp->link = temp3->link ;
+                            temp3->link = temp ;
+                            temp2->link = temp3 ;
 
-                        t = temp ;
-                        temp = temp3 ;
-                        temp3 = t;
+                            t = temp ;
+                            temp = temp3 ;
+                            temp3 = t;
+                        }
                     }
+
+                    temp2 = temp ;
+                    temp = temp->link ;
+                    if(temp3->link != NULL)
+                        temp3 = temp3->link ;
                 }
-                
-                temp2 = temp ;
-                temp = temp->link ;
-                if(temp3->link != NULL)
-                    temp3 = temp3->link ;
             }
         }
-    }
 
-    printf("\n\t\t\t%c" , 201);
-    for(i = 0 ; i < 112 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
+        printf("\n\t\t\t%c" , 201);
+        for(i = 0 ; i < 112 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
 
-    printf("\t\t\t%c" , 186);
-    printf("%49s%s%49s" , "" , "STUDENT SCORES" , "");
-    printf("%c\n" , 186);
+        printf("\t\t\t%c" , 186);
+        printf("%49s%s%49s" , "" , "STUDENT SCORES" , "");
+        printf("%c\n" , 186);
 
-    printf("\t\t\t%c" , 186);
-    for(i = 0 ; i < 112 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
+        printf("\t\t\t%c" , 186);
+        for(i = 0 ; i < 112 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
 
-    printf("\t\t\t%c" , 186);
-    printf("%5s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-15s%c" , "NAME" , 179);
-    printf("%-15s%c" , "FAMILY" , 179);
-    printf("%-15s%c" , "ID" , 179);
-    printf("%-18s%c" , "LESSONS CODE" , 179);
-    printf("%-18s%c" , "LESSONS NAME" , 179);
-    printf("%-12s" , "SCORE" , 179);
-    
-    
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    for(i = 0 ; i < 112 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    temp = s ;
-    j = 1 ;
+        printf("\t\t\t%c" , 186);
+        printf("%5s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-15s%c" , "NAME" , 179);
+        printf("%-15s%c" , "FAMILY" , 179);
+        printf("%-15s%c" , "ID" , 179);
+        printf("%-18s%c" , "LESSONS CODE" , 179);
+        printf("%-18s%c" , "LESSONS NAME" , 179);
+        printf("%-12s" , "SCORE" , 179);
 
 
-    // print tables data
-    while(temp != NULL)
-    {
-        if(!strcmp(temp->student_id , student_id) || !strcmp(temp->lesson_code , lesson_code))
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 186);
+        for(i = 0 ; i < 112 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        temp = s ;
+        j = 1 ;
+
+
+        // print tables data
+        while(temp != NULL)
         {
-            student = student_list("" , "" , temp->student_id);
-            lesson = lesson_list(temp->lesson_code);
+            if(!strcmp(temp->student_id , student_id) || !strcmp(temp->lesson_code , lesson_code))
+            {
+                student = student_list("" , "" , temp->student_id);
+                lesson = lesson_list(temp->lesson_code);
 
-            // for passed and faild student list part
-            if(!strcmp(type , "pass"))
-            {
-                if(atoi(temp->score) < 10)
+                // for passed and faild student list part
+                if(!strcmp(type , "pass"))
                 {
-                    temp = temp->link ;
-                    continue;
-                }
-            } else if(!strcmp(type , "fail"))
-            {
-                if(atoi(temp->score) > 10)
+                    if(atoi(temp->score) < 10)
+                    {
+                        temp = temp->link ;
+                        continue;
+                    }
+                } else if(!strcmp(type , "fail"))
                 {
-                    temp = temp->link ;
-                    continue;
-                }
+                    if(atoi(temp->score) > 10)
+                    {
+                        temp = temp->link ;
+                        continue;
+                    }
+                } 
+
+                printf("\t\t\t%c" , 186);
+                printf("%-5d%c" , j++ , 179);
+                printf("%-7s%c" , student.gender , 179);
+                printf("%-15s%c" , student.name , 179);
+                printf("%-15s%c" , student.family , 179);
+                printf("%-15s%c" , temp->student_id , 179);
+                printf("%-18s%c" , temp->lesson_code, 179);
+                printf("%-18s%c" , lesson.name, 179);
+                printf("%-12s" , temp->score);
+
+                printf("%c\n" , 186);
+
+                printf("\t\t\t%c" , 186);
+                for(i = 0 ; i < 112 ; i++)
+                    printf("%c" , 205);
+                printf("%c\n" , 186);
             } 
 
-            printf("\t\t\t%c" , 186);
-            printf("%-5d%c" , j++ , 179);
-            printf("%-7s%c" , student.gender , 179);
-            printf("%-15s%c" , student.name , 179);
-            printf("%-15s%c" , student.family , 179);
-            printf("%-15s%c" , temp->student_id , 179);
-            printf("%-18s%c" , temp->lesson_code, 179);
-            printf("%-18s%c" , lesson.name, 179);
-            printf("%-12s" , temp->score);
-            
-            printf("%c\n" , 186);
-
-            printf("\t\t\t%c" , 186);
-            for(i = 0 ; i < 112 ; i++)
-                printf("%c" , 205);
-            printf("%c\n" , 186);
-        } 
-
-        temp = temp->link ;
+            temp = temp->link ;
 
 
-    }
+        }
 
-    printf("\t\t\t%c" , 186);
-    printf("%112s" , "");
-    printf("%c\n" , 186);
+        printf("\t\t\t%c" , 186);
+        printf("%112s" , "");
+        printf("%c\n" , 186);
 
-    printf("\t\t\t%c" , 200);
-    for(i = 0 ; i < 112 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
+        printf("\t\t\t%c" , 200);
+        for(i = 0 ; i < 112 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
 
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
 
+        }
     } 
 }
 
@@ -4705,7 +5143,7 @@ void department_head_students_scores_page(struct department_head_information hea
     // check id
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
@@ -4741,7 +5179,7 @@ void department_head_sorted_students_scores_page(struct department_head_informat
     // check id
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
@@ -4778,7 +5216,7 @@ void department_head_student_average_page(struct department_head_information hea
     // check id
     while(!check_number(student.id))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
@@ -4786,13 +5224,20 @@ void department_head_student_average_page(struct department_head_information hea
     st = student_list("" , "" , student.id);
 
     ave = department_head_student_average(student.id);
-   
-    printf("\033[32m""\n\n\t\t\t\t+--------------------------------------------+");
-    printf("\n\t\t\t\t| Gender = %-33s |" , st.gender);
-    printf("\n\t\t\t\t| Name = %-35s |" , st.name);
-    printf("\n\t\t\t\t| Family = %-33s |" , st.family);
-    printf("\n\t\t\t\t| Average = %-32.2f |" , ave);
-    printf("\n\t\t\t\t+--------------------------------------------+""\033[0m");
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+        printf("\033[32m""\n\n\t\t\t\t+--------------------------------------------+");
+        printf("\n\t\t\t\t| Gender = %-33s |" , st.gender);
+        printf("\n\t\t\t\t| Name = %-35s |" , st.name);
+        printf("\n\t\t\t\t| Family = %-33s |" , st.family);
+        printf("\n\t\t\t\t| Average = %-32.2f |" , ave);
+        printf("\n\t\t\t\t+--------------------------------------------+""\033[0m");
+
+    }
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -4809,91 +5254,98 @@ float department_head_student_average(char student_id[])
     int  sum = 0 , n = 0;
     float ave = 0 ;
 
-    struct student_score *s = malloc(sizeof(struct student_score)) ;
-    struct student_score *e = malloc(sizeof(struct student_score)) ;
-    struct student_score *d = NULL ;
-    struct student_score *temp = NULL ;
-    struct student_score *temp2 = NULL ;
-    
     score_file_ptr = fopen("scores_information.txt" , "r");
 
-    fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
-    fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
-    fgets(s->score , sizeof(s->score) ,score_file_ptr);
-    fgets(s->date , sizeof(s->date) , score_file_ptr);
-    fgets(s->time , sizeof(s->time) , score_file_ptr);
-    fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
-
-    fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
-    fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
-    fgets(e->score , sizeof(e->score) ,score_file_ptr);
-    fgets(e->date , sizeof(e->date) , score_file_ptr);
-    fgets(e->time , sizeof(e->time) , score_file_ptr);
-    fgets(e->user_name , sizeof(e->user_name) , score_file_ptr);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(score_file_ptr) == 0)
+    if(score_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_score)) ;
-
-        fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
-        fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
-        fgets(d->score , sizeof(d->score) ,score_file_ptr);
-        fgets(d->date , sizeof(d->date) , score_file_ptr);
-        fgets(d->time , sizeof(d->time) , score_file_ptr);
-        fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(score_file_ptr) ;
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
 
-        temp->student_id[strcspn(temp->student_id , "\n")] = '\0' ;
-        temp->lesson_code[strcspn(temp->lesson_code , "\n")] = '\0' ;
-        temp->score[strcspn(temp->score , "\n")] = '\0' ;
-        temp->date[strcspn(temp->date , "\n")] = '\0' ;
-        temp->time[strcspn(temp->time , "\n")] = '\0' ;
-        temp->user_name[strcspn(temp->user_name , "\n")] = '\0' ;
+        struct student_score *s = malloc(sizeof(struct student_score)) ;
+        struct student_score *e = malloc(sizeof(struct student_score)) ;
+        struct student_score *d = NULL ;
+        struct student_score *temp = NULL ;
+        struct student_score *temp2 = NULL ;
+        
+        fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
+        fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
+        fgets(s->score , sizeof(s->score) ,score_file_ptr);
+        fgets(s->date , sizeof(s->date) , score_file_ptr);
+        fgets(s->time , sizeof(s->time) , score_file_ptr);
+        fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
 
-        temp = temp->link ;
+        fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
+        fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
+        fgets(e->score , sizeof(e->score) ,score_file_ptr);
+        fgets(e->date , sizeof(e->date) , score_file_ptr);
+        fgets(e->time , sizeof(e->time) , score_file_ptr);
+        fgets(e->user_name , sizeof(e->user_name) , score_file_ptr);
 
-    }
+        s->link = e ;
+        e->link = NULL ;
 
-    temp = s ;
-
-    while(temp != NULL)
-    {
-        if(!strcmp(student_id , temp->student_id))
+        while(feof(score_file_ptr) == 0)
         {
-            sum += atoi(temp->score);
-            n++; 
+            d = malloc(sizeof(struct student_score)) ;
+
+            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
+            fgets(d->score , sizeof(d->score) ,score_file_ptr);
+            fgets(d->date , sizeof(d->date) , score_file_ptr);
+            fgets(d->time , sizeof(d->time) , score_file_ptr);
+            fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
+
+            e->link = d ;
+            e = d ;
+
+        }
+        e->link = NULL ;
+
+        fclose(score_file_ptr) ;
+
+        temp = s ;
+        while(temp != NULL)
+        {
+
+            temp->student_id[strcspn(temp->student_id , "\n")] = '\0' ;
+            temp->lesson_code[strcspn(temp->lesson_code , "\n")] = '\0' ;
+            temp->score[strcspn(temp->score , "\n")] = '\0' ;
+            temp->date[strcspn(temp->date , "\n")] = '\0' ;
+            temp->time[strcspn(temp->time , "\n")] = '\0' ;
+            temp->user_name[strcspn(temp->user_name , "\n")] = '\0' ;
+
+            temp = temp->link ;
+
         }
 
-        temp = temp->link;
-    }
+        temp = s ;
 
-    ave = (float)sum/n ;
-    
+        while(temp != NULL)
+        {
+            if(!strcmp(student_id , temp->student_id))
+            {
+                sum += atoi(temp->score);
+                n++; 
+            }
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
+            temp = temp->link;
+        }
 
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
+        ave = (float)sum/n ;
 
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     } 
 
     return ave ;
@@ -4920,21 +5372,30 @@ void department_head_lesson_average_page(struct department_head_information head
     // check code
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
 
     les = lesson_list(lesson.code);
 
-    ave = department_head_lesson_average(lesson.code);
-   
-    printf("\033[32m""\n\n\t\t\t\t+--------------------------------------------+");
-    printf("\n\t\t\t\t| Name = %-35s |" , les.name);
-    printf("\n\t\t\t\t| Code = %-35s |" , les.code);
-    printf("\n\t\t\t\t| Number of unit = %-25s |" , les.number_of_unit);
-    printf("\n\t\t\t\t| Average = %-32.2f |" , ave);
-    printf("\n\t\t\t\t+--------------------------------------------+""\033[0m");
+    
+
+    if(lesson_list(les.code).name[0] == '\0')
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! Lesson not found .""\033[0m");
+    } else
+    {
+        ave = department_head_lesson_average(lesson.code);
+
+        printf("\033[32m""\n\n\t\t\t\t+--------------------------------------------+");
+        printf("\n\t\t\t\t| Name = %-35s |" , les.name);
+        printf("\n\t\t\t\t| Code = %-35s |" , les.code);
+        printf("\n\t\t\t\t| Number of unit = %-25s |" , les.number_of_unit);
+        printf("\n\t\t\t\t| Average = %-32.2f |" , ave);
+        printf("\n\t\t\t\t+--------------------------------------------+""\033[0m");
+
+    }
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -4951,93 +5412,99 @@ float department_head_lesson_average(char lesson_code[])
     int  sum = 0 , n = 0;
     float ave = 0 ;
 
-    struct student_score *s = malloc(sizeof(struct student_score)) ;
-    struct student_score *e = malloc(sizeof(struct student_score)) ;
-    struct student_score *d = NULL ;
-    struct student_score *temp = NULL ;
-    struct student_score *temp2 = NULL ;
-    
     score_file_ptr = fopen("scores_information.txt" , "r");
 
-    fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
-    fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
-    fgets(s->score , sizeof(s->score) ,score_file_ptr);
-    fgets(s->date , sizeof(s->date) , score_file_ptr);
-    fgets(s->time , sizeof(s->time) , score_file_ptr);
-    fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
-
-    fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
-    fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
-    fgets(e->score , sizeof(e->score) ,score_file_ptr);
-    fgets(e->date , sizeof(e->date) , score_file_ptr);
-    fgets(e->time , sizeof(e->time) , score_file_ptr);
-    fgets(e->user_name , sizeof(e->user_name) , score_file_ptr);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(score_file_ptr) == 0)
+    if(score_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_score)) ;
-
-        fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
-        fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
-        fgets(d->score , sizeof(d->score) ,score_file_ptr);
-        fgets(d->date , sizeof(d->date) , score_file_ptr);
-        fgets(d->time , sizeof(d->time) , score_file_ptr);
-        fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(score_file_ptr) ;
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
 
-        temp->student_id[strcspn(temp->student_id , "\n")] = '\0' ;
-        temp->lesson_code[strcspn(temp->lesson_code , "\n")] = '\0' ;
-        temp->score[strcspn(temp->score , "\n")] = '\0' ;
-        temp->date[strcspn(temp->date , "\n")] = '\0' ;
-        temp->time[strcspn(temp->time , "\n")] = '\0' ;
-        temp->user_name[strcspn(temp->user_name , "\n")] = '\0' ;
+        struct student_score *s = malloc(sizeof(struct student_score)) ;
+        struct student_score *e = malloc(sizeof(struct student_score)) ;
+        struct student_score *d = NULL ;
+        struct student_score *temp = NULL ;
+        struct student_score *temp2 = NULL ;
+        
+        fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
+        fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
+        fgets(s->score , sizeof(s->score) ,score_file_ptr);
+        fgets(s->date , sizeof(s->date) , score_file_ptr);
+        fgets(s->time , sizeof(s->time) , score_file_ptr);
+        fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
 
-        temp = temp->link ;
+        fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
+        fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
+        fgets(e->score , sizeof(e->score) ,score_file_ptr);
+        fgets(e->date , sizeof(e->date) , score_file_ptr);
+        fgets(e->time , sizeof(e->time) , score_file_ptr);
+        fgets(e->user_name , sizeof(e->user_name) , score_file_ptr);
 
-    }
+        s->link = e ;
+        e->link = NULL ;
 
-    temp = s ;
-
-    while(temp != NULL)
-    {
-        if(!strcmp(lesson_code , temp->lesson_code))
+        while(feof(score_file_ptr) == 0)
         {
-            sum += atoi(temp->score);
-            n++; 
+            d = malloc(sizeof(struct student_score)) ;
+
+            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
+            fgets(d->score , sizeof(d->score) ,score_file_ptr);
+            fgets(d->date , sizeof(d->date) , score_file_ptr);
+            fgets(d->time , sizeof(d->time) , score_file_ptr);
+            fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
+
+            e->link = d ;
+            e = d ;
+
+        }
+        e->link = NULL ;
+
+        fclose(score_file_ptr) ;
+
+        temp = s ;
+        while(temp != NULL)
+        {
+
+            temp->student_id[strcspn(temp->student_id , "\n")] = '\0' ;
+            temp->lesson_code[strcspn(temp->lesson_code , "\n")] = '\0' ;
+            temp->score[strcspn(temp->score , "\n")] = '\0' ;
+            temp->date[strcspn(temp->date , "\n")] = '\0' ;
+            temp->time[strcspn(temp->time , "\n")] = '\0' ;
+            temp->user_name[strcspn(temp->user_name , "\n")] = '\0' ;
+
+            temp = temp->link ;
+
         }
 
-        temp = temp->link;
+        temp = s ;
+
+        while(temp != NULL)
+        {
+            if(!strcmp(lesson_code , temp->lesson_code))
+            {
+                sum += atoi(temp->score);
+                n++; 
+            }
+
+            temp = temp->link;
+        }
+
+        ave = (float)sum/n ;
+
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        } 
     }
-
-    ave = (float)sum/n ;
-    
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    } 
-
     return ave ;
 }
 
@@ -5049,207 +5516,214 @@ void department_head_students_average_list(struct department_head_information he
 
     system("cls");
 
-    struct student_information *s = malloc(sizeof(struct student_information)) ;
-    struct student_information *e = malloc(sizeof(struct student_information)) ;
-    struct student_information *d = NULL ;
-    struct student_information *temp = NULL ;
-    struct student_information *temp2 = NULL ;
-    struct student_information *temp3 = NULL ;
-    struct student_information *t = NULL ;
-    
     student_file_ptr = fopen("student_information.txt" , "r");
 
-    fscanf(student_file_ptr , "%s" , s->gender);
-    fscanf(student_file_ptr , "%s" , s->name);
-    fscanf(student_file_ptr , "%s" , s->family);
-    fscanf(student_file_ptr , "%s" , s->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
-    fscanf(student_file_ptr , "%s" , s->birth_city);
-    fscanf(student_file_ptr , "%s" , s->field_of_study);
-    fscanf(student_file_ptr , "%s" , s->id);
-    fscanf(student_file_ptr , "%s" , s->phone_number);
-    fscanf(student_file_ptr , "%s" , s->email);
-
-    fscanf(student_file_ptr , "%s" , e->gender);
-    fscanf(student_file_ptr , "%s" , e->name);
-    fscanf(student_file_ptr , "%s" , e->family);
-    fscanf(student_file_ptr , "%s" , e->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
-    fscanf(student_file_ptr , "%s" , e->birth_city);
-    fscanf(student_file_ptr , "%s" , e->field_of_study);
-    fscanf(student_file_ptr , "%s" , e->id);
-    fscanf(student_file_ptr , "%s" , e->phone_number);
-    fscanf(student_file_ptr , "%s" , e->email);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(student_file_ptr) == 0)
+    if(student_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_information)) ;
-
-        fscanf(student_file_ptr , "%s" , d->gender);
-        fscanf(student_file_ptr , "%s" , d->name);
-        fscanf(student_file_ptr , "%s" , d->family);
-        fscanf(student_file_ptr , "%s" , d->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
-        fscanf(student_file_ptr , "%s" , d->birth_city);
-        fscanf(student_file_ptr , "%s" , d->field_of_study);
-        fscanf(student_file_ptr , "%s" , d->id);
-        fscanf(student_file_ptr , "%s" , d->phone_number);
-        fscanf(student_file_ptr , "%s" , d->email);
-
-        e->link = d ;
-        e = d ;
-
-        n++;
-    }
-    e->link = NULL ;
-
-    fclose(student_file_ptr) ;
-
-   
-
-    //sort list
-    
-    for(i = 0 ; i < n ; i++)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else 
     {
-        temp = temp2 = s ;
-        temp3 = s->link; 
-        while(temp != NULL)
+
+        struct student_information *s = malloc(sizeof(struct student_information)) ;
+        struct student_information *e = malloc(sizeof(struct student_information)) ;
+        struct student_information *d = NULL ;
+        struct student_information *temp = NULL ;
+        struct student_information *temp2 = NULL ;
+        struct student_information *temp3 = NULL ;
+        struct student_information *t = NULL ;
+        
+        fscanf(student_file_ptr , "%s" , s->gender);
+        fscanf(student_file_ptr , "%s" , s->name);
+        fscanf(student_file_ptr , "%s" , s->family);
+        fscanf(student_file_ptr , "%s" , s->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , "%s" , s->birth_city);
+        fscanf(student_file_ptr , "%s" , s->field_of_study);
+        fscanf(student_file_ptr , "%s" , s->id);
+        fscanf(student_file_ptr , "%s" , s->phone_number);
+        fscanf(student_file_ptr , "%s" , s->email);
+
+        fscanf(student_file_ptr , "%s" , e->gender);
+        fscanf(student_file_ptr , "%s" , e->name);
+        fscanf(student_file_ptr , "%s" , e->family);
+        fscanf(student_file_ptr , "%s" , e->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , "%s" , e->birth_city);
+        fscanf(student_file_ptr , "%s" , e->field_of_study);
+        fscanf(student_file_ptr , "%s" , e->id);
+        fscanf(student_file_ptr , "%s" , e->phone_number);
+        fscanf(student_file_ptr , "%s" , e->email);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        while(feof(student_file_ptr) == 0)
         {
-            if(department_head_student_average(temp->id) < department_head_student_average(temp3->id))
+            d = malloc(sizeof(struct student_information)) ;
+
+            fscanf(student_file_ptr , "%s" , d->gender);
+            fscanf(student_file_ptr , "%s" , d->name);
+            fscanf(student_file_ptr , "%s" , d->family);
+            fscanf(student_file_ptr , "%s" , d->code);
+            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , "%s" , d->birth_city);
+            fscanf(student_file_ptr , "%s" , d->field_of_study);
+            fscanf(student_file_ptr , "%s" , d->id);
+            fscanf(student_file_ptr , "%s" , d->phone_number);
+            fscanf(student_file_ptr , "%s" , d->email);
+
+            e->link = d ;
+            e = d ;
+
+            n++;
+        }
+        e->link = NULL ;
+
+        fclose(student_file_ptr) ;
+
+    
+
+        //sort list
+
+        for(i = 0 ; i < n ; i++)
+        {
+            temp = temp2 = s ;
+            temp3 = s->link; 
+            while(temp != NULL)
             {
-                if(temp == s)
+                if(department_head_student_average(temp->id) < department_head_student_average(temp3->id))
                 {
-                    temp->link = temp3->link ;
-                    temp3->link = temp ;
+                    if(temp == s)
+                    {
+                        temp->link = temp3->link ;
+                        temp3->link = temp ;
 
-                    temp2 = s = temp3 ;
-                    
-                    t = temp ; 
-                    temp = temp3 ;
-                    temp3 = t ;
-                } else if(temp3 == e)
-                {
-                    temp->link = temp3->link;
-                    temp3->link = temp;
-                    temp2->link = temp3;
+                        temp2 = s = temp3 ;
 
-                    t = temp ;
-                    temp = temp3 ;
-                    temp3 = t;
+                        t = temp ; 
+                        temp = temp3 ;
+                        temp3 = t ;
+                    } else if(temp3 == e)
+                    {
+                        temp->link = temp3->link;
+                        temp3->link = temp;
+                        temp2->link = temp3;
 
-                    e = temp3 ;
-                } else
-                {
-                    temp->link = temp3->link ;
-                    temp3->link = temp ;
-                    temp2->link = temp3 ;
+                        t = temp ;
+                        temp = temp3 ;
+                        temp3 = t;
 
-                    t = temp ;
-                    temp = temp3 ;
-                    temp3 = t;
+                        e = temp3 ;
+                    } else
+                    {
+                        temp->link = temp3->link ;
+                        temp3->link = temp ;
+                        temp2->link = temp3 ;
+
+                        t = temp ;
+                        temp = temp3 ;
+                        temp3 = t;
+                    }
                 }
-            }
-            
-            temp2 = temp ;
-            temp = temp->link ;
-            if(temp3->link != NULL)
-                temp3 = temp3->link ;
-        }
-    }
-    
 
-    printf("\n\t\t\t%c" , 201);
-    for(i = 0 ; i < 101 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
-
-    printf("\t\t\t%c" , 186);
-    printf("%43s%s%43s" , "" , "STUDENT AVERAGE" , "");
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    for(i = 0 ; i < 101 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    printf("%5s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-16s%c" , "NAME" , 179);
-    printf("%-16s%c" , "FAMILY" , 179);
-    printf("%-15s%c" , "ID" , 179);
-    printf("%-20s%c" , "FIELD OF STUDENT" , 179);
-    printf("%-16s" , "AVERAGE" , 179);
-    
-    
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    for(i = 0 ; i < 101 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    temp = s ;
-    j = 1 ;
-
-
-    // print tables data
-    while(temp != NULL)
-    {
-        // for conditional students list
-        if(!strcmp(type , "conditional"))
-        {
-            if(department_head_student_average(temp->id) > 12)
-            {
+                temp2 = temp ;
                 temp = temp->link ;
-                continue;
+                if(temp3->link != NULL)
+                    temp3 = temp3->link ;
             }
         }
+
+
+        printf("\n\t\t\t%c" , 201);
+        for(i = 0 ; i < 101 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
 
         printf("\t\t\t%c" , 186);
-        printf("%-5d%c" , j++ , 179);
-        printf("%-7s%c" , temp->gender , 179);
-        printf("%-16s%c" , temp->name , 179);
-        printf("%-16s%c" , temp->family , 179);
-        printf("%-15s%c" , temp->id , 179);
-        printf("%-20s%c" , temp->field_of_study, 179);
-        printf("%-16f" , department_head_student_average(temp->id));
-        
+        printf("%43s%s%43s" , "" , "STUDENT AVERAGE" , "");
         printf("%c\n" , 186);
 
         printf("\t\t\t%c" , 186);
         for(i = 0 ; i < 101 ; i++)
             printf("%c" , 205);
         printf("%c\n" , 186);
-        
 
-        temp = temp->link ;
+        printf("\t\t\t%c" , 186);
+        printf("%5s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-16s%c" , "NAME" , 179);
+        printf("%-16s%c" , "FAMILY" , 179);
+        printf("%-15s%c" , "ID" , 179);
+        printf("%-20s%c" , "FIELD OF STUDENT" , 179);
+        printf("%-16s" , "AVERAGE" , 179);
 
 
-    }
+        printf("%c\n" , 186);
 
-    printf("\t\t\t%c" , 186);
-    printf("%101s" , "");
-    printf("%c\n" , 186);
+        printf("\t\t\t%c" , 186);
+        for(i = 0 ; i < 101 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
 
-    printf("\t\t\t%c" , 200);
-    for(i = 0 ; i < 101 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
+        temp = s ;
+        j = 1 ;
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
 
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
+        // print tables data
+        while(temp != NULL)
+        {
+            // for conditional students list
+            if(!strcmp(type , "conditional"))
+            {
+                if(department_head_student_average(temp->id) > 12)
+                {
+                    temp = temp->link ;
+                    continue;
+                }
+            }
 
+            printf("\t\t\t%c" , 186);
+            printf("%-5d%c" , j++ , 179);
+            printf("%-7s%c" , temp->gender , 179);
+            printf("%-16s%c" , temp->name , 179);
+            printf("%-16s%c" , temp->family , 179);
+            printf("%-15s%c" , temp->id , 179);
+            printf("%-20s%c" , temp->field_of_study, 179);
+            printf("%-16f" , department_head_student_average(temp->id));
+
+            printf("%c\n" , 186);
+
+            printf("\t\t\t%c" , 186);
+            for(i = 0 ; i < 101 ; i++)
+                printf("%c" , 205);
+            printf("%c\n" , 186);
+
+
+            temp = temp->link ;
+
+
+        }
+
+        printf("\t\t\t%c" , 186);
+        printf("%101s" , "");
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 200);
+        for(i = 0 ; i < 101 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     } 
 
     // return to department head page menu
@@ -5281,7 +5755,7 @@ void department_head_passed_students_page(struct department_head_information hea
     // check id
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
@@ -5317,7 +5791,7 @@ void department_head_failed_students_page(struct department_head_information hea
     // check id
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
@@ -5353,7 +5827,7 @@ void department_head_conditional_students_list_take_lesson_page(struct departmen
     // check code
     while(!check_number(lesson.code))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(lesson.code);
     }
@@ -5380,152 +5854,159 @@ void department_head_conditional_students_list_take_lesson(char lesson_code[])
 
     system("cls");
 
-    struct student_score *s = malloc(sizeof(struct student_score)) ;
-    struct student_score *e = malloc(sizeof(struct student_score)) ;
-    struct student_score *d = NULL ;
-    struct student_score *temp = NULL ;
-    struct student_score *temp2 = NULL ;
-    
     score_file_ptr = fopen("scores_information.txt" , "r");
 
-    fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
-    fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
-    fgets(s->score , sizeof(s->score) ,score_file_ptr);
-    fgets(s->date , sizeof(s->date) , score_file_ptr);
-    fgets(s->time , sizeof(s->time) , score_file_ptr);
-    fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
-
-    fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
-    fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
-    fgets(e->score , sizeof(e->score) ,score_file_ptr);
-    fgets(e->date , sizeof(e->date) , score_file_ptr);
-    fgets(e->time , sizeof(e->time) , score_file_ptr);
-    fgets(e->user_name , sizeof(e->user_name) , score_file_ptr);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(score_file_ptr) == 0)
+    if(score_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_score)) ;
-
-        fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
-        fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
-        fgets(d->score , sizeof(d->score) ,score_file_ptr);
-        fgets(d->date , sizeof(d->date) , score_file_ptr);
-        fgets(d->time , sizeof(d->time) , score_file_ptr);
-        fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
-
-        e->link = d ;
-        e = d ;
-
-        n++;
-    }
-    e->link = NULL ;
-
-    fclose(score_file_ptr) ;
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-
-        temp->student_id[strcspn(temp->student_id , "\n")] = '\0' ;
-        temp->lesson_code[strcspn(temp->lesson_code , "\n")] = '\0' ;
-        temp->score[strcspn(temp->score , "\n")] = '\0' ;
-        temp->date[strcspn(temp->date , "\n")] = '\0' ;
-        temp->time[strcspn(temp->time , "\n")] = '\0' ;
-        temp->user_name[strcspn(temp->user_name , "\n")] = '\0' ;
-
-        temp = temp->link ;
-
-    }
-
-     printf("\n\t\t\t%c" , 201);
-    for(i = 0 ; i < 112 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
-
-    printf("\t\t\t%c" , 186);
-    printf("%49s%s%49s" , "" , "STUDENT SCORES" , "");
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    for(i = 0 ; i < 112 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    printf("\t\t\t%c" , 186);
-    printf("%5s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-15s%c" , "NAME" , 179);
-    printf("%-15s%c" , "FAMILY" , 179);
-    printf("%-15s%c" , "ID" , 179);
-    printf("%-12s%c" , "AVERAGE" , 179);
-    printf("%-18s%c" , "LESSONS NAME", 179);
-    printf("%-18s" , "LESSONS CODE" );
     
-    
-    
-    printf("%c\n" , 186);
+        struct student_score *s = malloc(sizeof(struct student_score)) ;
+        struct student_score *e = malloc(sizeof(struct student_score)) ;
+        struct student_score *d = NULL ;
+        struct student_score *temp = NULL ;
+        struct student_score *temp2 = NULL ;
 
-    printf("\t\t\t%c" , 186);
-    for(i = 0 ; i < 112 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
+        fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
+        fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
+        fgets(s->score , sizeof(s->score) ,score_file_ptr);
+        fgets(s->date , sizeof(s->date) , score_file_ptr);
+        fgets(s->time , sizeof(s->time) , score_file_ptr);
+        fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
 
-    temp = s ;
-    j = 1 ;
+        fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
+        fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
+        fgets(e->score , sizeof(e->score) ,score_file_ptr);
+        fgets(e->date , sizeof(e->date) , score_file_ptr);
+        fgets(e->time , sizeof(e->time) , score_file_ptr);
+        fgets(e->user_name , sizeof(e->user_name) , score_file_ptr);
 
+        s->link = e ;
+        e->link = NULL ;
 
-    // print tables data
-    while(temp != NULL)
-    {
-        if(!strcmp(temp->lesson_code , lesson_code) && department_head_student_average(temp->student_id) < 12)
+        while(feof(score_file_ptr) == 0)
         {
-            student = student_list("" , "" , temp->student_id);
+            d = malloc(sizeof(struct student_score)) ;
 
-            printf("\t\t\t%c" , 186);
-            printf("%-5d%c" , j++ , 179);
-            printf("%-7s%c" , student.gender , 179);
-            printf("%-15s%c" , student.name , 179);
-            printf("%-15s%c" , student.family , 179);
-            printf("%-15s%c" , temp->student_id , 179);
-            printf("%-12f%c" , department_head_student_average(temp->student_id) , 179);
-            printf("%-18s%c" , lesson.name, 179);
-            printf("%-18s" , lesson_code);
-            
-            printf("%c\n" , 186);
+            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
+            fgets(d->score , sizeof(d->score) ,score_file_ptr);
+            fgets(d->date , sizeof(d->date) , score_file_ptr);
+            fgets(d->time , sizeof(d->time) , score_file_ptr);
+            fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
 
-            printf("\t\t\t%c" , 186);
-            for(i = 0 ; i < 112 ; i++)
-                printf("%c" , 205);
-            printf("%c\n" , 186);
-        } 
+            e->link = d ;
+            e = d ;
 
-        temp = temp->link ;
+            n++;
+        }
+        e->link = NULL ;
+
+        fclose(score_file_ptr) ;
+
+        temp = s ;
+        while(temp != NULL)
+        {
+
+            temp->student_id[strcspn(temp->student_id , "\n")] = '\0' ;
+            temp->lesson_code[strcspn(temp->lesson_code , "\n")] = '\0' ;
+            temp->score[strcspn(temp->score , "\n")] = '\0' ;
+            temp->date[strcspn(temp->date , "\n")] = '\0' ;
+            temp->time[strcspn(temp->time , "\n")] = '\0' ;
+            temp->user_name[strcspn(temp->user_name , "\n")] = '\0' ;
+
+            temp = temp->link ;
+
+        }
+
+         printf("\n\t\t\t%c" , 201);
+        for(i = 0 ; i < 112 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
+
+        printf("\t\t\t%c" , 186);
+        printf("%49s%s%49s" , "" , "STUDENT SCORES" , "");
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 186);
+        for(i = 0 ; i < 112 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 186);
+        printf("%5s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-15s%c" , "NAME" , 179);
+        printf("%-15s%c" , "FAMILY" , 179);
+        printf("%-15s%c" , "ID" , 179);
+        printf("%-12s%c" , "AVERAGE" , 179);
+        printf("%-18s%c" , "LESSONS NAME", 179);
+        printf("%-18s" , "LESSONS CODE" );
 
 
-    }
 
-    printf("\t\t\t%c" , 186);
-    printf("%112s" , "");
-    printf("%c\n" , 186);
+        printf("%c\n" , 186);
 
-    printf("\t\t\t%c" , 200);
-    for(i = 0 ; i < 112 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
+        printf("\t\t\t%c" , 186);
+        for(i = 0 ; i < 112 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
+        temp = s ;
+        j = 1 ;
 
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
 
+        // print tables data
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->lesson_code , lesson_code) && department_head_student_average(temp->student_id) < 12)
+            {
+                student = student_list("" , "" , temp->student_id);
+
+                printf("\t\t\t%c" , 186);
+                printf("%-5d%c" , j++ , 179);
+                printf("%-7s%c" , student.gender , 179);
+                printf("%-15s%c" , student.name , 179);
+                printf("%-15s%c" , student.family , 179);
+                printf("%-15s%c" , temp->student_id , 179);
+                printf("%-12f%c" , department_head_student_average(temp->student_id) , 179);
+                printf("%-18s%c" , lesson.name, 179);
+                printf("%-18s" , lesson_code);
+
+                printf("%c\n" , 186);
+
+                printf("\t\t\t%c" , 186);
+                for(i = 0 ; i < 112 ; i++)
+                    printf("%c" , 205);
+                printf("%c\n" , 186);
+            } 
+
+            temp = temp->link ;
+
+
+        }
+
+        printf("\t\t\t%c" , 186);
+        printf("%112s" , "");
+        printf("%c\n" , 186);
+
+        printf("\t\t\t%c" , 200);
+        for(i = 0 ; i < 112 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     } 
 }
 
@@ -5555,7 +6036,7 @@ void department_head_setting_page(struct department_head_information head)
     // limit department head inputs
     while(head_choice <= 0 || head_choice > 4)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &head_choice);
         gets(c);
@@ -5610,7 +6091,7 @@ void department_head_setting_password_page(struct department_head_information he
     strcpy(hd.password , star_password());
     while(!check_password(hd.password))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter new password : ");
         strcpy(hd.password , star_password());
     }
@@ -5656,7 +6137,7 @@ void department_head_setting_email_page(struct department_head_information head)
     //check
     while(!check_email(hd.email))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter new email : ");
         gets(hd.email);
     }
@@ -5695,7 +6176,7 @@ void department_head_setting_phone_number_page(struct department_head_informatio
     //check
     while(!check_number(hd.phone_number) && strlen(hd.phone_number) != 11)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter new phone number : ");
         gets(hd.phone_number);
     }
@@ -5718,131 +6199,145 @@ void department_head_setting_phone_number_page(struct department_head_informatio
 //  department head setting
 void department_head_setting(struct department_head_information head , char type[] , char new[])
 {
-    struct department_head_information *s = malloc(sizeof(struct department_head_information));
-    struct department_head_information *e = malloc(sizeof(struct department_head_information));
-    struct department_head_information *d = NULL;
-    struct department_head_information *temp = NULL;
-    struct department_head_information *temp2 = NULL;
-
     head_file_ptr = fopen("department_head_information.txt" , "r");
 
-    fscanf(head_file_ptr , "%s" , s->gender);
-    fscanf(head_file_ptr , "%s" , s->name);
-    fscanf(head_file_ptr , "%s" , s->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(head_file_ptr , "%s" , s->group_name);
-    fscanf(head_file_ptr , "%s" , s->code);
-    fscanf(head_file_ptr , "%s" , s->phone_number);
-    fscanf(head_file_ptr , "%s" , s->email);
-    fscanf(head_file_ptr , "%s" , s->status);
-    fscanf(head_file_ptr , "%s" , s->user_name);
-    fscanf(head_file_ptr , "%s" , s->password);
-
-    fscanf(head_file_ptr , "%s" , e->gender);
-    fscanf(head_file_ptr , "%s" , e->name);
-    fscanf(head_file_ptr , "%s" , e->family);
-    fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(head_file_ptr , "%s" , e->group_name);
-    fscanf(head_file_ptr , "%s" , e->code);
-    fscanf(head_file_ptr , "%s" , e->phone_number);
-    fscanf(head_file_ptr , "%s" , e->email);
-    fscanf(head_file_ptr , "%s" , e->status);
-    fscanf(head_file_ptr , "%s" , e->user_name);
-    fscanf(head_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL;
-
-
-    // make link list of head department information
-    while(feof(head_file_ptr) == 0)
+    if(head_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct department_head_information));
-
-        fscanf(head_file_ptr , "%s" , d->gender);
-        fscanf(head_file_ptr , "%s" , d->name);
-        fscanf(head_file_ptr , "%s" , d->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(head_file_ptr , "%s" , d->group_name);
-        fscanf(head_file_ptr , "%s" , d->code);
-        fscanf(head_file_ptr , "%s" , d->phone_number);
-        fscanf(head_file_ptr , "%s" , d->email);
-        fscanf(head_file_ptr , "%s" , d->status);
-        fscanf(head_file_ptr , "%s" , d->user_name);
-        fscanf(head_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(head_file_ptr);
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else 
     {
-        if(!strcmp(type , "password"))
+
+        struct department_head_information *s = malloc(sizeof(struct department_head_information));
+        struct department_head_information *e = malloc(sizeof(struct department_head_information));
+        struct department_head_information *d = NULL;
+        struct department_head_information *temp = NULL;
+        struct department_head_information *temp2 = NULL;
+
+        fscanf(head_file_ptr , "%s" , s->gender);
+        fscanf(head_file_ptr , "%s" , s->name);
+        fscanf(head_file_ptr , "%s" , s->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , "%s" , s->group_name);
+        fscanf(head_file_ptr , "%s" , s->code);
+        fscanf(head_file_ptr , "%s" , s->phone_number);
+        fscanf(head_file_ptr , "%s" , s->email);
+        fscanf(head_file_ptr , "%s" , s->status);
+        fscanf(head_file_ptr , "%s" , s->user_name);
+        fscanf(head_file_ptr , "%s" , s->password);
+
+        fscanf(head_file_ptr , "%s" , e->gender);
+        fscanf(head_file_ptr , "%s" , e->name);
+        fscanf(head_file_ptr , "%s" , e->family);
+        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , "%s" , e->group_name);
+        fscanf(head_file_ptr , "%s" , e->code);
+        fscanf(head_file_ptr , "%s" , e->phone_number);
+        fscanf(head_file_ptr , "%s" , e->email);
+        fscanf(head_file_ptr , "%s" , e->status);
+        fscanf(head_file_ptr , "%s" , e->user_name);
+        fscanf(head_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL;
+
+
+        // make link list of head department information
+        while(feof(head_file_ptr) == 0)
         {
-            if(!strcmp(temp->user_name , head.user_name))
-            {
-                strcpy(temp->password , "");
-                strcpy(temp->password , new );
-            }
-        } else if(!strcmp(type , "email"))
-        {
-            if(!strcmp(temp->user_name , head.user_name))
-            {
-                strcpy(temp->email , "");
-                strcpy(temp->email , new );
-            }
-        }  else if(!strcmp(type , "phone number"))
-        {
-            if(!strcmp(temp->user_name , head.user_name))
-            {
-                strcpy(temp->phone_number , "");
-                strcpy(temp->phone_number , new );
-            }
+            d = malloc(sizeof(struct department_head_information));
+
+            fscanf(head_file_ptr , "%s" , d->gender);
+            fscanf(head_file_ptr , "%s" , d->name);
+            fscanf(head_file_ptr , "%s" , d->family);
+            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , "%s" , d->group_name);
+            fscanf(head_file_ptr , "%s" , d->code);
+            fscanf(head_file_ptr , "%s" , d->phone_number);
+            fscanf(head_file_ptr , "%s" , d->email);
+            fscanf(head_file_ptr , "%s" , d->status);
+            fscanf(head_file_ptr , "%s" , d->user_name);
+            fscanf(head_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+
         }
-        temp = temp->link ;
-    }
+        e->link = NULL ;
 
-    head_file_ptr = fopen("department_head_information.txt" , "w");
+        fclose(head_file_ptr);
 
-    temp = s ;
-    while(temp != NULL)
-    {   
-        if(temp == s)
-            fprintf(head_file_ptr , "%s\n" , temp->gender);
-        else
-            fprintf(head_file_ptr , "\n%s\n" , temp->gender);
-        fprintf(head_file_ptr , "%s\n" , temp->name);
-        fprintf(head_file_ptr , "%s\n" , temp->family);
-        fprintf(head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
-        fprintf(head_file_ptr , "%s\n" , temp->group_name);
-        fprintf(head_file_ptr , "%s\n" , temp->code);
-        fprintf(head_file_ptr , "%s\n" , temp->phone_number);
-        fprintf(head_file_ptr , "%s\n" , temp->email);
-        fprintf(head_file_ptr , "%s\n" , temp->status);
-        fprintf(head_file_ptr , "%s\n" , temp->user_name);
-        fprintf(head_file_ptr , "%s" , temp->password);
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(type , "password"))
+            {
+                if(!strcmp(temp->user_name , head.user_name))
+                {
+                    strcpy(temp->password , "");
+                    strcpy(temp->password , new );
+                }
+            } else if(!strcmp(type , "email"))
+            {
+                if(!strcmp(temp->user_name , head.user_name))
+                {
+                    strcpy(temp->email , "");
+                    strcpy(temp->email , new );
+                }
+            }  else if(!strcmp(type , "phone number"))
+            {
+                if(!strcmp(temp->user_name , head.user_name))
+                {
+                    strcpy(temp->phone_number , "");
+                    strcpy(temp->phone_number , new );
+                }
+            }
+            temp = temp->link ;
+        }
 
-        temp = temp->link ;
-        
-    }
+        head_file_ptr = fopen("department_head_information.txt" , "w");
 
-    fclose(head_file_ptr);
+        if(head_file_ptr == NULL)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
+            temp = s ;
+            while(temp != NULL)
+            {   
+                if(temp == s)
+                    fprintf(head_file_ptr , "%s\n" , temp->gender);
+                else
+                    fprintf(head_file_ptr , "\n%s\n" , temp->gender);
+                fprintf(head_file_ptr , "%s\n" , temp->name);
+                fprintf(head_file_ptr , "%s\n" , temp->family);
+                fprintf(head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+                fprintf(head_file_ptr , "%s\n" , temp->group_name);
+                fprintf(head_file_ptr , "%s\n" , temp->code);
+                fprintf(head_file_ptr , "%s\n" , temp->phone_number);
+                fprintf(head_file_ptr , "%s\n" , temp->email);
+                fprintf(head_file_ptr , "%s\n" , temp->status);
+                fprintf(head_file_ptr , "%s\n" , temp->user_name);
+                fprintf(head_file_ptr , "%s" , temp->password);
 
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
+                temp = temp->link ;
 
+            }
+
+            fclose(head_file_ptr);
+
+        }        
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     }
 }
 
@@ -5862,7 +6357,7 @@ void academic_staff_login()
     gets(staff_user_name);
     while(strcmp(staff_user_name , "") == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your user name : ");
         gets(staff_user_name);
     }
@@ -5871,7 +6366,7 @@ void academic_staff_login()
     strcpy(staff_password , star_password());
     while(strcmp(staff_password , "") == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your password : ");
         strcpy(staff_password , star_password());
     }
@@ -5880,7 +6375,7 @@ void academic_staff_login()
 
     if(staff_found == 1)
     {
-        academic_staff_menu(staff_list(staff_user_name));
+        academic_staff_menu(staff_list("" , "" ,staff_user_name));
 
     } else
     {
@@ -5901,87 +6396,94 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
 {
     int staff_found = 0 ;
 
-    struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *d = NULL;
-    struct academic_staff_information *temp = NULL;
-    struct academic_staff_information *temp2 = NULL;
-
     staff_file_ptr = fopen("staff_information.txt" , "r");
 
-    fscanf(staff_file_ptr , "%s" , s->gender);
-    fscanf(staff_file_ptr , "%s" , s->name);
-    fscanf(staff_file_ptr , "%s" , s->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(staff_file_ptr , "%s" , s->rank);
-    fscanf(staff_file_ptr , "%s" , s->phone_number);
-    fscanf(staff_file_ptr , "%s" , s->email);
-    fscanf(staff_file_ptr , "%s" , s->status);
-    fscanf(staff_file_ptr , "%s" , s->user_name);
-    fscanf(staff_file_ptr , "%s" , s->password);
-
-    fscanf(staff_file_ptr , "%s" , e->gender);
-    fscanf(staff_file_ptr , "%s" , e->name);
-    fscanf(staff_file_ptr , "%s" , e->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(staff_file_ptr , "%s" , e->rank);
-    fscanf(staff_file_ptr , "%s" , e->phone_number);
-    fscanf(staff_file_ptr , "%s" , e->email);
-    fscanf(staff_file_ptr , "%s" , e->status);
-    fscanf(staff_file_ptr , "%s" , e->user_name);
-    fscanf(staff_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL;
-    // make link list of staff department information
-    while(feof(staff_file_ptr) == 0)
+    if(staff_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct academic_staff_information));
-
-        fscanf(staff_file_ptr , "%s" , d->gender);
-        fscanf(staff_file_ptr , "%s" , d->name);
-        fscanf(staff_file_ptr , "%s" , d->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(staff_file_ptr , "%s" , d->rank);
-        fscanf(staff_file_ptr , "%s" , d->phone_number);
-        fscanf(staff_file_ptr , "%s" , d->email);
-        fscanf(staff_file_ptr , "%s" , d->status);
-        fscanf(staff_file_ptr , "%s" , d->user_name);
-        fscanf(staff_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(staff_file_ptr);
-
-    temp = s ;
-    // search user name and password
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(temp->user_name , staff_user_name))
+
+        struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *d = NULL;
+        struct academic_staff_information *temp = NULL;
+        struct academic_staff_information *temp2 = NULL;
+
+        fscanf(staff_file_ptr , "%s" , s->gender);
+        fscanf(staff_file_ptr , "%s" , s->name);
+        fscanf(staff_file_ptr , "%s" , s->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(staff_file_ptr , "%s" , s->rank);
+        fscanf(staff_file_ptr , "%s" , s->phone_number);
+        fscanf(staff_file_ptr , "%s" , s->email);
+        fscanf(staff_file_ptr , "%s" , s->status);
+        fscanf(staff_file_ptr , "%s" , s->user_name);
+        fscanf(staff_file_ptr , "%s" , s->password);
+
+        fscanf(staff_file_ptr , "%s" , e->gender);
+        fscanf(staff_file_ptr , "%s" , e->name);
+        fscanf(staff_file_ptr , "%s" , e->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(staff_file_ptr , "%s" , e->rank);
+        fscanf(staff_file_ptr , "%s" , e->phone_number);
+        fscanf(staff_file_ptr , "%s" , e->email);
+        fscanf(staff_file_ptr , "%s" , e->status);
+        fscanf(staff_file_ptr , "%s" , e->user_name);
+        fscanf(staff_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL;
+        // make link list of staff department information
+        while(feof(staff_file_ptr) == 0)
         {
-            if(!strcmp(temp->password , staff_password))
-            {
-                staff_found = 1 ;
-                break;
-            }
+            d = malloc(sizeof(struct academic_staff_information));
+
+            fscanf(staff_file_ptr , "%s" , d->gender);
+            fscanf(staff_file_ptr , "%s" , d->name);
+            fscanf(staff_file_ptr , "%s" , d->family);
+            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(staff_file_ptr , "%s" , d->rank);
+            fscanf(staff_file_ptr , "%s" , d->phone_number);
+            fscanf(staff_file_ptr , "%s" , d->email);
+            fscanf(staff_file_ptr , "%s" , d->status);
+            fscanf(staff_file_ptr , "%s" , d->user_name);
+            fscanf(staff_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+
         }
-        temp = temp->link ;
-    }
+        e->link = NULL ;
 
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
+        fclose(staff_file_ptr);
 
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
+        temp = s ;
+        // search user name and password
+        while(temp != NULL)
+        {
+            if(!strcmp(temp->user_name , staff_user_name))
+            {
+                if(!strcmp(temp->password , staff_password))
+                {
+                    staff_found = 1 ;
+                    break;
+                }
+            }
+            temp = temp->link ;
+        }
 
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
     }
 
 
@@ -6022,7 +6524,7 @@ void academic_staff_menu(struct academic_staff_information staff)
     // limit department head inputs
     while(staff_choice <= 0 || staff_choice > 6)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &staff_choice);
         gets(c);
@@ -6100,7 +6602,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     {
         while(strcmp(student.gender , "female") != 0 && strcmp(student.gender , "male") != 0)
         {
-            printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
             printf("\n\t\t\t\tPlease enter gender (male / female) : ");
             gets(student.gender);
         }
@@ -6118,7 +6620,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     // check name
     while(!check_string(student.name))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s name : " , ch);
         gets(student.name);
     }
@@ -6128,7 +6630,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     // check family
     while(!check_string(student.family))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s family : " , ch);
         gets(student.family);
     }
@@ -6136,9 +6638,9 @@ void academic_staff_log_student(struct academic_staff_information staff)
     printf("\n\t\t\t\tPlease enter %s code : " , ch);
     gets(student.code);
     // check code
-    while(!check_number(student.code) && strlen(student.code) != 10)
+    while(!check_number(student.code) || strlen(student.code) != 10)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s code : " , ch);
         gets(student.code);
     }
@@ -6148,7 +6650,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     //check year
     while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) != 4)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth year : " , ch);
         gets(student.birth_date.year);
     }
@@ -6159,7 +6661,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     //check month
     while(check_number(student.birth_date.month) == 0 || strlen(student.birth_date.month) > 2)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth month : " , ch);
         gets(student.birth_date.month);
     }
@@ -6170,7 +6672,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     //check day
     while(check_number(student.birth_date.day) == 0 || strlen(student.birth_date.day) > 2)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth day : " , ch);
         gets(student.birth_date.day);
     }
@@ -6181,7 +6683,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     //check
     while(check_string(student.birth_city) == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s birth city : " , ch);
         gets(student.birth_city);
     }
@@ -6191,17 +6693,24 @@ void academic_staff_log_student(struct academic_staff_information staff)
     //check
     while(check_string(student.field_of_study) == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s filed of study : " , ch);
         gets(student.field_of_study);
     }
 
     printf("\n\t\t\t\tPlease enter %s id : " , ch);
     gets(student.id);
-    //check
-    while(check_number(student.id) == 0 && student_list("" , "" ,student.id).name[0] != '\0' && student_list("" , "" ,student.id).family[0] != '\0')
+    //check id
+    while(check_number(student.id) == 0)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input . ""\033[0m");
+        printf("\n\t\t\t\tPlease enter %s id : " , ch);
+        gets(student.id);
+    }
+    //check existence id
+    while(student_list("" , "" ,student.id).name[0] != '\0' && student_list("" , "" ,student.id).family[0] != '\0')
+    {
+        printf("\033[31m""\t\t\t\tERROR ! Duplicate input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s id : " , ch);
         gets(student.id);
     }
@@ -6213,7 +6722,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     //check phone number
     while(check_number(student.phone_number) == 0 || strlen(student.phone_number) != 11)
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s phone number : " , ch);
         gets(student.phone_number);
     }
@@ -6223,31 +6732,37 @@ void academic_staff_log_student(struct academic_staff_information staff)
     // check email
     while(!check_email(student.email))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter %s email : " , ch);
         gets(student.email);
     }
     
 
-
-    printf("\033[32m""\n\t\t\t\tstudent log successfully complited :)\n""\033[0m");
-
-
     // print student information in file
     student_file_ptr = fopen("student_information.txt" , "a");
 
-    fprintf(staff_file_ptr , "\n%s\n" , student.gender);
-    fprintf(staff_file_ptr , "%s\n" , student.name);
-    fprintf(staff_file_ptr , "%s\n" , student.family);
-    fprintf(staff_file_ptr , "%s\n" , student.code);
-    fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , student.birth_date.year ,student.birth_date.month , student.birth_date.day);
-    fprintf(staff_file_ptr , "%s\n" , student.birth_city);
-    fprintf(staff_file_ptr , "%s\n" , student.field_of_study);
-    fprintf(staff_file_ptr , "%s\n" , student.id);
-    fprintf(staff_file_ptr , "%s\n" , student.phone_number);
-    fprintf(staff_file_ptr , "%s" , student.email);
+    if(student_file_ptr == NULL)
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
+    {
 
-    fclose(student_file_ptr);
+        fprintf(student_file_ptr , "\n%s\n" , student.gender);
+        fprintf(student_file_ptr , "%s\n" , student.name);
+        fprintf(student_file_ptr , "%s\n" , student.family);
+        fprintf(student_file_ptr , "%s\n" , student.code);
+        fprintf(student_file_ptr , "%4s/%2s/%2s\n" , student.birth_date.year ,student.birth_date.month , student.birth_date.day);
+        fprintf(student_file_ptr , "%s\n" , student.birth_city);
+        fprintf(student_file_ptr , "%s\n" , student.field_of_study);
+        fprintf(student_file_ptr , "%s\n" , student.id);
+        fprintf(student_file_ptr , "%s\n" , student.phone_number);
+        fprintf(student_file_ptr , "%s" , student.email);
+
+        fclose(student_file_ptr);
+        
+        printf("\033[32m""\n\t\t\t\tstudent log successfully complited :)\n""\033[0m");
+        
+    }
 
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -6265,7 +6780,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
 void academic_staff_edit_students_information(struct academic_staff_information staff)
 {
     int staff_choice = 0 ;
-    char c[100] , enter;
+    char c[100] ;
 
     system("cls");
 
@@ -6292,7 +6807,7 @@ void academic_staff_edit_students_information(struct academic_staff_information 
     // limit admin inputs
     while(staff_choice <= 0 || staff_choice > 10)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &staff_choice);
         gets(c);
@@ -6365,7 +6880,7 @@ void academic_staff_edit_students_information_menu_choice(int staff_choice , str
 // edit students gender page
 void academic_staff_edit_students_gender_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st;
     char enter ;
 
     system("cls");
@@ -6381,25 +6896,35 @@ void academic_staff_edit_students_gender_page(struct academic_staff_information 
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students gender : ");
-    gets(student.gender);
-    // check
-    while(check_string(student.gender) == 0 || ( strcmp(student.gender , "male") != 0 && strcmp(student.gender , "female") != 0 ) )
+
+    st = student_list("" , "" , student.id);
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter students gender : ");
         gets(student.gender);
+        // check
+        while(check_string(student.gender) == 0 || ( strcmp(student.gender , "male") != 0 && strcmp(student.gender , "female") != 0 ) )
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students gender : ");
+            gets(student.gender);
+        }
+
+        academic_staff_edit_students_information_list(student.id , "gender" , student.gender);
+
+        printf("\033[32m""\n\n\t\t\t\tstudents gender edit successfully :)\n""\033[0m");
     }
 
-
-    academic_staff_edit_students_information_list(student.id , "gender" , student.gender);
-
-    printf("\033[32m""\n\n\t\t\t\tstudents gender edit successfully :)\n""\033[0m");
+    
 
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -6413,7 +6938,7 @@ void academic_staff_edit_students_gender_page(struct academic_staff_information 
 // edit students name page
 void academic_staff_edit_students_name_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st ;
     char enter ;
 
     system("cls");
@@ -6429,26 +6954,34 @@ void academic_staff_edit_students_name_page(struct academic_staff_information st
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students name : ");
-    gets(student.name);
-    // check
-    while(!check_string(student.name))
+    st = student_list("" , "" , student.id);
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter students name : ");
         gets(student.name);
+        // check
+        while(!check_string(student.name))
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students name : ");
+            gets(student.name);
+        }
+
+
+        academic_staff_edit_students_information_list(student.id , "name" , student.name);
+        
+        printf("\033[32m""\n\n\t\t\t\tstudents name edit successfully :)\n""\033[0m");
     }
-
-
-    academic_staff_edit_students_information_list(student.id , "name" , student.name);
-
-    printf("\033[32m""\n\n\t\t\t\tstudents name edit successfully :)\n""\033[0m");
-
+    
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
     enter = getchar();
@@ -6461,7 +6994,7 @@ void academic_staff_edit_students_name_page(struct academic_staff_information st
 // edit students family page
 void academic_staff_edit_students_family_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st ;
     char enter ;
 
     system("cls");
@@ -6477,25 +7010,35 @@ void academic_staff_edit_students_family_page(struct academic_staff_information 
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students family : ");
-    gets(student.family);
-    // check
-    while(check_string(student.family) == 0)
+    st = student_list("" , "" , student.id);
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter students family : ");
         gets(student.family);
+        // check
+        while(check_string(student.family) == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students family : ");
+            gets(student.family);
+        }
+
+
+
+        academic_staff_edit_students_information_list(student.id , "family" , student.family);
+
+        printf("\033[32m""\n\n\t\t\t\tstudents family edit successfully :)\n""\033[0m");
     }
-
-
-    academic_staff_edit_students_information_list(student.id , "family" , student.family);
-
-    printf("\033[32m""\n\n\t\t\t\tstudents family edit successfully :)\n""\033[0m");
+    
 
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -6509,7 +7052,7 @@ void academic_staff_edit_students_family_page(struct academic_staff_information 
 // edit students code page
 void academic_staff_edit_students_code_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st ;
     char enter ;
 
     system("cls");
@@ -6525,25 +7068,34 @@ void academic_staff_edit_students_code_page(struct academic_staff_information st
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students code : ");
-    gets(student.code);
-    // check
-    while(check_number(student.code) == 0 && strlen(student.code) != 10)
+    st = student_list("" , "" , student.id);
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter students code : ");
         gets(student.code);
+        // check
+        while(check_number(student.code) == 0 || strlen(student.code) != 10)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students code : ");
+            gets(student.code);
+        }
+
+
+        academic_staff_edit_students_information_list(student.id , "code" , student.code);
+
+        printf("\033[32m""\n\n\t\t\t\tstudents code edit successfully :)\n""\033[0m");
     }
 
-
-    academic_staff_edit_students_information_list(student.id , "code" , student.code);
-
-    printf("\033[32m""\n\n\t\t\t\tstudents code edit successfully :)\n""\033[0m");
 
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -6557,7 +7109,7 @@ void academic_staff_edit_students_code_page(struct academic_staff_information st
 // edit students birth date page
 void academic_staff_edit_students_birth_date_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st;
     char enter , birth_date[50] ;
 
     system("cls");
@@ -6573,48 +7125,57 @@ void academic_staff_edit_students_birth_date_page(struct academic_staff_informat
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students year of birth : ");
-    gets(student.birth_date.year);
-    // check
-    while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) != 4)
-    {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
-        printf("\n\t\t\t\tPlease enter students year of birth : ");
-        gets(student.birth_date.year);
-    }
+    st = student_list("" , "" , student.id);
 
-    printf("\n\t\t\t\tPlease enter students month of birth : ");
-    gets(student.birth_date.month);
-    // check
-    while(check_number(student.birth_date.month) == 0 || strlen(student.birth_date.month) > 2)
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+            printf("\n\t\t\t\tPlease enter students year of birth : ");
+        gets(student.birth_date.year);
+        // check
+        while(check_number(student.birth_date.year) == 0 || strlen(student.birth_date.year) != 4)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students year of birth : ");
+            gets(student.birth_date.year);
+        }
+
         printf("\n\t\t\t\tPlease enter students month of birth : ");
         gets(student.birth_date.month);
-    }
-    date(student.birth_date.month);
+        // check
+        while(check_number(student.birth_date.month) == 0 || strlen(student.birth_date.month) > 2)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students month of birth : ");
+            gets(student.birth_date.month);
+        }
+        date(student.birth_date.month);
 
-    printf("\n\t\t\t\tPlease enter students day of birth : ");
-    gets(student.birth_date.day);
-    // check
-    while(check_number(student.birth_date.day) == 0 || strlen(student.birth_date.day) > 2)
-    {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students day of birth : ");
         gets(student.birth_date.day);
+        // check
+        while(check_number(student.birth_date.day) == 0 || strlen(student.birth_date.day) > 2)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students day of birth : ");
+            gets(student.birth_date.day);
+        }
+        date(student.birth_date.day);
+
+        sprintf(birth_date , "%4s/%2s/%2s" , student.birth_date.year , student.birth_date.month , student.birth_date.day);
+
+        academic_staff_edit_students_information_list(student.id , "birth date" , birth_date );
+
+        printf("\033[32m""\n\n\t\t\t\tstudents birth date edit successfully :)\n""\033[0m");
     }
-    date(student.birth_date.day);
 
-    sprintf(birth_date , "%4s/%2s/%2s" , student.birth_date.year , student.birth_date.month , student.birth_date.day);
-
-    academic_staff_edit_students_information_list(student.id , "birth date" , birth_date );
-
-    printf("\033[32m""\n\n\t\t\t\tstudents birth date edit successfully :)\n""\033[0m");
 
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -6628,7 +7189,7 @@ void academic_staff_edit_students_birth_date_page(struct academic_staff_informat
 // edit students birth city page
 void academic_staff_edit_students_birth_city_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st ;
     char enter ;
 
     system("cls");
@@ -6644,25 +7205,34 @@ void academic_staff_edit_students_birth_city_page(struct academic_staff_informat
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students birth city : ");
-    gets(student.birth_city);
-    // check
-    while(check_string(student.birth_city) == 0)
+    st = student_list("" , "" , student.id);
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter students birth city : ");
         gets(student.birth_city);
+        // check
+        while(check_string(student.birth_city) == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students birth city : ");
+            gets(student.birth_city);
+        }
+
+
+        academic_staff_edit_students_information_list(student.id , "birth city" , student.birth_city);
+
+        printf("\033[32m""\n\n\t\t\t\tstudents birth city edit successfully :)\n""\033[0m");
     }
-
-
-    academic_staff_edit_students_information_list(student.id , "birth city" , student.birth_city);
-
-    printf("\033[32m""\n\n\t\t\t\tstudents birth city edit successfully :)\n""\033[0m");
+    
 
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -6676,7 +7246,7 @@ void academic_staff_edit_students_birth_city_page(struct academic_staff_informat
 // edit students field of study page
 void academic_staff_edit_students_field_of_study_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st ;
     char enter ;
 
     system("cls");
@@ -6692,26 +7262,35 @@ void academic_staff_edit_students_field_of_study_page(struct academic_staff_info
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students field of study : ");
-    gets(student.field_of_study);
-    // check
-    while(check_string(student.field_of_study) == 0)
+    st = student_list("" , "" , student.id);
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter students field of study : ");
         gets(student.field_of_study);
+        // check
+        while(check_string(student.field_of_study) == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students field of study : ");
+            gets(student.field_of_study);
+        }
+
+
+        academic_staff_edit_students_information_list(student.id , "field of study" , student.field_of_study);
+
+        printf("\033[32m""\n\n\t\t\t\tstudents field of study edit successfully :)\n""\033[0m");
+
     }
-
-
-    academic_staff_edit_students_information_list(student.id , "field of study" , student.field_of_study);
-
-    printf("\033[32m""\n\n\t\t\t\tstudents field of study edit successfully :)\n""\033[0m");
-
+    
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
     enter = getchar();
@@ -6724,7 +7303,7 @@ void academic_staff_edit_students_field_of_study_page(struct academic_staff_info
 // edit students phone number page
 void academic_staff_edit_students_phone_number_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st;
     char enter ;
 
     system("cls");
@@ -6740,25 +7319,35 @@ void academic_staff_edit_students_phone_number_page(struct academic_staff_inform
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students phone number : ");
-    gets(student.phone_number);
-    // check
-    while(check_number(student.phone_number) == 0 && strlen(student.phone_number) != 11)
+    st = student_list("" , "" , student.id);
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
         printf("\n\t\t\t\tPlease enter students phone number : ");
         gets(student.phone_number);
+        // check
+        while(check_number(student.phone_number) == 0 && strlen(student.phone_number) != 11)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+            printf("\n\t\t\t\tPlease enter students phone number : ");
+            gets(student.phone_number);
+        }
+
+
+        academic_staff_edit_students_information_list(student.id , "phone number" , student.phone_number);
+
+        printf("\033[32m""\n\n\t\t\t\tstudents phone number edit successfully :)\n""\033[0m");
+
     }
-
-
-    academic_staff_edit_students_information_list(student.id , "phone number" , student.phone_number);
-
-    printf("\033[32m""\n\n\t\t\t\tstudents phone number edit successfully :)\n""\033[0m");
+    
 
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -6772,7 +7361,7 @@ void academic_staff_edit_students_phone_number_page(struct academic_staff_inform
 // edit students email page
 void academic_staff_edit_students_email_page(struct academic_staff_information staff)
 {
-    struct student_information student ;
+    struct student_information student , st ;
     char enter ;
 
     system("cls");
@@ -6788,26 +7377,36 @@ void academic_staff_edit_students_email_page(struct academic_staff_information s
     // check
     while(!check_number(student.id))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
-    printf("\n\t\t\t\tPlease enter students email : ");
-    gets(student.email);
-    // check email
-    while(!check_email(student.email))
+    st = student_list("" , "" , student.id);
+
+    if(student_list("" , "" , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter  email : ");
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+        printf("\n\t\t\t\tPlease enter students email : ");
         gets(student.email);
+        // check email
+        while(!check_email(student.email))
+        {
+            printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+            printf("\n\t\t\t\tPlease enter  email : ");
+            gets(student.email);
+        }
+
+
+
+        academic_staff_edit_students_information_list(student.id , "email" , student.email);
+
+        printf("\033[32m""\n\n\t\t\t\tstudents email edit successfully :)\n""\033[0m");
+
     }
     
-
-
-    academic_staff_edit_students_information_list(student.id , "email" , student.email);
-
-    printf("\033[32m""\n\n\t\t\t\tstudents email edit successfully :)\n""\033[0m");
 
     // return to academic staff page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -6821,306 +7420,320 @@ void academic_staff_edit_students_email_page(struct academic_staff_information s
 // edit system for students information
 void academic_staff_edit_students_information_list(char students_id[] , char type[] , char new[])
 {
-    struct student_information *s = malloc(sizeof(struct student_information));
-    struct student_information *e = malloc(sizeof(struct student_information));
-    struct student_information *d = NULL ;
-    struct student_information *temp = NULL ;
-    struct student_information *temp2 = NULL ;
-
     student_file_ptr = fopen("student_information.txt" , "r");
 
-    fscanf(student_file_ptr , "%s" , s->gender);
-    fscanf(student_file_ptr , "%s" , s->name);
-    fscanf(student_file_ptr , "%s" , s->family);
-    fscanf(student_file_ptr , "%s" , s->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year  , s->birth_date.month , s->birth_date.day);
-    fscanf(student_file_ptr , "%s" , s->birth_city);
-    fscanf(student_file_ptr , "%s" , s->field_of_study);
-    fscanf(student_file_ptr , "%s" , s->id);
-    fscanf(student_file_ptr , "%s" , s->phone_number);
-    fscanf(student_file_ptr , "%s" , s->email);
-
-    fscanf(student_file_ptr , "%s" , e->gender);
-    fscanf(student_file_ptr , "%s" , e->name);
-    fscanf(student_file_ptr , "%s" , e->family);
-    fscanf(student_file_ptr , "%s" , e->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year  , e->birth_date.month , e->birth_date.day);
-    fscanf(student_file_ptr , "%s" , e->birth_city);
-    fscanf(student_file_ptr , "%s" , e->field_of_study);
-    fscanf(student_file_ptr , "%s" , e->id);
-    fscanf(student_file_ptr , "%s" , e->phone_number);
-    fscanf(student_file_ptr , "%s" , e->email);
-
-    s->link = e ;
-    e->link = NULL ;
-
-    while(feof(student_file_ptr) == 0)
+    if(student_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_information));
-
-        fscanf(student_file_ptr , "%s" , d->gender);
-        fscanf(student_file_ptr , "%s" , d->name);
-        fscanf(student_file_ptr , "%s" , d->family);
-        fscanf(student_file_ptr , "%s" , d->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year  , d->birth_date.month , d->birth_date.day);
-        fscanf(student_file_ptr , "%s" , d->birth_city);
-        fscanf(student_file_ptr , "%s" , d->field_of_study);
-        fscanf(student_file_ptr , "%s" , d->id);
-        fscanf(student_file_ptr , "%s" , d->phone_number);
-        fscanf(student_file_ptr , "%s" , d->email);
-
-        e->link = d ;
-        e = d ;
-    }
-    e->link = NULL ;
-
-    fclose(student_file_ptr);
-
-    student_file_ptr = fopen("student_information.txt" , "w");
-
-    if(!strcmp(type , "gender"))
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        temp = s ;
-        while(temp != NULL)
+
+        struct student_information *s = malloc(sizeof(struct student_information));
+        struct student_information *e = malloc(sizeof(struct student_information));
+        struct student_information *d = NULL ;
+        struct student_information *temp = NULL ;
+        struct student_information *temp2 = NULL ;
+
+        fscanf(student_file_ptr , "%s" , s->gender);
+        fscanf(student_file_ptr , "%s" , s->name);
+        fscanf(student_file_ptr , "%s" , s->family);
+        fscanf(student_file_ptr , "%s" , s->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year  , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , "%s" , s->birth_city);
+        fscanf(student_file_ptr , "%s" , s->field_of_study);
+        fscanf(student_file_ptr , "%s" , s->id);
+        fscanf(student_file_ptr , "%s" , s->phone_number);
+        fscanf(student_file_ptr , "%s" , s->email);
+
+        fscanf(student_file_ptr , "%s" , e->gender);
+        fscanf(student_file_ptr , "%s" , e->name);
+        fscanf(student_file_ptr , "%s" , e->family);
+        fscanf(student_file_ptr , "%s" , e->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year  , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , "%s" , e->birth_city);
+        fscanf(student_file_ptr , "%s" , e->field_of_study);
+        fscanf(student_file_ptr , "%s" , e->id);
+        fscanf(student_file_ptr , "%s" , e->phone_number);
+        fscanf(student_file_ptr , "%s" , e->email);
+
+        s->link = e ;
+        e->link = NULL ;
+
+        while(feof(student_file_ptr) == 0)
         {
-            if(!strcmp(temp->id , students_id))
+            d = malloc(sizeof(struct student_information));
+
+            fscanf(student_file_ptr , "%s" , d->gender);
+            fscanf(student_file_ptr , "%s" , d->name);
+            fscanf(student_file_ptr , "%s" , d->family);
+            fscanf(student_file_ptr , "%s" , d->code);
+            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year  , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , "%s" , d->birth_city);
+            fscanf(student_file_ptr , "%s" , d->field_of_study);
+            fscanf(student_file_ptr , "%s" , d->id);
+            fscanf(student_file_ptr , "%s" , d->phone_number);
+            fscanf(student_file_ptr , "%s" , d->email);
+
+            e->link = d ;
+            e = d ;
+        }
+        e->link = NULL ;
+
+        fclose(student_file_ptr);
+
+        student_file_ptr = fopen("student_information.txt" , "w");
+
+        if(student_file_ptr == NULL)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
+
+            if(!strcmp(type , "gender"))
             {
-                strcpy(temp->gender , "");
-                strcpy(temp->gender , new);
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->gender , "");
+                        strcpy(temp->gender , new);
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
+            } else if(!strcmp(type , "name"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->name , "");
+                        strcpy(temp->name , new);
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
+            }  else if(!strcmp(type , "family"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->family , "");
+                        strcpy(temp->family , new);
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
+            }  else if(!strcmp(type , "code"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->code , "");
+                        strcpy(temp->code , new);
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
+            }  else if(!strcmp(type , "birth date"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->birth_date.year , "");
+                        strcpy(temp->birth_date.month , "");
+                        strcpy(temp->birth_date.day , "");
+                        sscanf(new , "%4s/%2s/%2s" , temp->birth_date.year , temp->birth_date.month ,temp->birth_date.day);
+
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%s/%s/%s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
+            } else if(!strcmp(type , "birth city"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->birth_city , "");
+                        strcpy(temp->birth_city , new);
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
+            } else if(!strcmp(type , "field of study"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->field_of_study , "");
+                        strcpy(temp->field_of_study , new);
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
+            } else if(!strcmp(type , "phone number"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->phone_number , "");
+                        strcpy(temp->phone_number , new);
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
+            } else if(!strcmp(type , "email"))
+            {
+                temp = s ;
+                while(temp != NULL)
+                {
+                    if(!strcmp(temp->id , students_id))
+                    {
+                        strcpy(temp->email , "");
+                        strcpy(temp->email , new);
+                    }
+
+                    fprintf(student_file_ptr , "%s\n" , temp->gender);
+                    fprintf(student_file_ptr , "%s\n" , temp->name);
+                    fprintf(student_file_ptr , "%s\n" , temp->family);
+                    fprintf(student_file_ptr , "%s\n" , temp->code);
+                    fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
+                    fprintf(student_file_ptr , "%s\n" , temp->birth_city);
+                    fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
+                    fprintf(student_file_ptr , "%s\n" , temp->id);
+                    fprintf(student_file_ptr , "%s\n" , temp->phone_number);
+                    fprintf(student_file_ptr , "%s\n" , temp->email);
+
+
+                    temp = temp->link ;
+                }
             }
 
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
 
+            fclose(staff_file_ptr);
 
-            temp = temp->link ;
-        }
-    } else if(!strcmp(type , "name"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            if(!strcmp(temp->id , students_id))
+            // delete link list
+            temp2 = s ;
+            temp = s->link ;
+            while (temp != NULL)
             {
-                strcpy(temp->name , "");
-                strcpy(temp->name , new);
+
+                free(temp2);
+                temp2 = temp ;
+                temp = temp->link;
+
             }
-
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
-
-
-            temp = temp->link ;
         }
-    }  else if(!strcmp(type , "family"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            if(!strcmp(temp->id , students_id))
-            {
-                strcpy(temp->family , "");
-                strcpy(temp->family , new);
-            }
-
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
-
-
-            temp = temp->link ;
-        }
-    }  else if(!strcmp(type , "code"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            if(!strcmp(temp->id , students_id))
-            {
-                strcpy(temp->code , "");
-                strcpy(temp->code , new);
-            }
-
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
-
-
-            temp = temp->link ;
-        }
-    }  else if(!strcmp(type , "birth date"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            if(!strcmp(temp->id , students_id))
-            {
-                strcpy(temp->birth_date.year , "");
-                strcpy(temp->birth_date.month , "");
-                strcpy(temp->birth_date.day , "");
-                sscanf(new , "%4s/%2s/%2s" , temp->birth_date.year , temp->birth_date.month ,temp->birth_date.day);
-                
-            }
-
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%s/%s/%s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
-
-
-            temp = temp->link ;
-        }
-    } else if(!strcmp(type , "birth city"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            if(!strcmp(temp->id , students_id))
-            {
-                strcpy(temp->birth_city , "");
-                strcpy(temp->birth_city , new);
-            }
-
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
-
-
-            temp = temp->link ;
-        }
-    } else if(!strcmp(type , "field of study"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            if(!strcmp(temp->id , students_id))
-            {
-                strcpy(temp->field_of_study , "");
-                strcpy(temp->field_of_study , new);
-            }
-
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
-
-
-            temp = temp->link ;
-        }
-    } else if(!strcmp(type , "phone number"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            if(!strcmp(temp->id , students_id))
-            {
-                strcpy(temp->phone_number , "");
-                strcpy(temp->phone_number , new);
-            }
-
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
-
-
-            temp = temp->link ;
-        }
-    } else if(!strcmp(type , "email"))
-    {
-        temp = s ;
-        while(temp != NULL)
-        {
-            if(!strcmp(temp->id , students_id))
-            {
-                strcpy(temp->email , "");
-                strcpy(temp->email , new);
-            }
-
-            fprintf(student_file_ptr , "%s\n" , temp->gender);
-            fprintf(student_file_ptr , "%s\n" , temp->name);
-            fprintf(student_file_ptr , "%s\n" , temp->family);
-            fprintf(student_file_ptr , "%s\n" , temp->code);
-            fprintf(student_file_ptr , "%4s/%2s/%2s\n" , temp->birth_date.year  , temp->birth_date.month , temp->birth_date.day);
-            fprintf(student_file_ptr , "%s\n" , temp->birth_city);
-            fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
-            fprintf(student_file_ptr , "%s\n" , temp->id);
-            fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-            fprintf(student_file_ptr , "%s\n" , temp->email);
-
-
-            temp = temp->link ;
-        }
-    }
-
-
-    fclose(staff_file_ptr);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
     }
 
 }
@@ -7130,6 +7743,8 @@ void academic_staff_log_score(struct academic_staff_information staff)
 {
     char   enter;
     struct student_score score;
+    struct student_information st;
+    struct lesson_information les ;
 
     system("cls");
 
@@ -7145,49 +7760,75 @@ void academic_staff_log_score(struct academic_staff_information staff)
     // check id
     while(!check_number(score.student_id))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students id  : ");
         gets(score.student_id);
     }
 
-    printf("\n\t\t\t\tPlease enter lessons code : ");
-    gets(score.lesson_code);
-    // check code
-    while(!check_number(score.lesson_code))
+    st = student_list("" , "" , score.student_id);
+
+    if(student_list(st.name , st.family , st.id).name[0] == '\0')
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+         printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+        printf("\n\t\t\t\tPlease enter lessons code : ");
+        gets(score.lesson_code);
+        // check code
+        while(!check_number(score.lesson_code))
+    {
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter lessons code : ");
         gets(score.lesson_code);
     }
 
-    printf("\n\t\t\t\tPlease enter score : ");
-    gets(score.score);
-    //check score
-    while(!check_number(score.score))
-    {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
-        printf("\n\t\t\t\tPlease enter score : ");
-        gets(score.score);
+        les = lesson_list(score.lesson_code);
+
+        if(lesson_list(les.code).name[0] == '\0')
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Lesson not found .""\033[0m");
+        } else
+        {
+            printf("\n\t\t\t\tPlease enter score : ");
+            gets(score.score);
+            //check score
+            while(!check_number(score.score))
+            {   
+                printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
+                printf("\n\t\t\t\tPlease enter score : ");
+                gets(score.score);
+            }   
+
+            printf("\n\t\t\t\tDate : %s" , __DATE__);
+
+            printf("\n\n\t\t\t\tTime : %s" , __TIME__);
+
+            ("\n\n\t\t\t\tAcademic staff name : %s %s" , staff.name , staff.family);
+            
+            // print score information in file
+            score_file_ptr = fopen("scores_information.txt" , "a");
+
+            if(score_file_ptr == NULL)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+            } else
+            {
+                fprintf(score_file_ptr , "\n%s\n" , score.student_id);
+                fprintf(score_file_ptr , "%s\n" , score.lesson_code);
+                fprintf(score_file_ptr , "%s\n" , score.score);
+                fprintf(score_file_ptr , "%s\n" , __DATE__);
+                fprintf(score_file_ptr , "%s\n" , __TIME__);
+                fprintf( score_file_ptr ,"%s %s" , staff.name , staff.family);
+            
+                 fclose(score_file_ptr);
+            
+                printf("\033[32m""\n\n\t\t\t\tscore log successfully complited :)\n""\033[0m");
+            }
+        }
+        
     }
 
-    printf("\n\t\t\t\tDate : %s" , __DATE__);
-
-    printf("\n\n\t\t\t\tTime : %s" , __TIME__);
-
-    printf("\n\n\t\t\t\tAcademic staff name : %s %s" , staff.name , staff.family);
-
-    // print score information in file
-    score_file_ptr = fopen("scores_information.txt" , "a");
-    fprintf(score_file_ptr , "\n%s\n" , score.student_id);
-    fprintf(score_file_ptr , "%s\n" , score.lesson_code);
-    fprintf(score_file_ptr , "%s\n" , score.score);
-    fprintf(score_file_ptr , "%s\n" , __DATE__);
-    fprintf(score_file_ptr , "%s\n" , __TIME__);
-    fprintf( score_file_ptr ,"%s %s" , staff.name , staff.family);
-
-     fclose(score_file_ptr);
-
-    printf("\033[32m""\n\n\t\t\t\tscore log successfully complited :)\n""\033[0m");
+    
 
     // return to department head page menu
     printf("\033[34m""\n\n\t\t\t\tPlease enter to continue ....""\033[0m");
@@ -7225,7 +7866,7 @@ void academic_staff_setting_page(struct academic_staff_information staff)
     // limit academic staff inputs
     while(staff_choice <= 0 || staff_choice > 4)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &staff_choice);
         gets(c);
@@ -7280,7 +7921,7 @@ void academic_staff_setting_password_page(struct academic_staff_information staf
     strcpy(st.password , star_password());
     while(!check_password(st.password))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter new password : ");
         strcpy(st.password , star_password());
     }
@@ -7327,7 +7968,7 @@ void academic_staff_setting_email_page(struct academic_staff_information staff)
     //check
     while(!check_email(st.email))
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter new email : ");
         gets(st.email);
     }
@@ -7366,7 +8007,7 @@ void academic_staff_setting_phone_number_page(struct academic_staff_information 
     //check
     while(!check_number(st.phone_number) && strlen(st.phone_number) != 11)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !\n""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
         printf("\n\t\t\t\tPlease enter new phone number : ");
         gets(st.phone_number);
     }
@@ -7389,131 +8030,145 @@ void academic_staff_setting_phone_number_page(struct academic_staff_information 
 //  academic staff setting
 void academic_staff_setting(struct academic_staff_information staff , char type[] , char new[])
 {
-    struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
-    struct academic_staff_information *d = NULL;
-    struct academic_staff_information *temp = NULL;
-    struct academic_staff_information *temp2 = NULL;
-
     staff_file_ptr = fopen("staff_information.txt" , "r");
 
-    fscanf(staff_file_ptr , "%s" , s->gender);
-    fscanf(staff_file_ptr , "%s" , s->name);
-    fscanf(staff_file_ptr , "%s" , s->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
-    fscanf(staff_file_ptr , "%s" , s->rank);
-    fscanf(staff_file_ptr , "%s" , s->phone_number);
-    fscanf(staff_file_ptr , "%s" , s->email);
-    fscanf(staff_file_ptr , "%s" , s->status);
-    fscanf(staff_file_ptr , "%s" , s->user_name);
-    fscanf(staff_file_ptr , "%s" , s->password);
-
-    fscanf(staff_file_ptr , "%s" , e->gender);
-    fscanf(staff_file_ptr , "%s" , e->name);
-    fscanf(staff_file_ptr , "%s" , e->family);
-    fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
-    fscanf(staff_file_ptr , "%s" , e->rank);
-    fscanf(staff_file_ptr , "%s" , e->phone_number);
-    fscanf(staff_file_ptr , "%s" , e->email);
-    fscanf(staff_file_ptr , "%s" , e->status);
-    fscanf(staff_file_ptr , "%s" , e->user_name);
-    fscanf(staff_file_ptr , "%s" , e->password);
-
-    s->link = e ;
-    e->link = NULL;
-
-
-    // make link list of academic staff
-    while(feof(staff_file_ptr) == 0)
+    if(staff_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct academic_staff_information));
-
-        fscanf(staff_file_ptr , "%s" , d->gender);
-        fscanf(staff_file_ptr , "%s" , d->name);
-        fscanf(staff_file_ptr , "%s" , d->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
-        fscanf(staff_file_ptr , "%s" , d->rank);
-        fscanf(staff_file_ptr , "%s" , d->phone_number);
-        fscanf(staff_file_ptr , "%s" , d->email);
-        fscanf(staff_file_ptr , "%s" , d->status);
-        fscanf(staff_file_ptr , "%s" , d->user_name);
-        fscanf(staff_file_ptr , "%s" , d->password);
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(staff_file_ptr);
-
-    temp = s ;
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(type , "password"))
+
+        struct academic_staff_information *s = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *e = malloc(sizeof(struct academic_staff_information));
+        struct academic_staff_information *d = NULL;
+        struct academic_staff_information *temp = NULL;
+        struct academic_staff_information *temp2 = NULL;
+
+        fscanf(staff_file_ptr , "%s" , s->gender);
+        fscanf(staff_file_ptr , "%s" , s->name);
+        fscanf(staff_file_ptr , "%s" , s->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(staff_file_ptr , "%s" , s->rank);
+        fscanf(staff_file_ptr , "%s" , s->phone_number);
+        fscanf(staff_file_ptr , "%s" , s->email);
+        fscanf(staff_file_ptr , "%s" , s->status);
+        fscanf(staff_file_ptr , "%s" , s->user_name);
+        fscanf(staff_file_ptr , "%s" , s->password);
+
+        fscanf(staff_file_ptr , "%s" , e->gender);
+        fscanf(staff_file_ptr , "%s" , e->name);
+        fscanf(staff_file_ptr , "%s" , e->family);
+        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(staff_file_ptr , "%s" , e->rank);
+        fscanf(staff_file_ptr , "%s" , e->phone_number);
+        fscanf(staff_file_ptr , "%s" , e->email);
+        fscanf(staff_file_ptr , "%s" , e->status);
+        fscanf(staff_file_ptr , "%s" , e->user_name);
+        fscanf(staff_file_ptr , "%s" , e->password);
+
+        s->link = e ;
+        e->link = NULL;
+
+
+        // make link list of academic staff
+        while(feof(staff_file_ptr) == 0)
         {
-            if(!strcmp(temp->user_name , staff.user_name))
+            d = malloc(sizeof(struct academic_staff_information));
+
+            fscanf(staff_file_ptr , "%s" , d->gender);
+            fscanf(staff_file_ptr , "%s" , d->name);
+            fscanf(staff_file_ptr , "%s" , d->family);
+            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(staff_file_ptr , "%s" , d->rank);
+            fscanf(staff_file_ptr , "%s" , d->phone_number);
+            fscanf(staff_file_ptr , "%s" , d->email);
+            fscanf(staff_file_ptr , "%s" , d->status);
+            fscanf(staff_file_ptr , "%s" , d->user_name);
+            fscanf(staff_file_ptr , "%s" , d->password);
+
+            e->link = d ;
+            e = d ;
+
+        }
+        e->link = NULL ;
+
+        fclose(staff_file_ptr);
+
+        temp = s ;
+        while(temp != NULL)
+        {
+            if(!strcmp(type , "password"))
             {
-                strcpy(temp->password , "");
-                strcpy(temp->password , new );
+                if(!strcmp(temp->user_name , staff.user_name))
+                {
+                    strcpy(temp->password , "");
+                    strcpy(temp->password , new );
+                }
+            } else if(!strcmp(type , "email"))
+            {
+                if(!strcmp(temp->user_name , staff.user_name))
+                {
+                    strcpy(temp->email , "");
+                    strcpy(temp->email , new );
+                }
+            }  else if(!strcmp(type , "phone number"))
+            {
+                if(!strcmp(temp->user_name , staff.user_name))
+                {
+                    strcpy(temp->phone_number , "");
+                    strcpy(temp->phone_number , new );
+                }
             }
-        } else if(!strcmp(type , "email"))
+            temp = temp->link ;
+        }
+
+        staff_file_ptr = fopen("staff_information.txt" , "w");
+
+        if(staff_file_ptr == NULL)
         {
-            if(!strcmp(temp->user_name , staff.user_name))
-            {
-                strcpy(temp->email , "");
-                strcpy(temp->email , new );
+            printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+        } else
+        {
+
+            temp = s ;
+            while(temp != NULL)
+            {   
+                if(temp == s)
+                    fprintf(staff_file_ptr , "%s\n" , temp->gender);
+                else
+                    fprintf(staff_file_ptr , "\n%s\n" , temp->gender);
+                fprintf(staff_file_ptr , "%s\n" , temp->name);
+                fprintf(staff_file_ptr , "%s\n" , temp->family);
+                fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
+                fprintf(staff_file_ptr , "%s\n" , temp->rank);
+                fprintf(staff_file_ptr , "%s\n" , temp->phone_number);
+                fprintf(staff_file_ptr , "%s\n" , temp->email);
+                fprintf(staff_file_ptr , "%s\n" , temp->status);
+                fprintf(staff_file_ptr , "%s\n" , temp->user_name);
+                fprintf(staff_file_ptr , "%s" , temp->password);
+
+                temp = temp->link ;
+
             }
-        }  else if(!strcmp(type , "phone number"))
-        {
-            if(!strcmp(temp->user_name , staff.user_name))
+
+            fclose(staff_file_ptr);
+
+            // delete link list
+            temp2 = s ;
+            temp = s->link ;
+            while (temp != NULL)
             {
-                strcpy(temp->phone_number , "");
-                strcpy(temp->phone_number , new );
+
+                free(temp2);
+                temp2 = temp ;
+                temp = temp->link;
+
             }
         }
-        temp = temp->link ;
-    }
-
-    staff_file_ptr = fopen("staff_information.txt" , "w");
-
-    temp = s ;
-    while(temp != NULL)
-    {   
-        if(temp == s)
-            fprintf(staff_file_ptr , "%s\n" , temp->gender);
-        else
-            fprintf(staff_file_ptr , "\n%s\n" , temp->gender);
-        fprintf(staff_file_ptr , "%s\n" , temp->name);
-        fprintf(staff_file_ptr , "%s\n" , temp->family);
-        fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
-        fprintf(staff_file_ptr , "%s\n" , temp->rank);
-        fprintf(staff_file_ptr , "%s\n" , temp->phone_number);
-        fprintf(staff_file_ptr , "%s\n" , temp->email);
-        fprintf(staff_file_ptr , "%s\n" , temp->status);
-        fprintf(staff_file_ptr , "%s\n" , temp->user_name);
-        fprintf(staff_file_ptr , "%s" , temp->password);
-
-        temp = temp->link ;
-        
-    }
-
-    fclose(staff_file_ptr);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
     }
 }
 
-// academic staff reports men
+// academic staff reports 
 void academic_staff_reports_page(struct academic_staff_information staff)
 {
     int staff_choice = 0 ;
@@ -7539,7 +8194,7 @@ void academic_staff_reports_page(struct academic_staff_information staff)
     // limit staff inputs
     while(staff_choice <= 0 || staff_choice > 5)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &staff_choice);
         gets(c);
@@ -7605,7 +8260,7 @@ void academic_staff_find_student_page(struct academic_staff_information staff)
     // limit department staff inputs
     while(staff_choice <= 0 || staff_choice > 3)
     {
-        printf("\033[31m""\n\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
         scanf("%d" , &staff_choice);
         gets(c);
@@ -7657,7 +8312,7 @@ void academic_staff_find_student_name_page(struct academic_staff_information sta
     // check name
     while(!check_string(student.name))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students name : ");
         gets(student.name);
     }
@@ -7667,25 +8322,31 @@ void academic_staff_find_student_name_page(struct academic_staff_information sta
     // check family
     while(!check_string(student.family))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students family : ");
         gets(student.family);
     } 
 
     st = student_list(student.name , student.family , "");
 
-    printf("\033[32m""\n\t\t\t\t+------------------------------------------------+");
-    printf("\n\t\t\t\t| gender = %-37s |" , st.gender);
-    printf("\n\t\t\t\t| name = %-39s |" , st.name);
-    printf("\n\t\t\t\t| family = %-37s |" ,  st.family);
-    printf("\n\t\t\t\t| code = %-39s |" , st.code);
-    printf("\n\t\t\t\t| birth date = %4s/%2s/%-25s |" , st.birth_date.year , st.birth_date.month , st.birth_date.day);
-    printf("\n\t\t\t\t| birth city = %-33s |" , st.birth_city);
-    printf("\n\t\t\t\t| field of study = %-29s |" , st.field_of_study);
-    printf("\n\t\t\t\t| id = %-41s |" , st.id);
-    printf("\n\t\t\t\t| phone number = %-31s |" , st.phone_number);
-    printf("\n\t\t\t\t| email = %-38s |" , st.email);
-    printf("\n\t\t\t\t+------------------------------------------------+""\033[0m");
+    if(student_list(st.name , st.family , st.id).name[0] == '\0')
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+        printf("\033[32m""\n\t\t\t\t+------------------------------------------------+");
+        printf("\n\t\t\t\t| gender = %-37s |" , st.gender);
+        printf("\n\t\t\t\t| name = %-39s |" , st.name);
+        printf("\n\t\t\t\t| family = %-37s |" ,  st.family);
+        printf("\n\t\t\t\t| code = %-39s |" , st.code);
+        printf("\n\t\t\t\t| birth date = %4s/%2s/%-25s |" , st.birth_date.year , st.birth_date.month , st.birth_date.day);
+        printf("\n\t\t\t\t| birth city = %-33s |" , st.birth_city);
+        printf("\n\t\t\t\t| field of study = %-29s |" , st.field_of_study);
+        printf("\n\t\t\t\t| id = %-41s |" , st.id);
+        printf("\n\t\t\t\t| phone number = %-31s |" , st.phone_number);
+        printf("\n\t\t\t\t| email = %-38s |" , st.email);
+        printf("\n\t\t\t\t+------------------------------------------------+""\033[0m");
+    }
     
 
     // return to academic staff page menu
@@ -7718,25 +8379,31 @@ void academic_staff_find_student_id_page(struct academic_staff_information staff
     // check id
     while(!check_number(student.id))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter students id : ");
         gets(student.id);
     }
 
     st = student_list("" , "" , student.id);
 
-    printf("\033[32m""\n\t\t\t\t+------------------------------------------------+");
-    printf("\n\t\t\t\t| gender = %-37s |" , st.gender);
-    printf("\n\t\t\t\t| name = %-39s |" , st.name);
-    printf("\n\t\t\t\t| family = %-37s |" ,  st.family);
-    printf("\n\t\t\t\t| code = %-39s |" , st.code);
-    printf("\n\t\t\t\t| birth date = %4s/%2s/%-25s |" , st.birth_date.year , st.birth_date.month , st.birth_date.day);
-    printf("\n\t\t\t\t| birth city = %-33s |" , st.birth_city);
-    printf("\n\t\t\t\t| field of study = %-29s |" , st.field_of_study);
-    printf("\n\t\t\t\t| id = %-41s |" , st.id);
-    printf("\n\t\t\t\t| phone number = %-31s |" , st.phone_number);
-    printf("\n\t\t\t\t| email = %-38s |" , st.email);
-    printf("\n\t\t\t\t+------------------------------------------------+""\033[0m");
+    if(student_list(st.name , st.family , st.id).name[0] == '\0')
+    {
+        printf("\033[31m""\n\t\t\t\tERROR ! Student not found .""\033[0m");
+    } else
+    {
+        printf("\033[32m""\n\t\t\t\t+------------------------------------------------+");
+        printf("\n\t\t\t\t| gender = %-37s |" , st.gender);
+        printf("\n\t\t\t\t| name = %-39s |" , st.name);
+        printf("\n\t\t\t\t| family = %-37s |" ,  st.family);
+        printf("\n\t\t\t\t| code = %-39s |" , st.code);
+        printf("\n\t\t\t\t| birth date = %4s/%2s/%-25s |" , st.birth_date.year , st.birth_date.month , st.birth_date.day);
+        printf("\n\t\t\t\t| birth city = %-33s |" , st.birth_city);
+        printf("\n\t\t\t\t| field of study = %-29s |" , st.field_of_study);
+        printf("\n\t\t\t\t| id = %-41s |" , st.id);
+        printf("\n\t\t\t\t| phone number = %-31s |" , st.phone_number);
+        printf("\n\t\t\t\t| email = %-38s |" , st.email);
+        printf("\n\t\t\t\t+------------------------------------------------+""\033[0m");
+    }
     
 
     // return to academic staff page menu
@@ -7769,7 +8436,7 @@ void academic_staff_find_student_born_historical_interval_page(struct academic_s
     // check 
     while(!check_number(start) && strlen(start) != 4 )
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter start of interval (year) : ");
         gets(start);
     }
@@ -7779,7 +8446,7 @@ void academic_staff_find_student_born_historical_interval_page(struct academic_s
     // check 
     while(!check_number(end) && strlen(end) != 4 && atoi(end) < atoi(start) )
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter end of interval (year) : ");
         gets(end);
     }
@@ -7815,7 +8482,7 @@ void academic_staff_find_students_field_page(struct academic_staff_information s
     // check 
     while(!check_string(field))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter field : ");
         gets(field);
     }
@@ -7852,7 +8519,7 @@ void academic_staff_find_students_birth_city_page(struct academic_staff_informat
     // check 
     while(!check_string(city))
     {
-        printf("\033[31m""\t\t\t\tERROR !""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter city : ");
         gets(city);
     }
@@ -7875,143 +8542,80 @@ void academic_staff_student_list(char type[] , char start[] , char end[] , char 
     int i = 0 , j = 0 ;
 
     system("cls");
-
-    struct student_information *s = malloc(sizeof(struct student_information));
-    struct student_information *e = malloc(sizeof(struct student_information));
-    struct student_information *d = NULL;
-    struct student_information *temp = NULL;
-    struct student_information *temp2 = NULL;
-
+    
     student_file_ptr = fopen("student_information.txt" , "r");
 
-    fscanf(student_file_ptr , "%s" , s->gender);
-    fscanf(student_file_ptr , "%s" , s->name);
-    fscanf(student_file_ptr , "%s" , s->family);
-    fscanf(student_file_ptr , "%s" , s->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
-    fscanf(student_file_ptr , "%s" , s->birth_city);
-    fscanf(student_file_ptr , "%s" , s->field_of_study);
-    fscanf(student_file_ptr , "%s" , s->id);
-    fscanf(student_file_ptr , "%s" , s->phone_number);
-    fscanf(student_file_ptr , "%s" , s->email );
-
-    fscanf(student_file_ptr , "%s" , e->gender);
-    fscanf(student_file_ptr , "%s" , e->name);
-    fscanf(student_file_ptr , "%s" , e->family);
-    fscanf(student_file_ptr , "%s" , e->code);
-    fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
-    fscanf(student_file_ptr , "%s" , e->birth_city);
-    fscanf(student_file_ptr , "%s" , e->field_of_study);
-    fscanf(student_file_ptr , "%s" , e->id);
-    fscanf(student_file_ptr , "%s" , e->phone_number);
-    fscanf(student_file_ptr , "%s" , e->email );
-
-    s->link = e ;
-    e->link = NULL;
-
-
-    // make link list of staff  information
-    while(feof(student_file_ptr) == 0)
+    if(student_file_ptr == NULL)
     {
-        d = malloc(sizeof(struct student_information));
-
-        fscanf(student_file_ptr , "%s" , d->gender);
-        fscanf(student_file_ptr , "%s" , d->name);
-        fscanf(student_file_ptr , "%s" , d->family);
-        fscanf(student_file_ptr , "%s" , d->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
-        fscanf(student_file_ptr , "%s" , d->birth_city);
-        fscanf(student_file_ptr , "%s" , d->field_of_study);
-        fscanf(student_file_ptr , "%s" , d->id);
-        fscanf(student_file_ptr , "%s" , d->phone_number);
-        fscanf(student_file_ptr , "%s" , d->email );
-
-        e->link = d ;
-        e = d ;
-
-    }
-    e->link = NULL ;
-
-    fclose(student_file_ptr);
-
-    printf("\n%c" , 201);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 187);
-
-    printf("%c" , 186);
-    printf("%78s%s%78s" , "" , "STUDENTS" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    printf("%2s%c" , "" , 179);
-    printf("%-7s%c" , "GENDER" , 179);
-    printf("%-15s%c" , "NAME" , 179);
-    printf("%-15s%c" , "FAMILY" , 179);
-    printf("%-14s%c" , "CODE" , 179);
-    printf("%-11s%c" , "BIRTH DATE" , 179);
-    printf("%-14s%c" , "BIRTH CITY" , 179);
-    printf("%-16s%c" , "FIELD OF STUDY" , 179);
-    printf("%-13s%c" , "ID" , 179);
-    printf("%-13s%c" , "PHONE NUMBER" , 179);
-    printf("%-34s" , "EMAIL" );
-    
-    
-    printf("%c\n" , 186);
-
-    printf("%c" , 186);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 186);
-
-    temp = s ;
-    j = 1 ;
-    // print tables data
-    while(temp != NULL)
+        printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
+    } else
     {
-        if(!strcmp(type , "interval"))
-        {
-            if(atoi(temp->birth_date.year) < atoi(start) || atoi(temp->birth_date.year) > atoi(end))
-            {
-                temp = temp->link ;
-                continue;
-            }
 
-        } else if(!strcmp(type , "field"))
-        {
-            if(strcmp(temp->field_of_study , field))
-            {
-                temp = temp->link ;
-                continue;
-            }
+        struct student_information *s = malloc(sizeof(struct student_information));
+        struct student_information *e = malloc(sizeof(struct student_information));
+        struct student_information *d = NULL;
+        struct student_information *temp = NULL;
+        struct student_information *temp2 = NULL;
 
-        }  else if(!strcmp(type , "city"))
+        
+
+        fscanf(student_file_ptr , "%s" , s->gender);
+        fscanf(student_file_ptr , "%s" , s->name);
+        fscanf(student_file_ptr , "%s" , s->family);
+        fscanf(student_file_ptr , "%s" , s->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , "%s" , s->birth_city);
+        fscanf(student_file_ptr , "%s" , s->field_of_study);
+        fscanf(student_file_ptr , "%s" , s->id);
+        fscanf(student_file_ptr , "%s" , s->phone_number);
+        fscanf(student_file_ptr , "%s" , s->email );
+
+        fscanf(student_file_ptr , "%s" , e->gender);
+        fscanf(student_file_ptr , "%s" , e->name);
+        fscanf(student_file_ptr , "%s" , e->family);
+        fscanf(student_file_ptr , "%s" , e->code);
+        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , "%s" , e->birth_city);
+        fscanf(student_file_ptr , "%s" , e->field_of_study);
+        fscanf(student_file_ptr , "%s" , e->id);
+        fscanf(student_file_ptr , "%s" , e->phone_number);
+        fscanf(student_file_ptr , "%s" , e->email );
+
+        s->link = e ;
+        e->link = NULL;
+
+
+        // make link list of staff  information
+        while(feof(student_file_ptr) == 0)
         {
-            if(strcmp(temp->birth_city , city))
-            {
-                temp = temp->link ;
-                continue;
-            }
+            d = malloc(sizeof(struct student_information));
+
+            fscanf(student_file_ptr , "%s" , d->gender);
+            fscanf(student_file_ptr , "%s" , d->name);
+            fscanf(student_file_ptr , "%s" , d->family);
+            fscanf(student_file_ptr , "%s" , d->code);
+            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , "%s" , d->birth_city);
+            fscanf(student_file_ptr , "%s" , d->field_of_study);
+            fscanf(student_file_ptr , "%s" , d->id);
+            fscanf(student_file_ptr , "%s" , d->phone_number);
+            fscanf(student_file_ptr , "%s" , d->email );
+
+            e->link = d ;
+            e = d ;
+
         }
+        e->link = NULL ;
+
+        fclose(student_file_ptr);
+
+        printf("\n%c" , 201);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 187);
 
         printf("%c" , 186);
-        printf("%-2d%c" , j++ , 179);
-        printf("%-7s%c" , temp->gender , 179);
-        printf("%-15s%c" , temp->name , 179);
-        printf("%-15s%c" , temp->family , 179);
-        printf("%-14s%c" , temp->code , 179);
-        printf("%4s/%2s/%2s%2c" , temp->birth_date.year , temp->birth_date.month , temp->birth_date.month ,  179);
-        printf("%-14s%c" , temp->birth_city ,  179);
-        printf("%-16s%c" , temp->field_of_study, 179);
-        printf("%-13s%c" , temp->id, 179);
-        printf("%-13s%c" , temp->phone_number , 179);
-        printf("%-34s" , temp->email);
-        
+        printf("%78s%s%78s" , "" , "STUDENTS" , "");
         printf("%c\n" , 186);
 
         printf("%c" , 186);
@@ -8019,33 +8623,104 @@ void academic_staff_student_list(char type[] , char start[] , char end[] , char 
             printf("%c" , 205);
         printf("%c\n" , 186);
 
-        temp = temp->link ;
+        printf("%c" , 186);
+        printf("%2s%c" , "" , 179);
+        printf("%-7s%c" , "GENDER" , 179);
+        printf("%-15s%c" , "NAME" , 179);
+        printf("%-15s%c" , "FAMILY" , 179);
+        printf("%-14s%c" , "CODE" , 179);
+        printf("%-11s%c" , "BIRTH DATE" , 179);
+        printf("%-14s%c" , "BIRTH CITY" , 179);
+        printf("%-16s%c" , "FIELD OF STUDY" , 179);
+        printf("%-13s%c" , "ID" , 179);
+        printf("%-13s%c" , "PHONE NUMBER" , 179);
+        printf("%-34s" , "EMAIL" );
 
+
+        printf("%c\n" , 186);
+
+        printf("%c" , 186);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 186);
+
+        temp = s ;
+        j = 1 ;
+        // print tables data
+        while(temp != NULL)
+        {
+            if(!strcmp(type , "interval"))
+            {
+                if(atoi(temp->birth_date.year) < atoi(start) || atoi(temp->birth_date.year) > atoi(end))
+                {
+                    temp = temp->link ;
+                    continue;
+                }
+
+            } else if(!strcmp(type , "field"))
+            {
+                if(strcmp(temp->field_of_study , field))
+                {
+                    temp = temp->link ;
+                    continue;
+                }
+
+            }  else if(!strcmp(type , "city"))
+            {
+                if(strcmp(temp->birth_city , city))
+                {
+                    temp = temp->link ;
+                    continue;
+                }
+            }
+
+            printf("%c" , 186);
+            printf("%-2d%c" , j++ , 179);
+            printf("%-7s%c" , temp->gender , 179);
+            printf("%-15s%c" , temp->name , 179);
+            printf("%-15s%c" , temp->family , 179);
+            printf("%-14s%c" , temp->code , 179);
+            printf("%4s/%2s/%2s%2c" , temp->birth_date.year , temp->birth_date.month , temp->birth_date.month ,  179);
+            printf("%-14s%c" , temp->birth_city ,  179);
+            printf("%-16s%c" , temp->field_of_study, 179);
+            printf("%-13s%c" , temp->id, 179);
+            printf("%-13s%c" , temp->phone_number , 179);
+            printf("%-34s" , temp->email);
+
+            printf("%c\n" , 186);
+
+            printf("%c" , 186);
+            for(i = 0 ; i < 164 ; i++)
+                printf("%c" , 205);
+            printf("%c\n" , 186);
+
+            temp = temp->link ;
+
+
+        }
+
+        printf("%c" , 186);
+        printf("%164s" , "");
+        printf("%c\n" , 186);
+
+        printf("%c" , 200);
+        for(i = 0 ; i < 164 ; i++)
+            printf("%c" , 205);
+        printf("%c\n" , 188);
+
+        // delete link list
+        temp2 = s ;
+        temp = s->link ;
+        while (temp != NULL)
+        {
+
+            free(temp2);
+            temp2 = temp ;
+            temp = temp->link;
+
+        }
 
     }
-
-    printf("%c" , 186);
-    printf("%164s" , "");
-    printf("%c\n" , 186);
-
-    printf("%c" , 200);
-    for(i = 0 ; i < 164 ; i++)
-        printf("%c" , 205);
-    printf("%c\n" , 188);
-
-    // delete link list
-    temp2 = s ;
-    temp = s->link ;
-    while (temp != NULL)
-    {
-
-        free(temp2);
-        temp2 = temp ;
-        temp = temp->link;
-
-    }
-
-    
 
 }
 
