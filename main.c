@@ -107,6 +107,7 @@ FILE *backup_score_file_ptr = NULL ;
 // protoype other functions
 // ---------------------------------------------------------------------------
 
+int input(char n[] , int min , int max);
 int check_string(char str[]);
 int check_number(char numbr[]);
 int check_email(char email[]);
@@ -235,6 +236,32 @@ void main()
 // ---------------------------------------------------------------------------
 // other functions
 // ---------------------------------------------------------------------------
+// check inputs
+int input(char n[] , int min , int max) {
+
+    int x;
+
+    while(1) {
+
+
+        if(strlen(n) == 0) {
+            return 0;
+        }else if(check_number(n) == 0)
+        {
+            return 0;
+        }
+
+        x = atoi(n);
+
+        if(x >= min && x <= max) {
+            return x;
+        } else
+        {
+            return 0 ;
+        }
+
+    }
+}
 
 // check strings
 int check_string(char str[])
@@ -302,48 +329,76 @@ int check_number(char number[])
 // check emails
 int check_email(char email[])
 {
-    int dot = 0 , at = 0 , len , i = 0  , n_at = 0 ; 
+    
+    int dot = 0 , at = 0 , len , i = 0 , n_at = 0 , n = 0 ; 
 
     len = strlen(email);
 
-    if(len < 10)
+    if(len < 6)
     {
-        return 0 ;
+        return 0;
     }
-
-    for(i = 0 ; i < len ; i++)
+    
+    
+    for(i = 0; i < len; i++)
     {
         if(email[i] == '@')
         {
-            at = i ;
-            n_at++ ;
+            n_at ++;
+            at  = i;
         }
-        if(email[i] == '.' && at != 0)
+        if(email[at - 1] == '.')
+        {
+            return 0 ;
+        }
+        if(email[i] == '.')
         {
             dot = i ;
+
+            if(dot == 0)
+            {
+                return 0;
+            }
+        }
+        if(i > at && at != 0)
+        {
+            if(email[i] == '.')
+            {
+                n++;
+
+                if(email[dot+1] == '.' || email[at+1] == '.')
+                {
+                    return 0 ;
+                }
+            }
+        }
+        if(email[i] == ' ' || email[i] == '!' || email[i] == '#' || email[i] == '$' || email[i] == '%'  || email[i] == '-' || email[i] == '+'
+           || email[i] == '*' || email[i] == '}' || email[i] == '()' || email[i] == '&' )
+        {
+            return 0 ;
         }
     }
-
-    if(at == 0 || dot == 0 || n_at != 1)
-    {
-        return 0 ;
-    } else if(email[at+10] != '\0')
-    {
-        return 0 ;
+    
+    if(at == 0 || at == len-1 || n_at != 1 )
+    { 
+        return 0;
     }
 
-    for(i = at+1 ; email[i] != '\0' ; i++)
-    {
-        email[i] = tolower(email[i]);
+    if(n == 0)
+    { 
+        return 0;
     }
-
-    if(strstr(email , "gmail.com") == NULL)
-    {
-        return 0 ;
+    
+    
+    if(email[at + 1] == '.' || email[len - 1] == '.' || email[at - 1] == '.')
+    { 
+        return 0;  
     }
+    
+    
+    return 1; 
 
     
-    return 1 ;
 }
 
 // check password
@@ -397,10 +452,17 @@ struct department_head_information head_list(char name[] , char family[] ,char h
         struct department_head_information *temp2 = NULL;
         struct department_head_information *x ;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(head_file_ptr , "%s" , s->gender);
         fscanf(head_file_ptr , "%s" , s->name);
         fscanf(head_file_ptr , "%s" , s->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(head_file_ptr , "%s" , s->group_name);
         fscanf(head_file_ptr , "%s" , s->code);
         fscanf(head_file_ptr , "%s" , s->phone_number);
@@ -408,11 +470,12 @@ struct department_head_information head_list(char name[] , char family[] ,char h
         fscanf(head_file_ptr , "%s" , s->status);
         fscanf(head_file_ptr , "%s" , s->user_name);
         fscanf(head_file_ptr , "%s" , s->password);
+        fgets(t , sizeof(t) , head_file_ptr);
 
         fscanf(head_file_ptr , "%s" , e->gender);
         fscanf(head_file_ptr , "%s" , e->name);
         fscanf(head_file_ptr , "%s" , e->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(head_file_ptr , "%s" , e->group_name);
         fscanf(head_file_ptr , "%s" , e->code);
         fscanf(head_file_ptr , "%s" , e->phone_number);
@@ -420,6 +483,7 @@ struct department_head_information head_list(char name[] , char family[] ,char h
         fscanf(head_file_ptr , "%s" , e->status);
         fscanf(head_file_ptr , "%s" , e->user_name);
         fscanf(head_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , head_file_ptr);
 
         s->link = e ;
         e->link = NULL;
@@ -430,10 +494,16 @@ struct department_head_information head_list(char name[] , char family[] ,char h
         {
             d = malloc(sizeof(struct department_head_information));
 
-            fscanf(head_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(head_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(head_file_ptr , "%s" , d->name);
             fscanf(head_file_ptr , "%s" , d->family);
-            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(head_file_ptr , "%s" , d->group_name);
             fscanf(head_file_ptr , "%s" , d->code);
             fscanf(head_file_ptr , "%s" , d->phone_number);
@@ -441,6 +511,7 @@ struct department_head_information head_list(char name[] , char family[] ,char h
             fscanf(head_file_ptr , "%s" , d->status);
             fscanf(head_file_ptr , "%s" , d->user_name);
             fscanf(head_file_ptr , "%s" , d->password);
+            fgets(t , sizeof(t) , head_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -469,21 +540,22 @@ struct department_head_information head_list(char name[] , char family[] ,char h
             temp = temp->link ;
         }
 
-
-        return *x ;
-
-
         // delete link list
         temp2 = s ;
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
+            
 
         }
+        
+
+        return *x ;
+
+
     }
 }
 
@@ -505,27 +577,36 @@ struct academic_staff_information staff_list(char name[] , char family[] ,char s
         struct academic_staff_information *temp2 = NULL;
         struct academic_staff_information *x ;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(staff_file_ptr , "%s" , s->gender);
         fscanf(staff_file_ptr , "%s" , s->name);
         fscanf(staff_file_ptr , "%s" , s->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(staff_file_ptr , "%s" , s->rank);
         fscanf(staff_file_ptr , "%s" , s->phone_number);
         fscanf(staff_file_ptr , "%s" , s->email);
         fscanf(staff_file_ptr , "%s" , s->status);
         fscanf(staff_file_ptr , "%s" , s->user_name );
         fscanf(staff_file_ptr , "%s" , s->password);
+        fgets(t , sizeof(t) , staff_file_ptr);
 
         fscanf(staff_file_ptr , "%s" , e->gender);
         fscanf(staff_file_ptr , "%s" , e->name);
         fscanf(staff_file_ptr , "%s" , e->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(staff_file_ptr , "%s" , e->rank);
         fscanf(staff_file_ptr , "%s" , e->phone_number);
         fscanf(staff_file_ptr , "%s" , e->email);
         fscanf(staff_file_ptr , "%s" , e->status);
         fscanf(staff_file_ptr , "%s" , e->user_name);
         fscanf(staff_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , staff_file_ptr);
 
         s->link = e ;
         e->link = NULL;
@@ -536,16 +617,23 @@ struct academic_staff_information staff_list(char name[] , char family[] ,char s
         {
             d = malloc(sizeof(struct academic_staff_information));
 
-            fscanf(staff_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(staff_file_ptr , "%s" , d->gender ) != 1)
+                break;
             fscanf(staff_file_ptr , "%s" , d->name);
             fscanf(staff_file_ptr , "%s" , d->family);
-            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(staff_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(staff_file_ptr , "%s" , d->rank);
             fscanf(staff_file_ptr , "%s" , d->phone_number);
             fscanf(staff_file_ptr , "%s" , d->email);
             fscanf(staff_file_ptr , "%s" , d->status);
             fscanf(staff_file_ptr , "%s" , d->user_name);
-            fscanf(staff_file_ptr , "%s" , d->password);
+            fscanf(staff_file_ptr , "%s" , d->password );
+            fgets(t , sizeof(t) , staff_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -574,21 +662,18 @@ struct academic_staff_information staff_list(char name[] , char family[] ,char s
             temp = temp->link ;
         }
 
-
-
-        return *x ;
-
         // delete link list
         temp2 = s ;
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
+        
+
+        return *x ;
     }
 }
 
@@ -611,27 +696,35 @@ struct student_information student_list(char student_name[] , char student_famil
         struct student_information *temp2 = NULL;
         struct student_information *x;
 
-        fscanf(student_file_ptr , "%s" , s->gender);
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+        fscanf(student_file_ptr , "%s" , s->gender );
         fscanf(student_file_ptr , "%s" , s->name);
         fscanf(student_file_ptr , "%s" , s->family);
         fscanf(student_file_ptr , "%s" , s->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
         fscanf(student_file_ptr , "%s" , s->birth_city);
         fscanf(student_file_ptr , "%s" , s->field_of_study);
         fscanf(student_file_ptr , "%s" , s->id);
         fscanf(student_file_ptr , "%s" , s->phone_number);
-        fscanf(student_file_ptr , "%s" , s->email );
+        fscanf(student_file_ptr , "%s" , s->email);
+        fgets(t , sizeof(t) , student_file_ptr);
 
-        fscanf(student_file_ptr , "%s" , e->gender);
+        fscanf(student_file_ptr , "%s" , e->gender );
         fscanf(student_file_ptr , "%s" , e->name);
         fscanf(student_file_ptr , "%s" , e->family);
         fscanf(student_file_ptr , "%s" , e->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
         fscanf(student_file_ptr , "%s" , e->birth_city);
         fscanf(student_file_ptr , "%s" , e->field_of_study);
         fscanf(student_file_ptr , "%s" , e->id);
         fscanf(student_file_ptr , "%s" , e->phone_number);
         fscanf(student_file_ptr , "%s" , e->email );
+        fgets(t , sizeof(t) , student_file_ptr);
 
         s->link = e ;
         e->link = NULL;
@@ -642,16 +735,23 @@ struct student_information student_list(char student_name[] , char student_famil
         {
             d = malloc(sizeof(struct student_information));
 
-            fscanf(student_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(student_file_ptr , "%s" , d->gender ) != 1)
+                break;
             fscanf(student_file_ptr , "%s" , d->name);
             fscanf(student_file_ptr , "%s" , d->family);
             fscanf(student_file_ptr , "%s" , d->code);
-            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , " %4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
             fscanf(student_file_ptr , "%s" , d->birth_city);
             fscanf(student_file_ptr , "%s" , d->field_of_study);
             fscanf(student_file_ptr , "%s" , d->id);
             fscanf(student_file_ptr , "%s" , d->phone_number);
             fscanf(student_file_ptr , "%s" , d->email );
+            fgets(t , sizeof(t) , student_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -679,19 +779,18 @@ struct student_information student_list(char student_name[] , char student_famil
             temp = temp->link ;
         }
 
-        return *x ;
-
         // delete link list
         temp2 = s ;
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
+
+        
+        return *x ;
 
     
     }
@@ -716,32 +815,48 @@ struct lesson_information lesson_list(char lesson_code[])
         struct lesson_information *temp2 = NULL;
         struct lesson_information *x ;
 
-        fscanf(lesson_file_ptr , "%s" , s->name);
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
+        fscanf(lesson_file_ptr , "%s" , s->name ) ;
         fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
         fscanf(lesson_file_ptr , "%s" , s->type);
         fscanf(lesson_file_ptr , "%s" , s->code);
         fscanf(lesson_file_ptr , "%s" , s->status);
-
-        fscanf(lesson_file_ptr , "%s" , e->name);
+        fgets(t , sizeof(t) , lesson_file_ptr);
+ 
+        fscanf(lesson_file_ptr , "%s" , e->name );
         fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
         fscanf(lesson_file_ptr , "%s" , e->type);
         fscanf(lesson_file_ptr , "%s" , e->code);
         fscanf(lesson_file_ptr , "%s" , e->status);
+        fgets(t , sizeof(t) , lesson_file_ptr);
 
         s->link = e ;
         e->link = NULL;
 
 
-        // make link list of staff  information
+        // make link list of lessons  information
         while(feof(lesson_file_ptr) == 0)
         {
-            d = malloc(sizeof(struct student_information));
+            d = malloc(sizeof(struct lesson_information));
 
-            fscanf(lesson_file_ptr , "%s" , d->name);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(lesson_file_ptr , "%s" , d->name) != 1)
+                break;
             fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
             fscanf(lesson_file_ptr , "%s" , d->type);
             fscanf(lesson_file_ptr , "%s" , d->code);
             fscanf(lesson_file_ptr , "%s" , d->status);
+            fgets(t , sizeof(t) , lesson_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -761,20 +876,19 @@ struct lesson_information lesson_list(char lesson_code[])
             temp = temp->link ;
         }
 
-        return *x ;
-        free(x);
-
         // delete link list
         temp2 = s ;
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
+
+        
+        return *x ;
+
     }
 }
 
@@ -850,8 +964,8 @@ char* star_password()
 // function for diasplay main menu
 int main_menu()
 {
-    int choice = 0 ;
-    char c[100] ;
+    
+    char choice[100]; ;
 
     system("cls");
 
@@ -865,19 +979,19 @@ int main_menu()
     printf("\n\t\t\t\t4- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &choice);
-    getchar();
+    gets(choice);
+    choice[strcspn(choice , "\n")] = '\0';
+
     // limit user inputs
-    while(choice <= 0 || choice > 4 )
+    while(!input(choice , 1 , 4))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &choice);
-        getchar();
-        gets(c);
+        gets(choice);
+        choice[strcspn(choice , "\n")] = '\0';
     }
 
-    return choice ;
+    return atoi(choice) ;
 }
 
 // switch structure for user choice
@@ -969,8 +1083,7 @@ void admin_login()
 // admin page
 void admin_menu()
 {
-    int admin_choice = 0 ;
-    char c[100];
+    char admin_choice[100] ;
 
     system("cls");
 
@@ -987,18 +1100,19 @@ void admin_menu()
     printf("\n\t\t\t\t7- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &admin_choice);
-    getchar();
-    // limit admin inputs
-    while(admin_choice <= 0 || admin_choice > 7)
+    gets(admin_choice);
+    admin_choice[strcspn(admin_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(admin_choice , 1 , 7))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &admin_choice);
-        gets(c);
+        gets(admin_choice);
+        admin_choice[strcspn(admin_choice , "\n")] = '\0';
     }
 
-    admin_menu_choice(admin_choice);
+    admin_menu_choice(atoi(admin_choice));
 }
 
 // switch structure for admin choice
@@ -1223,7 +1337,7 @@ void admin_log_head()
             printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
         } else 
         {
-            fprintf(head_file_ptr , "\n%s\n" , department_head.gender);
+            fprintf(head_file_ptr , "%s\n" , department_head.gender);
             fprintf(head_file_ptr , "%s\n" , department_head.name);
             fprintf(head_file_ptr , "%s\n" , department_head.family);
             fprintf(head_file_ptr , "%4s/%2s/%2s\n" , department_head.start_date.year ,department_head.start_date.month , department_head.start_date.day);
@@ -1233,7 +1347,7 @@ void admin_log_head()
             fprintf(head_file_ptr , "%s\n" , department_head.email);
             fprintf(head_file_ptr , "%s\n" , department_head.status);
             fprintf(head_file_ptr , "%s\n" , department_head.user_name);
-            fprintf(head_file_ptr , "%s" , department_head.password);
+            fprintf(head_file_ptr , "%s\n\n" , department_head.password);
 
             fclose(head_file_ptr);
         }
@@ -1421,7 +1535,7 @@ void admin_log_staff()
             printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
         } else
         {
-            fprintf(staff_file_ptr , "\n%s\n" , staff.gender);
+            fprintf(staff_file_ptr , "%s\n" , staff.gender);
             fprintf(staff_file_ptr , "%s\n" , staff.name);
             fprintf(staff_file_ptr , "%s\n" , staff.family);
             fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , staff.start_date.year ,staff.start_date.month , staff.start_date.day);
@@ -1430,7 +1544,7 @@ void admin_log_staff()
             fprintf(staff_file_ptr , "%s\n" , staff.email);
             fprintf(staff_file_ptr , "%s\n" , staff.status);
             fprintf(staff_file_ptr , "%s\n" , staff.user_name);
-            fprintf(staff_file_ptr , "%s" , staff.password);
+            fprintf(staff_file_ptr , "%s\n\n" , staff.password);
 
             fclose(staff_file_ptr);
         }
@@ -1474,10 +1588,16 @@ void admin_observe_department_head_list(char type[])
         struct department_head_information *temp = NULL;
         struct department_head_information *temp2 = NULL;
 
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+        char t[50];
+
         fscanf(head_file_ptr , "%s" , s->gender);
         fscanf(head_file_ptr , "%s" , s->name);
         fscanf(head_file_ptr , "%s" , s->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(head_file_ptr , "%s" , s->group_name);
         fscanf(head_file_ptr , "%s" , s->code);
         fscanf(head_file_ptr , "%s" , s->phone_number);
@@ -1485,11 +1605,12 @@ void admin_observe_department_head_list(char type[])
         fscanf(head_file_ptr , "%s" , s->status);
         fscanf(head_file_ptr , "%s" , s->user_name);
         fscanf(head_file_ptr , "%s" , s->password);
-
+        fgets(t , sizeof(t) , head_file_ptr);
+ 
         fscanf(head_file_ptr , "%s" , e->gender);
         fscanf(head_file_ptr , "%s" , e->name);
         fscanf(head_file_ptr , "%s" , e->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(head_file_ptr , "%s" , e->group_name);
         fscanf(head_file_ptr , "%s" , e->code);
         fscanf(head_file_ptr , "%s" , e->phone_number);
@@ -1497,6 +1618,7 @@ void admin_observe_department_head_list(char type[])
         fscanf(head_file_ptr , "%s" , e->status);
         fscanf(head_file_ptr , "%s" , e->user_name);
         fscanf(head_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , head_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -1506,10 +1628,16 @@ void admin_observe_department_head_list(char type[])
         {
             d = malloc(sizeof(struct department_head_information));
 
-            fscanf(head_file_ptr , "%s" , d->gender);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(head_file_ptr , "%s" , d->gender)!= 1)
+                break;
             fscanf(head_file_ptr , "%s" , d->name);
             fscanf(head_file_ptr , "%s" , d->family);
-            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(head_file_ptr , "%s" , d->group_name);
             fscanf(head_file_ptr , "%s" , d->code);
             fscanf(head_file_ptr , "%s" , d->phone_number);
@@ -1517,6 +1645,7 @@ void admin_observe_department_head_list(char type[])
             fscanf(head_file_ptr , "%s" , d->status);
             fscanf(head_file_ptr , "%s" , d->user_name);
             fscanf(head_file_ptr , "%s" , d->password);
+            fgets(t , sizeof(t) , head_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -1604,11 +1733,9 @@ void admin_observe_department_head_list(char type[])
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
 
         if(!strcmp(type , "reports"))
@@ -1648,27 +1775,36 @@ void admin_observe_academic_staff_list(char type[])
         struct academic_staff_information *t = NULL;
         struct academic_staff_information *t2 = NULL;
 
+        char tt[50];
+
+        if(s2 == 0 || e2 == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(staff_file_ptr , "%s" , s2->gender);
         fscanf(staff_file_ptr , "%s" , s2->name);
         fscanf(staff_file_ptr , "%s" , s2->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
         fscanf(staff_file_ptr , "%s" , s2->rank);
         fscanf(staff_file_ptr , "%s" , s2->phone_number);
         fscanf(staff_file_ptr , "%s" , s2->email);
         fscanf(staff_file_ptr , "%s" , s2->status);
         fscanf(staff_file_ptr , "%s" , s2->user_name);
         fscanf(staff_file_ptr , "%s" , s2->password);
-
+        fgets(tt , sizeof(t) , staff_file_ptr);
+ 
         fscanf(staff_file_ptr , "%s" , e2->gender);
         fscanf(staff_file_ptr , "%s" , e2->name);
         fscanf(staff_file_ptr , "%s" , e2->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
         fscanf(staff_file_ptr , "%s" , e2->rank);
         fscanf(staff_file_ptr , "%s" , e2->phone_number);
         fscanf(staff_file_ptr , "%s" , e2->email);
         fscanf(staff_file_ptr , "%s" , e2->status);
         fscanf(staff_file_ptr , "%s" , e2->user_name);
         fscanf(staff_file_ptr , "%s" , e2->password);
+        fgets(tt , sizeof(t) , staff_file_ptr);
 
         s2->link = e2 ;
         e2->link = NULL ;
@@ -1677,16 +1813,23 @@ void admin_observe_academic_staff_list(char type[])
         {
             d2 = malloc(sizeof(struct academic_staff_information));
 
-            fscanf(staff_file_ptr , "%s" , d2->gender);
+            if(d2 == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(staff_file_ptr , "%s" , d2->gender) != 1)
+                break;
             fscanf(staff_file_ptr , "%s" , d2->name);
             fscanf(staff_file_ptr , "%s" , d2->family);
-            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
+            fscanf(staff_file_ptr , " %4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
             fscanf(staff_file_ptr , "%s" , d2->rank);
             fscanf(staff_file_ptr , "%s" , d2->phone_number);
             fscanf(staff_file_ptr , "%s" , d2->email);
             fscanf(staff_file_ptr , "%s" , d2->status);
             fscanf(staff_file_ptr , "%s" , d2->user_name);
             fscanf(staff_file_ptr , "%s" , d2->password);
+            fgets(tt , sizeof(t) , staff_file_ptr);
 
             e2->link = d2 ;
             e2 = d2 ;
@@ -1772,11 +1915,9 @@ void admin_observe_academic_staff_list(char type[])
         t = s2->link ;
         while (t != NULL)
         {
-
+            t = t2->link;
             free(t2);
             t2 = t ;
-            t = t->link;
-
         }
 
         // return to main menu
@@ -1792,8 +1933,7 @@ void admin_observe_academic_staff_list(char type[])
 // delete users
 void admin_delete_users_menu()
 {
-     int admin_choice = 0 ;
-    char c[100];
+     char admin_choice[100];
 
     system("cls");
 
@@ -1806,18 +1946,19 @@ void admin_delete_users_menu()
     printf("\n\t\t\t\t3- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &admin_choice);
-    getchar();
-    // limit admin inputs
-    while(admin_choice <= 0 || admin_choice > 3)
+    gets(admin_choice);
+    admin_choice[strcspn(admin_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(admin_choice , 1 , 3))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &admin_choice);
-        gets(c);
+        gets(admin_choice);
+        admin_choice[strcspn(admin_choice , "\n")] = '\0';
     }
 
-    admin_delete_users_menu_choice(admin_choice);
+    admin_delete_users_menu_choice(atoi(admin_choice));
 }
 
 // switch structure for admin choice in delete users page
@@ -1950,22 +2091,30 @@ void admin_delete_head(char head_name[] , char head_family[] , char terminate_da
         struct department_head_information *temp = NULL ;
         struct department_head_information *temp2 = NULL ;
 
-        fscanf(head_file_ptr , "%s" , s->gender);
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
+        fscanf(head_file_ptr , "%s" , s->gender) ;
         fscanf(head_file_ptr , "%s" , s->name);
         fscanf(head_file_ptr , "%s" , s->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(head_file_ptr , "%s" , s->group_name);
         fscanf(head_file_ptr , "%s" , s->code);
         fscanf(head_file_ptr , "%s" , s->phone_number);
         fscanf(head_file_ptr , "%s" , s->email);
         fscanf(head_file_ptr , "%s" , s->status);
         fscanf(head_file_ptr , "%s" , s->user_name);
-        fscanf(head_file_ptr , "%s" , s->password);
+        fscanf(head_file_ptr , "%s" , s->password) ;
+        fgets(t , sizeof(t) , head_file_ptr);
 
         fscanf(head_file_ptr , "%s" , e->gender);
         fscanf(head_file_ptr , "%s" , e->name);
         fscanf(head_file_ptr , "%s" , e->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(head_file_ptr , "%s" , e->group_name);
         fscanf(head_file_ptr , "%s" , e->code);
         fscanf(head_file_ptr , "%s" , e->phone_number);
@@ -1973,6 +2122,7 @@ void admin_delete_head(char head_name[] , char head_family[] , char terminate_da
         fscanf(head_file_ptr , "%s" , e->status);
         fscanf(head_file_ptr , "%s" , e->user_name);
         fscanf(head_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , head_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -1981,10 +2131,16 @@ void admin_delete_head(char head_name[] , char head_family[] , char terminate_da
         {
             d = malloc(sizeof(struct department_head_information));
 
-            fscanf(head_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(head_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(head_file_ptr , "%s" , d->name);
             fscanf(head_file_ptr , "%s" , d->family);
-            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(head_file_ptr , "%s" , d->group_name);
             fscanf(head_file_ptr , "%s" , d->code);
             fscanf(head_file_ptr , "%s" , d->phone_number);
@@ -1992,6 +2148,7 @@ void admin_delete_head(char head_name[] , char head_family[] , char terminate_da
             fscanf(head_file_ptr , "%s" , d->status);
             fscanf(head_file_ptr , "%s" , d->user_name);
             fscanf(head_file_ptr , "%s" , d->password);
+            fgets(t , sizeof(t) , head_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -2026,10 +2183,9 @@ void admin_delete_head(char head_name[] , char head_family[] , char terminate_da
                         {
                             sscanf(terminate_date , "%4s/%2s/%2s" , temp->terminate_date.year , temp->terminate_date.month , temp->terminate_date.day);
 
-                            if(temp == s)
-                                fprintf(terminate_head_file_ptr , "%s\n" , temp->gender);
-                            else 
-                                fprintf(terminate_head_file_ptr , "\n%s\n" , temp->gender);
+                            
+                            
+                            fprintf(terminate_head_file_ptr , "%s\n" , temp->gender);
                             fprintf(terminate_head_file_ptr , "%s\n" , temp->name);
                             fprintf(terminate_head_file_ptr , "%s\n" , temp->family);
                             fprintf(terminate_head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
@@ -2040,17 +2196,15 @@ void admin_delete_head(char head_name[] , char head_family[] , char terminate_da
                             fprintf(terminate_head_file_ptr , "%s\n" , temp->status);
                             fprintf(terminate_head_file_ptr , "%4s/%2s/%2s\n" , temp->terminate_date.year , temp->terminate_date.month, temp->terminate_date.day);
                             fprintf(terminate_head_file_ptr , "%s\n" , temp->user_name);
-                            fprintf(terminate_head_file_ptr , "%s" , temp->password);
+                            fprintf(terminate_head_file_ptr , "%s\n\n" , temp->password);
 
                             fclose(terminate_head_file_ptr);
                         }
                     }
                 }
 
-                if(temp == s)
-                    fprintf(head_file_ptr , "%s\n" , temp->gender);
-                else 
-                    fprintf(head_file_ptr , "\n%s\n" , temp->gender);
+                
+                fprintf(head_file_ptr , "%s\n" , temp->gender);
                 fprintf(head_file_ptr , "%s\n" , temp->name);
                 fprintf(head_file_ptr , "%s\n" , temp->family);
                 fprintf(head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
@@ -2060,7 +2214,7 @@ void admin_delete_head(char head_name[] , char head_family[] , char terminate_da
                 fprintf(head_file_ptr , "%s\n" , temp->email);
                 fprintf(head_file_ptr , "%s\n" , temp->status);
                 fprintf(head_file_ptr , "%s\n" , temp->user_name);
-                fprintf(head_file_ptr , "%s" , temp->password);
+                fprintf(head_file_ptr , "%s\n\n" , temp->password);
 
                 temp = temp->link ;
             }
@@ -2072,11 +2226,9 @@ void admin_delete_head(char head_name[] , char head_family[] , char terminate_da
             temp = s->link ;
             while (temp != NULL)
             {
-
+                temp = temp2->link;
                 free(temp2);
                 temp2 = temp ;
-                temp = temp->link;
-
             }
         }
     }
@@ -2134,7 +2286,7 @@ void admin_delete_staff_page()
             printf("\n\t\t\t\tPlease enter year of terminate : ");
             gets(terminate_date.year);
         }
-    
+
         printf("\n\t\t\t\tPlease enter month of terminate : ");
         gets(terminate_date.month);
         //check 
@@ -2145,7 +2297,7 @@ void admin_delete_staff_page()
             gets(terminate_date.month);
         }
         date(terminate_date.month);
-    
+
         printf("\n\t\t\t\tPlease enter day of terminate : ");
         gets(terminate_date.day);
         //check 
@@ -2156,11 +2308,11 @@ void admin_delete_staff_page()
             gets(terminate_date.day);
         }
         date(terminate_date.day);
-        
+
         sprintf(t_date , "%4s/%2s/%2s" , terminate_date.year  , terminate_date.month , terminate_date.day);
-    
+
         admin_delete_staff(staff_name , staff_family , t_date);
-    
+
         printf("\033[32m""\n\t\t\t\tuser delete successfully :)\n""\033[0m");
     }
 
@@ -2192,27 +2344,36 @@ void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate
         struct academic_staff_information *temp = NULL ;
         struct academic_staff_information *temp2 = NULL ;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(staff_file_ptr , "%s" , s->gender);
         fscanf(staff_file_ptr , "%s" , s->name);
         fscanf(staff_file_ptr , "%s" , s->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(staff_file_ptr , "%s" , s->rank);
         fscanf(staff_file_ptr , "%s" , s->phone_number);
         fscanf(staff_file_ptr , "%s" , s->email);
         fscanf(staff_file_ptr , "%s" , s->status);
         fscanf(staff_file_ptr , "%s" , s->user_name);
         fscanf(staff_file_ptr , "%s" , s->password);
-
+        fgets(t , sizeof(t) , staff_file_ptr);
+ 
         fscanf(staff_file_ptr , "%s" , e->gender);
         fscanf(staff_file_ptr , "%s" , e->name);
         fscanf(staff_file_ptr , "%s" , e->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(staff_file_ptr , "%s" , e->rank);
         fscanf(staff_file_ptr , "%s" , e->phone_number);
         fscanf(staff_file_ptr , "%s" , e->email);
         fscanf(staff_file_ptr , "%s" , e->status);
         fscanf(staff_file_ptr , "%s" , e->user_name);
         fscanf(staff_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , staff_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -2221,16 +2382,23 @@ void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate
         {
             d = malloc(sizeof(struct academic_staff_information));
 
-            fscanf(staff_file_ptr , "%s" , d->gender);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(staff_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(staff_file_ptr , "%s" , d->name);
             fscanf(staff_file_ptr , "%s" , d->family);
-            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(staff_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(staff_file_ptr , "%s" , d->rank);
             fscanf(staff_file_ptr , "%s" , d->phone_number);
             fscanf(staff_file_ptr , "%s" , d->email);
             fscanf(staff_file_ptr , "%s" , d->status);
             fscanf(staff_file_ptr , "%s" , d->user_name);
             fscanf(staff_file_ptr , "%s" , d->password);
+            fgets(t , sizeof(t) , staff_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -2267,10 +2435,8 @@ void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate
 
                             sscanf(terminate_date , "%4s/%2s/%2s" , temp->terminate_date.year , temp->terminate_date.month , temp->terminate_date.day);
 
-                            if(temp == s)
-                                fprintf(terminate_staff_file_ptr , "%s\n" , temp->gender);
-                            else 
-                                fprintf(terminate_staff_file_ptr , "\n%s\n" , temp->gender);
+                            
+                            fprintf(terminate_staff_file_ptr , "%s\n" , temp->gender);
                             fprintf(terminate_staff_file_ptr , "%s\n" , temp->name);
                             fprintf(terminate_staff_file_ptr , "%s\n" , temp->family);
                             fprintf(terminate_staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
@@ -2280,7 +2446,7 @@ void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate
                             fprintf(terminate_staff_file_ptr , "%s\n" , temp->status);
                             fprintf(terminate_staff_file_ptr , "%4s/%2s/%2s\n" , temp->terminate_date.year , temp->terminate_date.month, temp->terminate_date.day);
                             fprintf(terminate_staff_file_ptr , "%s\n" , temp->user_name);
-                            fprintf(terminate_staff_file_ptr , "%s" , temp->password);
+                            fprintf(terminate_staff_file_ptr , "%s\n\n" , temp->password);
 
                             fclose(terminate_staff_file_ptr);
                         }
@@ -2288,10 +2454,8 @@ void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate
                     }
                 }
 
-                if(temp == s)
-                    fprintf(staff_file_ptr , "%s\n" , temp->gender);
-                else 
-                    fprintf(staff_file_ptr , "\n%s\n" , temp->gender);
+                
+                fprintf(staff_file_ptr , "%s\n" , temp->gender);
                 fprintf(staff_file_ptr , "%s\n" , temp->name);
                 fprintf(staff_file_ptr , "%s\n" , temp->family);
                 fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
@@ -2300,7 +2464,7 @@ void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate
                 fprintf(staff_file_ptr , "%s\n" , temp->email);
                 fprintf(staff_file_ptr , "%s\n" , temp->status);
                 fprintf(staff_file_ptr , "%s\n" , temp->user_name);
-                fprintf(staff_file_ptr , "%s" , temp->password);
+                fprintf(staff_file_ptr , "%s\n\n" , temp->password);
 
                 temp = temp->link ;
 
@@ -2313,11 +2477,9 @@ void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate
             temp = s->link ;
             while (temp != NULL)
             {
-
+                temp = temp2->link;
                 free(temp2);
                 temp2 = temp ;
-                temp = temp->link;
-
             }
         }
     }
@@ -2326,8 +2488,7 @@ void admin_delete_staff(char staff_name[] , char staff_family[] , char terminate
 // reports page
 void admin_reports_page()
 {
-   int admin_choice = 0 ;
-    char c[100];
+   char admin_choice[100];
 
     system("cls");
 
@@ -2341,18 +2502,19 @@ void admin_reports_page()
     printf("\n\t\t\t\t4- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &admin_choice);
-    getchar();
-    // limit admin inputs
-    while(admin_choice <= 0 || admin_choice > 4)
+    gets(admin_choice);
+    admin_choice[strcspn(admin_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(admin_choice , 1 , 4))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &admin_choice);
-        gets(c);
+        gets(admin_choice);
+        admin_choice[strcspn(admin_choice , "\n")] = '\0';
     }
 
-    admin_reports_menu_choice(admin_choice); 
+    admin_reports_menu_choice(atoi(admin_choice)); 
 }
 
 // switch structure for admin choice in reports page
@@ -2407,31 +2569,40 @@ void admin_observe_terminated_users_list()
         struct department_head_information *temp = NULL;
         struct department_head_information *temp2 = NULL;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(terminate_head_file_ptr , "%s" , s->gender);
         fscanf(terminate_head_file_ptr , "%s" , s->name);
         fscanf(terminate_head_file_ptr , "%s" , s->family);
-        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(terminate_head_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(terminate_head_file_ptr , "%s" , s->group_name);
         fscanf(terminate_head_file_ptr , "%s" , s->code);
         fscanf(terminate_head_file_ptr , "%s" , s->phone_number);
         fscanf(terminate_head_file_ptr , "%s" , s->email);
         fscanf(terminate_head_file_ptr , "%s" , s->status);
-        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , s->terminate_date.year , s->terminate_date.month , s->terminate_date.day);
+        fscanf(terminate_head_file_ptr , " %4s/%2s/%2s" , s->terminate_date.year , s->terminate_date.month , s->terminate_date.day);
         fscanf(terminate_head_file_ptr , "%s" , s->user_name);
         fscanf(terminate_head_file_ptr , "%s" , s->password);
-
+        fgets(t , sizeof(t) , terminate_head_file_ptr);
+ 
         fscanf(terminate_head_file_ptr , "%s" , e->gender);
         fscanf(terminate_head_file_ptr , "%s" , e->name);
         fscanf(terminate_head_file_ptr , "%s" , e->family);
-        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(terminate_head_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(terminate_head_file_ptr , "%s" , e->group_name);
         fscanf(terminate_head_file_ptr , "%s" , e->code);
         fscanf(terminate_head_file_ptr , "%s" , e->phone_number);
         fscanf(terminate_head_file_ptr , "%s" , e->email);
         fscanf(terminate_head_file_ptr , "%s" , e->status);
-        fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , e->terminate_date.year , e->terminate_date.month , e->terminate_date.day);
+        fscanf(terminate_head_file_ptr , " %4s/%2s/%2s" , e->terminate_date.year , e->terminate_date.month , e->terminate_date.day);
         fscanf(terminate_head_file_ptr , "%s" , e->user_name);
         fscanf(terminate_head_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , terminate_head_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -2441,19 +2612,25 @@ void admin_observe_terminated_users_list()
         {
             d = malloc(sizeof(struct department_head_information));
 
-            fscanf(terminate_head_file_ptr , "%s" , d->gender);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(terminate_head_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(terminate_head_file_ptr , "%s" , d->name);
             fscanf(terminate_head_file_ptr , "%s" , d->family);
-            fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(terminate_head_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(terminate_head_file_ptr , "%s" , d->group_name);
             fscanf(terminate_head_file_ptr , "%s" , d->code);
             fscanf(terminate_head_file_ptr , "%s" , d->phone_number);
             fscanf(terminate_head_file_ptr , "%s" , d->email);
             fscanf(terminate_head_file_ptr , "%s" , d->status);
-            fscanf(terminate_head_file_ptr , "%4s/%2s/%2s" , d->terminate_date.year , d->terminate_date.month , d->terminate_date.day);
+            fscanf(terminate_head_file_ptr , " %4s/%2s/%2s" , d->terminate_date.year , d->terminate_date.month , d->terminate_date.day);
             fscanf(terminate_head_file_ptr , "%s" , d->user_name);
             fscanf(terminate_head_file_ptr , "%s" , d->password);
-
+            fgets(t , sizeof(t) , terminate_head_file_ptr);
             e->link = d ;
             e = d ;
         }
@@ -2506,7 +2683,7 @@ void admin_observe_terminated_users_list()
             printf("%-7s%c" , temp->gender , 179);
             printf("%-12s%c" , temp->name , 179);
             printf("%-12s%c" , temp->family , 179);
-            printf("%4s/%2s/%2s%2c" , temp->start_date.year , temp->start_date.month , temp->start_date.month ,  179);
+            printf("%4s/%2s/%2s%2c" , temp->start_date.year , temp->start_date.month , temp->start_date.day ,  179);
             printf("%-13s%c" , temp->group_name , 179);
             printf("%-13s%c" , temp->code , 179);
             printf("%-13s%c" , temp->phone_number , 179);
@@ -2540,11 +2717,9 @@ void admin_observe_terminated_users_list()
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     }
 
@@ -2563,29 +2738,38 @@ void admin_observe_terminated_users_list()
         struct academic_staff_information *t = NULL;
         struct academic_staff_information *t2 = NULL;
 
+        char tt[50];
+
+        if(s2 == 0 || e2 == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(terminate_staff_file_ptr , "%s" , s2->gender);
         fscanf(terminate_staff_file_ptr , "%s" , s2->name);
         fscanf(terminate_staff_file_ptr , "%s" , s2->family);
-        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
+        fscanf(terminate_staff_file_ptr , " %4s/%2s/%2s" , s2->start_date.year , s2->start_date.month , s2->start_date.day);
         fscanf(terminate_staff_file_ptr , "%s" , s2->rank);
         fscanf(terminate_staff_file_ptr , "%s" , s2->phone_number);
         fscanf(terminate_staff_file_ptr , "%s" , s2->email);
         fscanf(terminate_staff_file_ptr , "%s" , s2->status);
-        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , s2->terminate_date.year , s2->terminate_date.month , s2->terminate_date.day);
+        fscanf(terminate_staff_file_ptr , " %4s/%2s/%2s" , s2->terminate_date.year , s2->terminate_date.month , s2->terminate_date.day);
         fscanf(terminate_staff_file_ptr , "%s" , s2->user_name);
         fscanf(terminate_staff_file_ptr , "%s" , s2->password);
-
+        fgets(tt , sizeof(t) , terminate_staff_file_ptr);
+ 
         fscanf(terminate_staff_file_ptr , "%s" , e2->gender);
         fscanf(terminate_staff_file_ptr , "%s" , e2->name);
         fscanf(terminate_staff_file_ptr , "%s" , e2->family);
-        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
+        fscanf(terminate_staff_file_ptr , " %4s/%2s/%2s" , e2->start_date.year , e2->start_date.month , e2->start_date.day);
         fscanf(terminate_staff_file_ptr , "%s" , e2->rank);
         fscanf(terminate_staff_file_ptr , "%s" , e2->phone_number);
         fscanf(terminate_staff_file_ptr , "%s" , e2->email);
         fscanf(terminate_staff_file_ptr , "%s" , e2->status);
-        fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , e2->terminate_date.year , e2->terminate_date.month , e2->terminate_date.day);
+        fscanf(terminate_staff_file_ptr , " %4s/%2s/%2s" , e2->terminate_date.year , e2->terminate_date.month , e2->terminate_date.day);
         fscanf(terminate_staff_file_ptr , "%s" , e2->user_name);
         fscanf(terminate_staff_file_ptr , "%s" , e2->password);
+        fgets(tt , sizeof(t) , terminate_staff_file_ptr);
 
         s2->link = e2 ;
         e2->link = NULL ;
@@ -2594,17 +2778,24 @@ void admin_observe_terminated_users_list()
         {
             d2 = malloc(sizeof(struct academic_staff_information));
 
-            fscanf(terminate_staff_file_ptr , "%s" , d2->gender);
+            if(d2 == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(terminate_staff_file_ptr , "%s" , d2->gender) != 1)
+                break;
             fscanf(terminate_staff_file_ptr , "%s" , d2->name);
             fscanf(terminate_staff_file_ptr , "%s" , d2->family);
-            fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
+            fscanf(terminate_staff_file_ptr , " %4s/%2s/%2s" , d2->start_date.year , d2->start_date.month , d2->start_date.day);
             fscanf(terminate_staff_file_ptr , "%s" , d2->rank);
             fscanf(terminate_staff_file_ptr , "%s" , d2->phone_number);
             fscanf(terminate_staff_file_ptr , "%s" , d2->email);
             fscanf(terminate_staff_file_ptr , "%s" , d2->status);
-            fscanf(terminate_staff_file_ptr , "%4s/%2s/%2s" , d2->terminate_date.year , d2->terminate_date.month , d2->terminate_date.day);
+            fscanf(terminate_staff_file_ptr , " %4s/%2s/%2s" , d2->terminate_date.year , d2->terminate_date.month , d2->terminate_date.day);
             fscanf(terminate_staff_file_ptr , "%s" , d2->user_name);
             fscanf(terminate_staff_file_ptr , "%s" , d2->password);
+            fgets(tt , sizeof(t) , terminate_staff_file_ptr);
 
             e2->link = d2 ;
             e2 = d2 ;
@@ -2690,11 +2881,9 @@ void admin_observe_terminated_users_list()
         t = s2->link ;
         while (t != NULL)
         {
-
+            t = t2->link;
             free(t2);
             t2 = t ;
-            t = t->link;
-
         }
     }
     // return to main menu
@@ -2710,8 +2899,8 @@ void admin_observe_terminated_users_list()
 // backup files
 void admin_backup_menu()
 {
-   int admin_choice = 0 ;
-    char c[100] , enter;
+   char admin_choice[100];
+    char enter;
 
     system("cls");
 
@@ -2728,18 +2917,19 @@ void admin_backup_menu()
     printf("\n\t\t\t\t7- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &admin_choice);
-    getchar();
-    // limit admin inputs
-    while(admin_choice <= 0 || admin_choice > 7)
+    gets(admin_choice);
+    admin_choice[strcspn(admin_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(admin_choice , 1 , 7))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &admin_choice);
-        gets(c);
+        gets(admin_choice);
+        admin_choice[strcspn(admin_choice , "\n")] = '\0';
     }
 
-    admin_backup_menu_choice(admin_choice);
+    admin_backup_menu_choice(atoi(admin_choice));
 
     printf("\033[32m""\n\t\t\t\tBackup file successfully built :)\n""\033[0m");
 
@@ -3037,10 +3227,17 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         struct department_head_information *temp = NULL;
         struct department_head_information *temp2 = NULL;
 
-        fscanf(head_file_ptr , "%s" , s->gender);
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
+        fscanf(head_file_ptr , "%s" , s->gender) ;
         fscanf(head_file_ptr , "%s" , s->name);
         fscanf(head_file_ptr , "%s" , s->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(head_file_ptr , "%s" , s->group_name);
         fscanf(head_file_ptr , "%s" , s->code);
         fscanf(head_file_ptr , "%s" , s->phone_number);
@@ -3048,11 +3245,12 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         fscanf(head_file_ptr , "%s" , s->status);
         fscanf(head_file_ptr , "%s" , s->user_name);
         fscanf(head_file_ptr , "%s" , s->password);
-
+        fgets(t , sizeof(t) , head_file_ptr);
+ 
         fscanf(head_file_ptr , "%s" , e->gender);
         fscanf(head_file_ptr , "%s" , e->name);
         fscanf(head_file_ptr , "%s" , e->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(head_file_ptr , "%s" , e->group_name);
         fscanf(head_file_ptr , "%s" , e->code);
         fscanf(head_file_ptr , "%s" , e->phone_number);
@@ -3060,6 +3258,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         fscanf(head_file_ptr , "%s" , e->status);
         fscanf(head_file_ptr , "%s" , e->user_name);
         fscanf(head_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , head_file_ptr);
 
         s->link = e ;
         e->link = NULL;
@@ -3070,10 +3269,16 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         {
             d = malloc(sizeof(struct department_head_information));
 
-            fscanf(head_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(head_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(head_file_ptr , "%s" , d->name);
             fscanf(head_file_ptr , "%s" , d->family);
-            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(head_file_ptr , "%s" , d->group_name);
             fscanf(head_file_ptr , "%s" , d->code);
             fscanf(head_file_ptr , "%s" , d->phone_number);
@@ -3081,6 +3286,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
             fscanf(head_file_ptr , "%s" , d->status);
             fscanf(head_file_ptr , "%s" , d->user_name);
             fscanf(head_file_ptr , "%s" , d->password);
+            fgets(t , sizeof(t) , head_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -3110,11 +3316,9 @@ int department_head_check_login(char head_user_name[] , char head_password[])
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
 
         if(head_found == 1)
@@ -3130,8 +3334,7 @@ int department_head_check_login(char head_user_name[] , char head_password[])
 //department head page menu
 void department_head_menu(struct department_head_information head)
 {
-    int head_choice = 0 ;
-    char c[100];
+    char head_choice[100];
 
     system("cls");
 
@@ -3151,18 +3354,19 @@ void department_head_menu(struct department_head_information head)
     printf("\n\t\t\t\t8- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &head_choice);
-    getchar();
-    // limit department head inputs
-    while(head_choice <= 0 || head_choice > 8)
+    gets(head_choice);
+    head_choice[strcspn(head_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(head_choice , 1 , 8))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &head_choice);
-        gets(c);
+        gets(head_choice);
+        head_choice[strcspn(head_choice , "\n")] = '\0';
     }
 
-    department_head_menu_choice(head_choice , head);
+    department_head_menu_choice(atoi(head_choice) , head);
 }
 
 // switch structure for department head choice
@@ -3289,11 +3493,11 @@ void department_head_log_lesson( struct department_head_information head)
     } else
     {
 
-        fprintf(lesson_file_ptr , "\n%s\n" , lesson.name);
+        fprintf(lesson_file_ptr , "%s\n" , lesson.name);
         fprintf(lesson_file_ptr , "%s\n" , lesson.number_of_unit);
         fprintf(lesson_file_ptr , "%s\n" , lesson.type);
         fprintf(lesson_file_ptr , "%s\n" , lesson.code);
-        fprintf(lesson_file_ptr , "%s" , lesson.status);
+        fprintf(lesson_file_ptr , "%s\n\n" , lesson.status);
 
         fclose(lesson_file_ptr);
 
@@ -3386,12 +3590,12 @@ void department_head_log_score( struct department_head_information head)
                 printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
             } else
             {
-                fprintf(score_file_ptr , "\n%s\n" , score.student_id);
+                fprintf(score_file_ptr , "%s\n" , score.student_id);
                 fprintf(score_file_ptr , "%s\n" , score.lesson_code);
                 fprintf(score_file_ptr , "%s\n" , score.score);
                 fprintf(score_file_ptr , "%s\n" , __DATE__);
                 fprintf(score_file_ptr , "%s\n" , __TIME__);
-                fprintf( score_file_ptr ,"%s %s" , head.name , head.family);
+                fprintf( score_file_ptr ,"%s %s\n\n" , head.name , head.family);
             
                  fclose(score_file_ptr);
             
@@ -3506,19 +3710,24 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
         struct student_score *temp = NULL;
         struct student_score *temp2 = NULL;
 
-        fgets(s->student_id , sizeof(d->student_id) , score_file_ptr);
-        fgets(s->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
-        fgets(s->score , sizeof(d->score) , score_file_ptr);
-        fgets(s->date , sizeof(d->date) , score_file_ptr);
-        fgets(s->time , sizeof(d->time) , score_file_ptr);
-        fgets(s->user_name , sizeof(d->user_name) ,  score_file_ptr );
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
 
-        fgets(e->student_id , sizeof(d->student_id) , score_file_ptr);
-        fgets(e->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
-        fgets(e->score , sizeof(d->score) , score_file_ptr);
-        fgets(e->date , sizeof(d->date) , score_file_ptr);
-        fgets(e->time , sizeof(d->time) , score_file_ptr);
-        fgets(e->user_name , sizeof(d->user_name) ,  score_file_ptr );
+        fgets(s->student_id , sizeof(s->student_id) , score_file_ptr) ;
+        fgets(s->lesson_code, sizeof(s->lesson_code) , score_file_ptr);
+        fgets(s->score , sizeof(s->score) , score_file_ptr);
+        fgets(s->date , sizeof(s->date) , score_file_ptr);
+        fgets(s->time , sizeof(s->time) , score_file_ptr);
+        fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
+
+        fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
+        fgets(e->lesson_code, sizeof(e->lesson_code) , score_file_ptr);
+        fgets(e->score , sizeof(e->score) , score_file_ptr);
+        fgets(e->date , sizeof(e->date) , score_file_ptr);
+        fgets(e->time , sizeof(e->time) , score_file_ptr);
+        fgets(e->user_name, sizeof(s->student_id) , score_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -3528,12 +3737,19 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
         {
             d = malloc(sizeof(struct student_score));
 
-            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fgets(d->student_id , sizeof(d->student_id) , score_file_ptr) == NULL )
+                break;
             fgets(d->lesson_code, sizeof(d->lesson_code) , score_file_ptr);
             fgets(d->score , sizeof(d->score) , score_file_ptr);
             fgets(d->date , sizeof(d->date) , score_file_ptr);
             fgets(d->time , sizeof(d->time) , score_file_ptr);
-            fgets(d->user_name , sizeof(d->user_name) ,  score_file_ptr );
+            fgets(d->user_name, sizeof(s->user_name) , score_file_ptr);
+            
 
             e->link = d ;
             e = d ;
@@ -3588,11 +3804,9 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
             temp = s->link ;
             while (temp != NULL)
             {
-
+                temp = temp2->link;
                 free(temp2);
                 temp2 = temp ;
-                temp = temp->link;
-
             }
         }
     }
@@ -3601,8 +3815,7 @@ void department_head_edit_score_list(char student_id[] , char lesson_code[] , ch
 // department head edit lessons information page
 void department_head_edit_lesson(struct department_head_information head)
 {
-    int head_choice = 0 ;
-    char c[100];
+    char head_choice[100];
 
     system("cls");
 
@@ -3618,18 +3831,19 @@ void department_head_edit_lesson(struct department_head_information head)
     printf("\n\t\t\t\t4- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &head_choice);
-    getchar();
-    // limit admin inputs
-    while(head_choice <= 0 || head_choice > 4)
+    gets(head_choice);
+    head_choice[strcspn(head_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(head_choice , 1 , 4))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &head_choice);
-        gets(c);
+        gets(head_choice);
+        head_choice[strcspn(head_choice , "\n")] = '\0';
     }
 
-    department_head_edit_lesson_menu_choice(head_choice , head);
+    department_head_edit_lesson_menu_choice(atoi(head_choice) , head);
 
 }
 
@@ -3854,17 +4068,27 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
         struct lesson_information *temp = NULL;
         struct lesson_information *temp2 = NULL;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(lesson_file_ptr , "%s" , s->name);
         fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
         fscanf(lesson_file_ptr , "%s" , s->type);
         fscanf(lesson_file_ptr , "%s" , s->code);
         fscanf(lesson_file_ptr , "%s" , s->status);
-
+        fgets(t , sizeof(t) , lesson_file_ptr);
+ 
         fscanf(lesson_file_ptr , "%s" , e->name);
         fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
         fscanf(lesson_file_ptr , "%s" , e->type);
         fscanf(lesson_file_ptr , "%s" , e->code);
-        fscanf(lesson_file_ptr , "%s" , e->status);
+        fscanf(lesson_file_ptr , "%s" , e->status);        
+        fgets(t , sizeof(t) , lesson_file_ptr);       
+
 
         s->link = e ;
         e->link = NULL ;
@@ -3873,11 +4097,18 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
         {
             d = malloc(sizeof(struct lesson_information));
 
-            fscanf(lesson_file_ptr , "%s" , d->name);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(lesson_file_ptr , "%s" , d->name) != 1)
+                break;
             fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
             fscanf(lesson_file_ptr , "%s" , d->type);
             fscanf(lesson_file_ptr , "%s" , d->code);
             fscanf(lesson_file_ptr , "%s" , d->status);
+            fgets(t , sizeof(t) , lesson_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -3907,14 +4138,12 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
                         strcpy(temp->name , "");
                         strcpy(temp->name , new);
                     }
-                    if(temp == s)
-                        fprintf(lesson_file_ptr , "%s\n" , temp->name);
-                    else
-                        fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                    
+                    fprintf(lesson_file_ptr , "%s\n" , temp->name);
                     fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
                     fprintf(lesson_file_ptr , "%s\n" , temp->type);
                     fprintf(lesson_file_ptr , "%s\n" , temp->code);
-                    fprintf(lesson_file_ptr , "%s" , temp->status);
+                    fprintf(lesson_file_ptr , "%s\n\n" , temp->status);
 
                     temp = temp->link ;
                 }
@@ -3932,14 +4161,12 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
                         strcpy(temp->number_of_unit , new);
                     }
 
-                    if(temp == s)
-                        fprintf(lesson_file_ptr , "%s\n" , temp->name);
-                    else
-                        fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                    
+                    fprintf(lesson_file_ptr , "%s\n" , temp->name);
                     fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
                     fprintf(lesson_file_ptr , "%s\n" , temp->type);
                     fprintf(lesson_file_ptr , "%s\n" , temp->code);
-                    fprintf(lesson_file_ptr , "%s" , temp->status);
+                    fprintf(lesson_file_ptr , "%s\n\n" , temp->status);
 
                     temp = temp->link ;
                 }
@@ -3957,14 +4184,12 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
                         strcpy(temp->type , new);
                     }
 
-                    if(temp == s)
-                        fprintf(lesson_file_ptr , "%s\n" , temp->name);
-                    else
-                        fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                    
+                    fprintf(lesson_file_ptr , "%s\n" , temp->name);
                     fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
                     fprintf(lesson_file_ptr , "%s\n" , temp->type);
                     fprintf(lesson_file_ptr , "%s\n" , temp->code);
-                    fprintf(lesson_file_ptr , "%s" , temp->status);
+                    fprintf(lesson_file_ptr , "%s\n\n" , temp->status);
 
 
                     temp = temp->link ;
@@ -3979,11 +4204,9 @@ void department_head_edit_lessons_list(char lesson_code[] , char type[] , char n
             temp = s->link ;
             while (temp != NULL)
             {
-
+                temp = temp2->link;
                 free(temp2);
                 temp2 = temp ;
-                temp = temp->link;
-
             }
         }
     }
@@ -4052,17 +4275,26 @@ void department_head_delete_lesson_list(char lesson_code[])
         struct lesson_information *temp = NULL;
         struct lesson_information *temp2 = NULL;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(lesson_file_ptr , "%s" , s->name);
         fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
         fscanf(lesson_file_ptr , "%s" , s->type);
         fscanf(lesson_file_ptr , "%s" , s->code);
-        fscanf(lesson_file_ptr , "%s" , s->status);
-
-        fscanf(lesson_file_ptr , "%s" , e->name);
+        fscanf(lesson_file_ptr , "%s" , s->status) ;
+        fgets(t , sizeof(t) , lesson_file_ptr);
+ 
+        fscanf(lesson_file_ptr , "%s" , e->name) ;
         fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
         fscanf(lesson_file_ptr , "%s" , e->type);
         fscanf(lesson_file_ptr , "%s" , e->code);
-        fscanf(lesson_file_ptr , "%s" , e->status);
+        fscanf(lesson_file_ptr , "%s" , e->status) ;
+        fgets(t , sizeof(t) , lesson_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -4071,11 +4303,18 @@ void department_head_delete_lesson_list(char lesson_code[])
         {
             d = malloc(sizeof(struct lesson_information));
 
-            fscanf(lesson_file_ptr , "%s" , d->name);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(lesson_file_ptr , "%s" , d->name) != 1)
+                break;
             fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
             fscanf(lesson_file_ptr , "%s" , d->type);
             fscanf(lesson_file_ptr , "%s" , d->code);
             fscanf(lesson_file_ptr , "%s" , d->status);
+            fgets(t , sizeof(t) , lesson_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -4101,14 +4340,12 @@ void department_head_delete_lesson_list(char lesson_code[])
                     strcpy(temp->status , "unavailabe");
                 }
 
-                if(temp == s)
-                    fprintf(lesson_file_ptr , "%s\n" , temp->name);
-                else
-                    fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                
+                fprintf(lesson_file_ptr , "%s\n" , temp->name);
                 fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
                 fprintf(lesson_file_ptr , "%s\n" , temp->type);
                 fprintf(lesson_file_ptr , "%s\n" , temp->code);
-                fprintf(lesson_file_ptr , "%s" , temp->status);
+                fprintf(lesson_file_ptr , "%s\n\n" , temp->status);
                 temp = temp->link ;
             }
         }
@@ -4130,14 +4367,12 @@ void department_head_delete_lesson_list(char lesson_code[])
                 {
                     strcpy(temp->status , "");
                     strcpy(temp->status , "unavailabe");
-                    if(temp == s)
-                        fprintf(lesson_file_ptr , "%s\n" , temp->name);
-                    else
-                        fprintf(lesson_file_ptr , "\n%s\n" , temp->name);
+                    
+                    fprintf(lesson_file_ptr , "%s\n" , temp->name);
                     fprintf(lesson_file_ptr , "%s\n" , temp->number_of_unit);
                     fprintf(lesson_file_ptr , "%s\n" , temp->type);
                     fprintf(lesson_file_ptr , "%s\n" , temp->code);
-                    fprintf(lesson_file_ptr , "%s" , temp->code);
+                    fprintf(lesson_file_ptr , "%s\n\n" , temp->code);
                 }
 
                 temp = temp->link ;
@@ -4151,11 +4386,9 @@ void department_head_delete_lesson_list(char lesson_code[])
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     }
 }
@@ -4163,8 +4396,7 @@ void department_head_delete_lesson_list(char lesson_code[])
 // reports
 void department_head_reports_page(struct department_head_information head)
 {
-    int head_choice = 0 ;
-    char c[100];
+    char head_choice[100];
 
     system("cls");
 
@@ -4192,18 +4424,19 @@ void department_head_reports_page(struct department_head_information head)
     printf("\n\t\t\t\t16- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &head_choice);
-    getchar();
-    // limit department head inputs
-    while(head_choice <= 0 || head_choice > 16)
+    gets(head_choice);
+    head_choice[strcspn(head_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(head_choice , 1 , 16))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &head_choice);
-        gets(c);
+        gets(head_choice);
+        head_choice[strcspn(head_choice , "\n")] = '\0';
     }
 
-    department_head_reports_menu_choice(head_choice , head);
+    department_head_reports_menu_choice(atoi(head_choice) , head);
 }
 
 // switch structure for head choice in reports page
@@ -4298,8 +4531,7 @@ void department_head_reports_menu_choice(int head_choice , struct department_hea
 // find student information page
 void department_head_find_student_page(struct department_head_information head)
 {
-    int head_choice = 0 ;
-    char c[100];
+    char head_choice[100];
 
     system("cls");
 
@@ -4314,18 +4546,19 @@ void department_head_find_student_page(struct department_head_information head)
     printf("\n\t\t\t\t3- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &head_choice);
-    getchar();
-    // limit department head inputs
-    while(head_choice <= 0 || head_choice > 3)
+    gets(head_choice);
+    head_choice[strcspn(head_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(head_choice , 1 , 3))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &head_choice);
-        gets(c);
+        gets(head_choice);
+        head_choice[strcspn(head_choice , "\n")] = '\0';
     }
 
-    department_head_find_student_menu_choice(head_choice , head);
+    department_head_find_student_menu_choice(atoi(head_choice) , head);
 }
 
 // switch structure for head  choice in find student information page
@@ -4496,27 +4729,36 @@ void department_head_student_list(struct department_head_information head)
         struct student_information *temp = NULL;
         struct student_information *temp2 = NULL;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(student_file_ptr , "%s" , s->gender);
         fscanf(student_file_ptr , "%s" , s->name);
         fscanf(student_file_ptr , "%s" , s->family);
         fscanf(student_file_ptr , "%s" , s->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
         fscanf(student_file_ptr , "%s" , s->birth_city);
         fscanf(student_file_ptr , "%s" , s->field_of_study);
         fscanf(student_file_ptr , "%s" , s->id);
         fscanf(student_file_ptr , "%s" , s->phone_number);
         fscanf(student_file_ptr , "%s" , s->email);
+        fgets(t , sizeof(t) , student_file_ptr);
 
         fscanf(student_file_ptr , "%s" , e->gender);
         fscanf(student_file_ptr , "%s" , e->name);
         fscanf(student_file_ptr , "%s" , e->family);
         fscanf(student_file_ptr , "%s" , e->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
         fscanf(student_file_ptr , "%s" , e->birth_city);
         fscanf(student_file_ptr , "%s" , e->field_of_study);
         fscanf(student_file_ptr , "%s" , e->id);
         fscanf(student_file_ptr , "%s" , e->phone_number);
         fscanf(student_file_ptr , "%s" , e->email);
+        fgets(t , sizeof(t) , student_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -4526,16 +4768,23 @@ void department_head_student_list(struct department_head_information head)
         {
             d = malloc(sizeof(struct student_information));
 
-            fscanf(student_file_ptr , "%s" , d->gender);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(student_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(student_file_ptr , "%s" , d->name);
             fscanf(student_file_ptr , "%s" , d->family);
             fscanf(student_file_ptr , "%s" , d->code);
-            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , " %4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
             fscanf(student_file_ptr , "%s" , d->birth_city);
             fscanf(student_file_ptr , "%s" , d->field_of_study);
             fscanf(student_file_ptr , "%s" , d->id);
             fscanf(student_file_ptr , "%s" , d->phone_number);
             fscanf(student_file_ptr , "%s" , d->email);
+            fgets(t , sizeof(t) , student_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -4591,7 +4840,7 @@ void department_head_student_list(struct department_head_information head)
             printf("%-15s%c" , temp->name , 179);
             printf("%-15s%c" , temp->family , 179);
             printf("%-14s%c" , temp->code , 179);
-            printf("%4s/%2s/%2s%2c" , temp->birth_date.year , temp->birth_date.month , temp->birth_date.month ,  179);
+            printf("%4s/%2s/%2s%2c" , temp->birth_date.year , temp->birth_date.month , temp->birth_date.day ,  179);
             printf("%-14s%c" , temp->birth_city ,  179);
             printf("%-16s%c" , temp->field_of_study, 179);
             printf("%-13s%c" , temp->id, 179);
@@ -4624,11 +4873,9 @@ void department_head_student_list(struct department_head_information head)
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     }
     
@@ -4651,9 +4898,9 @@ void department_head_lesson_list(struct department_head_information head , char 
     int i = 0  , j = 0;
     char enter ;
     
-    student_file_ptr = fopen("lessons_information.txt" , "r");
+    lesson_file_ptr = fopen("lessons_information.txt" , "r");
 
-    if(student_file_ptr == NULL)
+    if(lesson_file_ptr == NULL)
     {
         printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
     } else
@@ -4665,17 +4912,27 @@ void department_head_lesson_list(struct department_head_information head , char 
         struct lesson_information *temp = NULL;
         struct lesson_information *temp2 = NULL;
 
-        fscanf(student_file_ptr , "%s" , s->name);
-        fscanf(student_file_ptr , "%s" , s->number_of_unit);
-        fscanf(student_file_ptr , "%s" , s->type);
-        fscanf(student_file_ptr , "%s" , s->code);
-        fscanf(student_file_ptr , "%s" , s->status);
+        char t[50];
 
-        fscanf(student_file_ptr , "%s" , e->name);
-        fscanf(student_file_ptr , "%s" , e->number_of_unit);
-        fscanf(student_file_ptr , "%s" , e->type);
-        fscanf(student_file_ptr , "%s" , e->code);
-        fscanf(student_file_ptr , "%s" , e->status);
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
+        fscanf(lesson_file_ptr , "%s" , s->name);
+        fscanf(lesson_file_ptr , "%s" , s->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , s->type);
+        fscanf(lesson_file_ptr , "%s" , s->code);
+        fscanf(lesson_file_ptr , "%s" , s->status);
+        fgets(t , sizeof(t) , lesson_file_ptr);
+
+ 
+        fscanf(lesson_file_ptr , "%s" , e->name);
+        fscanf(lesson_file_ptr , "%s" , e->number_of_unit);
+        fscanf(lesson_file_ptr , "%s" , e->type);
+        fscanf(lesson_file_ptr , "%s" , e->code);
+        fscanf(lesson_file_ptr , "%s" , e->status) ;
+        fgets(t , sizeof(t) , lesson_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -4685,18 +4942,25 @@ void department_head_lesson_list(struct department_head_information head , char 
         {
             d = malloc(sizeof(struct student_information));
 
-            fscanf(student_file_ptr , "%s" , d->name);
-            fscanf(student_file_ptr , "%s" , d->number_of_unit);
-            fscanf(student_file_ptr , "%s" , d->type);
-            fscanf(student_file_ptr , "%s" , d->code);
-            fscanf(student_file_ptr , "%s" , d->status);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(lesson_file_ptr , "%s" , d->name) != 1)
+                break;
+            fscanf(lesson_file_ptr , "%s" , d->number_of_unit);
+            fscanf(lesson_file_ptr , "%s" , d->type);
+            fscanf(lesson_file_ptr , "%s" , d->code);
+            fscanf(lesson_file_ptr , "%s" , d->status);
+            fgets(t , sizeof(t) , lesson_file_ptr);
 
             e->link = d ;
             e = d ;
         }
         e->link = NULL ;
 
-        fclose(student_file_ptr) ;
+        fclose(lesson_file_ptr) ;
 
         printf("\n\t\t\t%c" , 201);
         for(i = 0 ; i < 94 ; i++)
@@ -4829,11 +5093,9 @@ void department_head_lesson_list(struct department_head_information head , char 
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     }
     
@@ -4906,13 +5168,19 @@ void department_head_students_scores_list(char student_id[] , char lesson_code[]
         struct student_score *temp2 = NULL ;
         struct student_score *temp3 = NULL ;
         struct student_score *t = NULL ;
+
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
         
         fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
         fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
         fgets(s->score , sizeof(s->score) ,score_file_ptr);
         fgets(s->date , sizeof(s->date) , score_file_ptr);
         fgets(s->time , sizeof(s->time) , score_file_ptr);
-        fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
+        fgets(d->user_name , sizeof(d->user_name) , score_file_ptr);
 
         fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
         fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
@@ -4928,7 +5196,13 @@ void department_head_students_scores_list(char student_id[] , char lesson_code[]
         {
             d = malloc(sizeof(struct student_score)) ;
 
-            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fgets(d->student_id , sizeof(d->student_id) , score_file_ptr) == NULL)
+                break;
             fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
             fgets(d->score , sizeof(d->score) ,score_file_ptr);
             fgets(d->date , sizeof(d->date) , score_file_ptr);
@@ -5114,11 +5388,9 @@ void department_head_students_scores_list(char student_id[] , char lesson_code[]
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     } 
 }
@@ -5267,13 +5539,19 @@ float department_head_student_average(char student_id[])
         struct student_score *d = NULL ;
         struct student_score *temp = NULL ;
         struct student_score *temp2 = NULL ;
+
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
         
-        fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
+        fgets(s->student_id , sizeof(s->student_id) , score_file_ptr) ;
         fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
         fgets(s->score , sizeof(s->score) ,score_file_ptr);
         fgets(s->date , sizeof(s->date) , score_file_ptr);
         fgets(s->time , sizeof(s->time) , score_file_ptr);
-        fgets(s->user_name , sizeof(s->user_name) , score_file_ptr);
+        fgets(s->user_name ,  sizeof(s->user_name) , score_file_ptr);
 
         fgets(e->student_id , sizeof(e->student_id) , score_file_ptr);
         fgets(e->lesson_code , sizeof(e->lesson_code) , score_file_ptr);
@@ -5289,7 +5567,13 @@ float department_head_student_average(char student_id[])
         {
             d = malloc(sizeof(struct student_score)) ;
 
-            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fgets(d->student_id , sizeof(d->student_id) , score_file_ptr) == NULL )
+                break;
             fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
             fgets(d->score , sizeof(d->score) ,score_file_ptr);
             fgets(d->date , sizeof(d->date) , score_file_ptr);
@@ -5340,11 +5624,9 @@ float department_head_student_average(char student_id[])
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     } 
 
@@ -5425,6 +5707,12 @@ float department_head_lesson_average(char lesson_code[])
         struct student_score *d = NULL ;
         struct student_score *temp = NULL ;
         struct student_score *temp2 = NULL ;
+
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
         
         fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
         fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
@@ -5447,7 +5735,13 @@ float department_head_lesson_average(char lesson_code[])
         {
             d = malloc(sizeof(struct student_score)) ;
 
-            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fgets(d->student_id , sizeof(d->student_id) , score_file_ptr) == NULL )
+                break;
             fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
             fgets(d->score , sizeof(d->score) ,score_file_ptr);
             fgets(d->date , sizeof(d->date) , score_file_ptr);
@@ -5498,12 +5792,10 @@ float department_head_lesson_average(char lesson_code[])
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
-        } 
+        }
     }
     return ave ;
 }
@@ -5531,28 +5823,38 @@ void department_head_students_average_list(struct department_head_information he
         struct student_information *temp2 = NULL ;
         struct student_information *temp3 = NULL ;
         struct student_information *t = NULL ;
+
+        char tt[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
         
         fscanf(student_file_ptr , "%s" , s->gender);
         fscanf(student_file_ptr , "%s" , s->name);
         fscanf(student_file_ptr , "%s" , s->family);
         fscanf(student_file_ptr , "%s" , s->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
         fscanf(student_file_ptr , "%s" , s->birth_city);
         fscanf(student_file_ptr , "%s" , s->field_of_study);
         fscanf(student_file_ptr , "%s" , s->id);
         fscanf(student_file_ptr , "%s" , s->phone_number);
         fscanf(student_file_ptr , "%s" , s->email);
-
+        fgets(tt, sizeof(t) , student_file_ptr);
+ 
         fscanf(student_file_ptr , "%s" , e->gender);
         fscanf(student_file_ptr , "%s" , e->name);
         fscanf(student_file_ptr , "%s" , e->family);
         fscanf(student_file_ptr , "%s" , e->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
         fscanf(student_file_ptr , "%s" , e->birth_city);
         fscanf(student_file_ptr , "%s" , e->field_of_study);
         fscanf(student_file_ptr , "%s" , e->id);
         fscanf(student_file_ptr , "%s" , e->phone_number);
         fscanf(student_file_ptr , "%s" , e->email);
+        fgets(tt , sizeof(t) , student_file_ptr);
+
 
         s->link = e ;
         e->link = NULL ;
@@ -5561,16 +5863,23 @@ void department_head_students_average_list(struct department_head_information he
         {
             d = malloc(sizeof(struct student_information)) ;
 
-            fscanf(student_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(student_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(student_file_ptr , "%s" , d->name);
             fscanf(student_file_ptr , "%s" , d->family);
             fscanf(student_file_ptr , "%s" , d->code);
-            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , " %4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
             fscanf(student_file_ptr , "%s" , d->birth_city);
             fscanf(student_file_ptr , "%s" , d->field_of_study);
             fscanf(student_file_ptr , "%s" , d->id);
             fscanf(student_file_ptr , "%s" , d->phone_number);
             fscanf(student_file_ptr , "%s" , d->email);
+            fgets(tt , sizeof(t) , student_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -5718,11 +6027,9 @@ void department_head_students_average_list(struct department_head_information he
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     } 
 
@@ -5868,6 +6175,12 @@ void department_head_conditional_students_list_take_lesson(char lesson_code[])
         struct student_score *temp = NULL ;
         struct student_score *temp2 = NULL ;
 
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fgets(s->student_id , sizeof(s->student_id) , score_file_ptr);
         fgets(s->lesson_code , sizeof(s->lesson_code) , score_file_ptr);
         fgets(s->score , sizeof(s->score) ,score_file_ptr);
@@ -5889,7 +6202,13 @@ void department_head_conditional_students_list_take_lesson(char lesson_code[])
         {
             d = malloc(sizeof(struct student_score)) ;
 
-            fgets(d->student_id , sizeof(d->student_id) , score_file_ptr);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fgets(d->student_id , sizeof(d->student_id) , score_file_ptr) == NULL )
+                break;
             fgets(d->lesson_code , sizeof(d->lesson_code) , score_file_ptr);
             fgets(d->score , sizeof(d->score) ,score_file_ptr);
             fgets(d->date , sizeof(d->date) , score_file_ptr);
@@ -6001,11 +6320,9 @@ void department_head_conditional_students_list_take_lesson(char lesson_code[])
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     } 
 }
@@ -6013,8 +6330,7 @@ void department_head_conditional_students_list_take_lesson(char lesson_code[])
 // department head setting page
 void department_head_setting_page(struct department_head_information head)
 {
-    int head_choice = 0 ;
-    char c[100];
+    char head_choice[100];
 
     system("cls");
 
@@ -6031,18 +6347,19 @@ void department_head_setting_page(struct department_head_information head)
     
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &head_choice);
-    getchar();
-    // limit department head inputs
-    while(head_choice <= 0 || head_choice > 4)
+    gets(head_choice);
+    head_choice[strcspn(head_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(head_choice , 1 , 4))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &head_choice);
-        gets(c);
+        gets(head_choice);
+        head_choice[strcspn(head_choice , "\n")] = '\0';
     }
 
-    department_head_setting_menu_choice(head_choice , head);
+    department_head_setting_menu_choice(atoi(head_choice) , head);
 }
 
 // switch structure fo head choice in user setting page
@@ -6213,10 +6530,17 @@ void department_head_setting(struct department_head_information head , char type
         struct department_head_information *temp = NULL;
         struct department_head_information *temp2 = NULL;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(head_file_ptr , "%s" , s->gender);
         fscanf(head_file_ptr , "%s" , s->name);
         fscanf(head_file_ptr , "%s" , s->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(head_file_ptr , "%s" , s->group_name);
         fscanf(head_file_ptr , "%s" , s->code);
         fscanf(head_file_ptr , "%s" , s->phone_number);
@@ -6224,11 +6548,12 @@ void department_head_setting(struct department_head_information head , char type
         fscanf(head_file_ptr , "%s" , s->status);
         fscanf(head_file_ptr , "%s" , s->user_name);
         fscanf(head_file_ptr , "%s" , s->password);
-
-        fscanf(head_file_ptr , "%s" , e->gender);
+        fgets(t , sizeof(t) , head_file_ptr);
+ 
+        fscanf(head_file_ptr , "%s" , e->gender) ;
         fscanf(head_file_ptr , "%s" , e->name);
         fscanf(head_file_ptr , "%s" , e->family);
-        fscanf(head_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(head_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(head_file_ptr , "%s" , e->group_name);
         fscanf(head_file_ptr , "%s" , e->code);
         fscanf(head_file_ptr , "%s" , e->phone_number);
@@ -6236,6 +6561,7 @@ void department_head_setting(struct department_head_information head , char type
         fscanf(head_file_ptr , "%s" , e->status);
         fscanf(head_file_ptr , "%s" , e->user_name);
         fscanf(head_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , head_file_ptr);
 
         s->link = e ;
         e->link = NULL;
@@ -6246,10 +6572,16 @@ void department_head_setting(struct department_head_information head , char type
         {
             d = malloc(sizeof(struct department_head_information));
 
-            fscanf(head_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(head_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(head_file_ptr , "%s" , d->name);
             fscanf(head_file_ptr , "%s" , d->family);
-            fscanf(head_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(head_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(head_file_ptr , "%s" , d->group_name);
             fscanf(head_file_ptr , "%s" , d->code);
             fscanf(head_file_ptr , "%s" , d->phone_number);
@@ -6257,6 +6589,7 @@ void department_head_setting(struct department_head_information head , char type
             fscanf(head_file_ptr , "%s" , d->status);
             fscanf(head_file_ptr , "%s" , d->user_name);
             fscanf(head_file_ptr , "%s" , d->password);
+            fgets(t , sizeof(t) , head_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -6305,10 +6638,8 @@ void department_head_setting(struct department_head_information head , char type
             temp = s ;
             while(temp != NULL)
             {   
-                if(temp == s)
-                    fprintf(head_file_ptr , "%s\n" , temp->gender);
-                else
-                    fprintf(head_file_ptr , "\n%s\n" , temp->gender);
+                
+                fprintf(head_file_ptr , "%s\n" , temp->gender);
                 fprintf(head_file_ptr , "%s\n" , temp->name);
                 fprintf(head_file_ptr , "%s\n" , temp->family);
                 fprintf(head_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
@@ -6318,7 +6649,7 @@ void department_head_setting(struct department_head_information head , char type
                 fprintf(head_file_ptr , "%s\n" , temp->email);
                 fprintf(head_file_ptr , "%s\n" , temp->status);
                 fprintf(head_file_ptr , "%s\n" , temp->user_name);
-                fprintf(head_file_ptr , "%s" , temp->password);
+                fprintf(head_file_ptr , "%s\n\n" , temp->password);
 
                 temp = temp->link ;
 
@@ -6332,11 +6663,9 @@ void department_head_setting(struct department_head_information head , char type
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     }
 }
@@ -6410,27 +6739,36 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
         struct academic_staff_information *temp = NULL;
         struct academic_staff_information *temp2 = NULL;
 
-        fscanf(staff_file_ptr , "%s" , s->gender);
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
+        fscanf(staff_file_ptr , "%s" , s->gender) ;
         fscanf(staff_file_ptr , "%s" , s->name);
         fscanf(staff_file_ptr , "%s" , s->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(staff_file_ptr , "%s" , s->rank);
         fscanf(staff_file_ptr , "%s" , s->phone_number);
         fscanf(staff_file_ptr , "%s" , s->email);
         fscanf(staff_file_ptr , "%s" , s->status);
         fscanf(staff_file_ptr , "%s" , s->user_name);
-        fscanf(staff_file_ptr , "%s" , s->password);
-
+        fscanf(staff_file_ptr , "%s" , s->password) ;
+        fgets(t , sizeof(t) , staff_file_ptr);
+ 
         fscanf(staff_file_ptr , "%s" , e->gender);
         fscanf(staff_file_ptr , "%s" , e->name);
         fscanf(staff_file_ptr , "%s" , e->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(staff_file_ptr , "%s" , e->rank);
         fscanf(staff_file_ptr , "%s" , e->phone_number);
         fscanf(staff_file_ptr , "%s" , e->email);
         fscanf(staff_file_ptr , "%s" , e->status);
         fscanf(staff_file_ptr , "%s" , e->user_name);
-        fscanf(staff_file_ptr , "%s" , e->password);
+        fscanf(staff_file_ptr , "%s" , e->password) ;
+        fgets(t , sizeof(t) , staff_file_ptr);
 
         s->link = e ;
         e->link = NULL;
@@ -6439,16 +6777,23 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
         {
             d = malloc(sizeof(struct academic_staff_information));
 
-            fscanf(staff_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(staff_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(staff_file_ptr , "%s" , d->name);
             fscanf(staff_file_ptr , "%s" , d->family);
-            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(staff_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(staff_file_ptr , "%s" , d->rank);
             fscanf(staff_file_ptr , "%s" , d->phone_number);
             fscanf(staff_file_ptr , "%s" , d->email);
             fscanf(staff_file_ptr , "%s" , d->status);
             fscanf(staff_file_ptr , "%s" , d->user_name);
-            fscanf(staff_file_ptr , "%s" , d->password);
+            fscanf(staff_file_ptr , "%s" , d->password) ;
+            fgets(t , sizeof(t) , staff_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -6478,11 +6823,9 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
     }
 
@@ -6500,8 +6843,7 @@ int academic_staff_check_login(char staff_user_name[] , char staff_password[])
 // academic staff page menu
 void academic_staff_menu(struct academic_staff_information staff)
 {
-    int staff_choice = 0 ;
-    char c[100];
+    char staff_choice[100];
 
     system("cls");
 
@@ -6519,18 +6861,19 @@ void academic_staff_menu(struct academic_staff_information staff)
     printf("\n\t\t\t\t6- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &staff_choice);
-    getchar();
-    // limit department head inputs
-    while(staff_choice <= 0 || staff_choice > 6)
+    gets(staff_choice);
+    staff_choice[strcspn(staff_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(staff_choice , 1 , 6))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &staff_choice);
-        gets(c);
+        gets(staff_choice);
+        staff_choice[strcspn(staff_choice , "\n")] = '\0';
     }
 
-    academic_staff_menu_choice(staff_choice , staff);
+    academic_staff_menu_choice(atoi(staff_choice) , staff);
 }
 
 // switch structure for academic staff choice
@@ -6747,7 +7090,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
     } else
     {
 
-        fprintf(student_file_ptr , "\n%s\n" , student.gender);
+        fprintf(student_file_ptr , "%s\n" , student.gender);
         fprintf(student_file_ptr , "%s\n" , student.name);
         fprintf(student_file_ptr , "%s\n" , student.family);
         fprintf(student_file_ptr , "%s\n" , student.code);
@@ -6756,7 +7099,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
         fprintf(student_file_ptr , "%s\n" , student.field_of_study);
         fprintf(student_file_ptr , "%s\n" , student.id);
         fprintf(student_file_ptr , "%s\n" , student.phone_number);
-        fprintf(student_file_ptr , "%s" , student.email);
+        fprintf(student_file_ptr , "%s\n\n" , student.email);
 
         fclose(student_file_ptr);
         
@@ -6779,8 +7122,7 @@ void academic_staff_log_student(struct academic_staff_information staff)
 // academic staff edit students information page
 void academic_staff_edit_students_information(struct academic_staff_information staff)
 {
-    int staff_choice = 0 ;
-    char c[100] ;
+    char staff_choice[100];
 
     system("cls");
 
@@ -6802,18 +7144,19 @@ void academic_staff_edit_students_information(struct academic_staff_information 
     printf("\n\t\t\t\t10- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &staff_choice);
-    getchar();
-    // limit admin inputs
-    while(staff_choice <= 0 || staff_choice > 10)
+    gets(staff_choice);
+    staff_choice[strcspn(staff_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(staff_choice , 1 , 10))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .\n""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &staff_choice);
-        gets(c);
+        gets(staff_choice);
+        staff_choice[strcspn(staff_choice , "\n")] = '\0';
     }
 
-    academic_staff_edit_students_information_menu_choice(staff_choice , staff);
+    academic_staff_edit_students_information_menu_choice(atoi(staff_choice) , staff);
 
 }
 
@@ -7434,27 +7777,36 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
         struct student_information *temp = NULL ;
         struct student_information *temp2 = NULL ;
 
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
         fscanf(student_file_ptr , "%s" , s->gender);
         fscanf(student_file_ptr , "%s" , s->name);
         fscanf(student_file_ptr , "%s" , s->family);
         fscanf(student_file_ptr , "%s" , s->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year  , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , s->birth_date.year  , s->birth_date.month , s->birth_date.day);
         fscanf(student_file_ptr , "%s" , s->birth_city);
         fscanf(student_file_ptr , "%s" , s->field_of_study);
         fscanf(student_file_ptr , "%s" , s->id);
         fscanf(student_file_ptr , "%s" , s->phone_number);
         fscanf(student_file_ptr , "%s" , s->email);
-
+        fgets(t , sizeof(t) , student_file_ptr);
+ 
         fscanf(student_file_ptr , "%s" , e->gender);
         fscanf(student_file_ptr , "%s" , e->name);
         fscanf(student_file_ptr , "%s" , e->family);
         fscanf(student_file_ptr , "%s" , e->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year  , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , e->birth_date.year  , e->birth_date.month , e->birth_date.day);
         fscanf(student_file_ptr , "%s" , e->birth_city);
         fscanf(student_file_ptr , "%s" , e->field_of_study);
         fscanf(student_file_ptr , "%s" , e->id);
         fscanf(student_file_ptr , "%s" , e->phone_number);
         fscanf(student_file_ptr , "%s" , e->email);
+        fgets(t , sizeof(t) , student_file_ptr);
 
         s->link = e ;
         e->link = NULL ;
@@ -7463,16 +7815,23 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
         {
             d = malloc(sizeof(struct student_information));
 
-            fscanf(student_file_ptr , "%s" , d->gender);
+            if(d == 0 )
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(student_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(student_file_ptr , "%s" , d->name);
             fscanf(student_file_ptr , "%s" , d->family);
             fscanf(student_file_ptr , "%s" , d->code);
-            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year  , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , " %4s/%2s/%2s" , d->birth_date.year  , d->birth_date.month , d->birth_date.day);
             fscanf(student_file_ptr , "%s" , d->birth_city);
             fscanf(student_file_ptr , "%s" , d->field_of_study);
             fscanf(student_file_ptr , "%s" , d->id);
             fscanf(student_file_ptr , "%s" , d->phone_number);
-            fscanf(student_file_ptr , "%s" , d->email);
+            fscanf(student_file_ptr , "%s" , d->email) ;
+            fgets(t , sizeof(t) , student_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -7509,7 +7868,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7534,7 +7893,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7559,7 +7918,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7584,7 +7943,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7612,7 +7971,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7637,7 +7996,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7662,7 +8021,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7687,7 +8046,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7712,7 +8071,7 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
                     fprintf(student_file_ptr , "%s\n" , temp->field_of_study);
                     fprintf(student_file_ptr , "%s\n" , temp->id);
                     fprintf(student_file_ptr , "%s\n" , temp->phone_number);
-                    fprintf(student_file_ptr , "%s\n" , temp->email);
+                    fprintf(student_file_ptr , "%s\n\n" , temp->email);
 
 
                     temp = temp->link ;
@@ -7727,11 +8086,9 @@ void academic_staff_edit_students_information_list(char students_id[] , char typ
             temp = s->link ;
             while (temp != NULL)
             {
-
+                temp = temp2->link;
                 free(temp2);
                 temp2 = temp ;
-                temp = temp->link;
-
             }
         }
     }
@@ -7813,12 +8170,12 @@ void academic_staff_log_score(struct academic_staff_information staff)
                 printf("\033[31m""\n\t\t\t\tERROR ! File could not be opened.""\033[0m");
             } else
             {
-                fprintf(score_file_ptr , "\n%s\n" , score.student_id);
+                fprintf(score_file_ptr , "%s\n" , score.student_id);
                 fprintf(score_file_ptr , "%s\n" , score.lesson_code);
                 fprintf(score_file_ptr , "%s\n" , score.score);
                 fprintf(score_file_ptr , "%s\n" , __DATE__);
                 fprintf(score_file_ptr , "%s\n" , __TIME__);
-                fprintf( score_file_ptr ,"%s %s" , staff.name , staff.family);
+                fprintf( score_file_ptr ,"%s %s\n\n" , staff.name , staff.family);
             
                  fclose(score_file_ptr);
             
@@ -7843,8 +8200,7 @@ void academic_staff_log_score(struct academic_staff_information staff)
 // academic staff setting page
 void academic_staff_setting_page(struct academic_staff_information staff)
 {
-    int staff_choice = 0 ;
-    char c[100];
+    char staff_choice[100];
 
     system("cls");
 
@@ -7861,18 +8217,19 @@ void academic_staff_setting_page(struct academic_staff_information staff)
     
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &staff_choice);
-    getchar();
-    // limit academic staff inputs
-    while(staff_choice <= 0 || staff_choice > 4)
+    gets(staff_choice);
+    staff_choice[strcspn(staff_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(staff_choice , 1 , 4))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &staff_choice);
-        gets(c);
+        gets(staff_choice);
+        staff_choice[strcspn(staff_choice , "\n")] = '\0';
     }
 
-    academic_staff_setting_menu_choice(staff_choice , staff);
+    academic_staff_setting_menu_choice(atoi(staff_choice) , staff);
 }
 
 // switch structure fo staff choice in user setting page
@@ -8044,27 +8401,36 @@ void academic_staff_setting(struct academic_staff_information staff , char type[
         struct academic_staff_information *temp = NULL;
         struct academic_staff_information *temp2 = NULL;
 
-        fscanf(staff_file_ptr , "%s" , s->gender);
+        char t[50];
+
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
+
+        fscanf(staff_file_ptr , "%s" , s->gender) ;
         fscanf(staff_file_ptr , "%s" , s->name);
         fscanf(staff_file_ptr , "%s" , s->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , s->start_date.year , s->start_date.month , s->start_date.day);
         fscanf(staff_file_ptr , "%s" , s->rank);
         fscanf(staff_file_ptr , "%s" , s->phone_number);
         fscanf(staff_file_ptr , "%s" , s->email);
         fscanf(staff_file_ptr , "%s" , s->status);
         fscanf(staff_file_ptr , "%s" , s->user_name);
         fscanf(staff_file_ptr , "%s" , s->password);
-
+        fgets(t , sizeof(t) , staff_file_ptr);
+ 
         fscanf(staff_file_ptr , "%s" , e->gender);
         fscanf(staff_file_ptr , "%s" , e->name);
         fscanf(staff_file_ptr , "%s" , e->family);
-        fscanf(staff_file_ptr , "%4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
+        fscanf(staff_file_ptr , " %4s/%2s/%2s" , e->start_date.year , e->start_date.month , e->start_date.day);
         fscanf(staff_file_ptr , "%s" , e->rank);
         fscanf(staff_file_ptr , "%s" , e->phone_number);
         fscanf(staff_file_ptr , "%s" , e->email);
         fscanf(staff_file_ptr , "%s" , e->status);
         fscanf(staff_file_ptr , "%s" , e->user_name);
         fscanf(staff_file_ptr , "%s" , e->password);
+        fgets(t , sizeof(t) , staff_file_ptr);
 
         s->link = e ;
         e->link = NULL;
@@ -8075,16 +8441,23 @@ void academic_staff_setting(struct academic_staff_information staff , char type[
         {
             d = malloc(sizeof(struct academic_staff_information));
 
-            fscanf(staff_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(staff_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(staff_file_ptr , "%s" , d->name);
             fscanf(staff_file_ptr , "%s" , d->family);
-            fscanf(staff_file_ptr , "%4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
+            fscanf(staff_file_ptr , " %4s/%2s/%2s" , d->start_date.year , d->start_date.month , d->start_date.day);
             fscanf(staff_file_ptr , "%s" , d->rank);
             fscanf(staff_file_ptr , "%s" , d->phone_number);
             fscanf(staff_file_ptr , "%s" , d->email);
             fscanf(staff_file_ptr , "%s" , d->status);
             fscanf(staff_file_ptr , "%s" , d->user_name);
-            fscanf(staff_file_ptr , "%s" , d->password);
+            fscanf(staff_file_ptr , "%s" , d->password) ;
+            fgets(t , sizeof(t) , staff_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -8133,10 +8506,8 @@ void academic_staff_setting(struct academic_staff_information staff , char type[
             temp = s ;
             while(temp != NULL)
             {   
-                if(temp == s)
-                    fprintf(staff_file_ptr , "%s\n" , temp->gender);
-                else
-                    fprintf(staff_file_ptr , "\n%s\n" , temp->gender);
+                
+                fprintf(staff_file_ptr , "%s\n" , temp->gender);
                 fprintf(staff_file_ptr , "%s\n" , temp->name);
                 fprintf(staff_file_ptr , "%s\n" , temp->family);
                 fprintf(staff_file_ptr , "%4s/%2s/%2s\n" , temp->start_date.year , temp->start_date.month , temp->start_date.day);
@@ -8145,7 +8516,7 @@ void academic_staff_setting(struct academic_staff_information staff , char type[
                 fprintf(staff_file_ptr , "%s\n" , temp->email);
                 fprintf(staff_file_ptr , "%s\n" , temp->status);
                 fprintf(staff_file_ptr , "%s\n" , temp->user_name);
-                fprintf(staff_file_ptr , "%s" , temp->password);
+                fprintf(staff_file_ptr , "%s\n\n" , temp->password);
 
                 temp = temp->link ;
 
@@ -8158,11 +8529,9 @@ void academic_staff_setting(struct academic_staff_information staff , char type[
             temp = s->link ;
             while (temp != NULL)
             {
-
+                temp = temp2->link;
                 free(temp2);
                 temp2 = temp ;
-                temp = temp->link;
-
             }
         }
     }
@@ -8171,8 +8540,7 @@ void academic_staff_setting(struct academic_staff_information staff , char type[
 // academic staff reports 
 void academic_staff_reports_page(struct academic_staff_information staff)
 {
-    int staff_choice = 0 ;
-    char c[100];
+    char staff_choice[100];
 
     system("cls");
 
@@ -8189,18 +8557,19 @@ void academic_staff_reports_page(struct academic_staff_information staff)
     printf("\n\t\t\t\t5- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &staff_choice);
-    getchar();
-    // limit staff inputs
-    while(staff_choice <= 0 || staff_choice > 5)
+    gets(staff_choice);
+    staff_choice[strcspn(staff_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(staff_choice , 1 , 5))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &staff_choice);
-        gets(c);
+        gets(staff_choice);
+        staff_choice[strcspn(staff_choice , "\n")] = '\0';
     }
 
-    academic_reports_menu_choice(staff_choice , staff);
+    academic_reports_menu_choice(atoi(staff_choice) , staff);
 }
 
 // switch structure of staff choices in reports page
@@ -8239,8 +8608,7 @@ void academic_reports_menu_choice(int staff_choice , struct academic_staff_infor
 // find student information page
 void academic_staff_find_student_page(struct academic_staff_information staff)
 {
-    int staff_choice = 0 ;
-    char c[100];
+    char staff_choice[100];
 
     system("cls");
 
@@ -8255,18 +8623,19 @@ void academic_staff_find_student_page(struct academic_staff_information staff)
     printf("\n\t\t\t\t3- Exit\n");
 
     printf("\n\t\t\t\tPlease enter your choice : ");
-    scanf("%d" , &staff_choice);
-    getchar();
-    // limit department staff inputs
-    while(staff_choice <= 0 || staff_choice > 3)
+    gets(staff_choice);
+    staff_choice[strcspn(staff_choice , "\n")] = '\0';
+
+    // limit user inputs
+    while(!input(staff_choice , 1 , 3))
     {
-        printf("\033[31m""\n\t\t\t\tERROR ! Incorrect input .""\033[0m");
+        printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter your choice : ");
-        scanf("%d" , &staff_choice);
-        gets(c);
+        gets(staff_choice);
+        staff_choice[strcspn(staff_choice , "\n")] = '\0';
     }
 
-    academic_staff_find_student_menu_choice(staff_choice , staff);
+    academic_staff_find_student_menu_choice(atoi(staff_choice) , staff);
 }
 
 // switch structure for staff  choice in find student information page
@@ -8434,7 +8803,7 @@ void academic_staff_find_student_born_historical_interval_page(struct academic_s
     printf("\n\t\t\t\tPlease enter start of interval (year) : ");
     gets(start);
     // check 
-    while(!check_number(start) && strlen(start) != 4 )
+    while(!check_number(start) || strlen(start) != 4 )
     {
         printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter start of interval (year) : ");
@@ -8444,7 +8813,7 @@ void academic_staff_find_student_born_historical_interval_page(struct academic_s
     printf("\n\t\t\t\tPlease enter end of interval (year) : ");
     gets(end);
     // check 
-    while(!check_number(end) && strlen(end) != 4 && atoi(end) < atoi(start) )
+    while(!check_number(end) || strlen(end) != 4 || atoi(end) < atoi(start) )
     {
         printf("\033[31m""\t\t\t\tERROR ! Incorrect input .""\033[0m");
         printf("\n\t\t\t\tPlease enter end of interval (year) : ");
@@ -8557,29 +8926,35 @@ void academic_staff_student_list(char type[] , char start[] , char end[] , char 
         struct student_information *temp = NULL;
         struct student_information *temp2 = NULL;
 
-        
+        char t[50];
+    
+        if(s == 0 || e == 0)
+        {
+            printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+        }
 
         fscanf(student_file_ptr , "%s" , s->gender);
         fscanf(student_file_ptr , "%s" , s->name);
         fscanf(student_file_ptr , "%s" , s->family);
         fscanf(student_file_ptr , "%s" , s->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , s->birth_date.year , s->birth_date.month , s->birth_date.day);
         fscanf(student_file_ptr , "%s" , s->birth_city);
         fscanf(student_file_ptr , "%s" , s->field_of_study);
         fscanf(student_file_ptr , "%s" , s->id);
         fscanf(student_file_ptr , "%s" , s->phone_number);
-        fscanf(student_file_ptr , "%s" , s->email );
-
+        fscanf(student_file_ptr , "%s" , s->email) ;
+        fgets(t , sizeof(t) , student_file_ptr);
+ 
         fscanf(student_file_ptr , "%s" , e->gender);
         fscanf(student_file_ptr , "%s" , e->name);
         fscanf(student_file_ptr , "%s" , e->family);
         fscanf(student_file_ptr , "%s" , e->code);
-        fscanf(student_file_ptr , "%4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
+        fscanf(student_file_ptr , " %4s/%2s/%2s" , e->birth_date.year , e->birth_date.month , e->birth_date.day);
         fscanf(student_file_ptr , "%s" , e->birth_city);
         fscanf(student_file_ptr , "%s" , e->field_of_study);
         fscanf(student_file_ptr , "%s" , e->id);
         fscanf(student_file_ptr , "%s" , e->phone_number);
-        fscanf(student_file_ptr , "%s" , e->email );
+        fgets(t , sizeof(t) , student_file_ptr);
 
         s->link = e ;
         e->link = NULL;
@@ -8590,16 +8965,23 @@ void academic_staff_student_list(char type[] , char start[] , char end[] , char 
         {
             d = malloc(sizeof(struct student_information));
 
-            fscanf(student_file_ptr , "%s" , d->gender);
+            if(d == 0)
+            {
+                printf("\033[31m""\n\t\t\t\tERROR ! Memory allocation failed.\n""\033[0m");
+            }
+
+            if(fscanf(student_file_ptr , "%s" , d->gender) != 1)
+                break;
             fscanf(student_file_ptr , "%s" , d->name);
             fscanf(student_file_ptr , "%s" , d->family);
             fscanf(student_file_ptr , "%s" , d->code);
-            fscanf(student_file_ptr , "%4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
+            fscanf(student_file_ptr , " %4s/%2s/%2s" , d->birth_date.year , d->birth_date.month , d->birth_date.day);
             fscanf(student_file_ptr , "%s" , d->birth_city);
             fscanf(student_file_ptr , "%s" , d->field_of_study);
             fscanf(student_file_ptr , "%s" , d->id);
             fscanf(student_file_ptr , "%s" , d->phone_number);
-            fscanf(student_file_ptr , "%s" , d->email );
+            fscanf(student_file_ptr , "%s" , d->email);
+            fgets(t , sizeof(t) , student_file_ptr);
 
             e->link = d ;
             e = d ;
@@ -8680,7 +9062,7 @@ void academic_staff_student_list(char type[] , char start[] , char end[] , char 
             printf("%-15s%c" , temp->name , 179);
             printf("%-15s%c" , temp->family , 179);
             printf("%-14s%c" , temp->code , 179);
-            printf("%4s/%2s/%2s%2c" , temp->birth_date.year , temp->birth_date.month , temp->birth_date.month ,  179);
+            printf("%4s/%2s/%2s%2c" , temp->birth_date.year , temp->birth_date.month , temp->birth_date.day ,  179);
             printf("%-14s%c" , temp->birth_city ,  179);
             printf("%-16s%c" , temp->field_of_study, 179);
             printf("%-13s%c" , temp->id, 179);
@@ -8713,11 +9095,9 @@ void academic_staff_student_list(char type[] , char start[] , char end[] , char 
         temp = s->link ;
         while (temp != NULL)
         {
-
+            temp = temp2->link;
             free(temp2);
             temp2 = temp ;
-            temp = temp->link;
-
         }
 
     }
